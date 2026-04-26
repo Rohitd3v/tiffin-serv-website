@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brutal-bg: rgb(255 245 251);
+  --color-brutal-card: rgb(255 251 247);
+  --color-brutal-card-mint: rgb(232 255 244);
+  --color-brutal-card-peach: rgb(255 240 235);
+  --color-brutal-card-lilac: rgb(244 238 255);
+  --color-brutal-card-lemon: rgb(255 251 213);
+  --color-brutal-border: rgb(45 27 78);
+  --color-brutal-ink: rgb(45 27 78);
+  --color-brutal-accent: rgb(255 229 102);
+  --color-brutal-accent-hover: rgb(255 217 61);
+  --color-brutal-pop: rgb(255 107 157);
+  --color-brutal-pop-hover: rgb(255 80 136);
+  --color-brutal-sea: rgb(94 234 212);
+  --color-brutal-sky: rgb(125 211 252);
+  --color-brutal-text: rgb(45 27 78);
+  
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-dm-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #fff5fb;
+  --foreground: #2d1b4e;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-space-grotesk), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Brutalist selection */
+::selection {
+  background: var(--color-brutal-accent);
+  color: var(--color-brutal-border);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-brutal-bg);
+  border-left: 3px solid var(--color-brutal-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brutal-border);
+  border: 2px solid var(--color-brutal-bg);
+}
+
+/* Helper classes for brutalist elements */
+.brutalist-border {
+  border: 3px solid var(--color-brutal-border);
+}
+
+.brutalist-shadow {
+  box-shadow: 4px 4px 0px var(--color-brutal-border);
+}
+
+.brutalist-shadow-lg {
+  box-shadow: 8px 8px 0px var(--color-brutal-border);
+}
+
+.brutalist-button-hover:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--color-brutal-border);
+}
+
+.brutalist-card {
+  border: 3px solid var(--color-brutal-border);
+  background: var(--color-brutal-card);
+  padding: 1.5rem;
+  box-shadow: 4px 4px 0px var(--color-brutal-border);
+  transition: all 0.2s ease;
+}
+
+.brutalist-input {
+  border: 3px solid var(--color-brutal-border);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-dm-mono);
+  outline: none;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.brutalist-input:focus {
+  background: var(--color-brutal-accent);
+  box-shadow: 4px 4px 0px var(--color-brutal-border);
 }
