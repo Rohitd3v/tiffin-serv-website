@@ -2,15 +2,14 @@ import { BLOG_POSTS } from "@/lib/blog";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Calendar, Clock, MessageCircle, Share2 } from "lucide-react";
-import type { Metadata, ResolvingMetadata } from "next";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
+  { params }: Props
 ): Promise<Metadata> {
   const slug = (await params).slug;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
@@ -18,7 +17,7 @@ export async function generateMetadata(
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.title} | Tiffin Serv Blog`,
+    title: `${post.title} | Mom's Kitchen Blog`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -42,7 +41,7 @@ export default async function BlogPostPage({ params }: Props) {
           <ArrowLeft className="w-4 h-4" /> Back to Blog
         </Link>
         <Link href="/" className="text-2xl font-bold tracking-tight uppercase text-brutal-text hidden md:block">
-          Tiffin Serv
+          Mom&apos;s Kitchen
         </Link>
         <div className="flex gap-4">
           <button className="p-2 border-2 border-brutal-border hover:bg-brutal-sea transition-colors">
@@ -66,7 +65,7 @@ export default async function BlogPostPage({ params }: Props) {
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4" /> {post.readTime}
             </span>
-            <span className="md:ml-auto">By Tiffin Serv Editorial</span>
+            <span className="md:ml-auto">By Mom&apos;s Kitchen Editorial</span>
           </div>
         </header>
 

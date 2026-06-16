@@ -3,8 +3,8 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Tiffin Serv",
-  description: "Standard terms and conditions for Tiffin Serv meal delivery in Delhi NCR.",
+  title: "Terms & Conditions | Mom's Kitchen",
+  description: "Standard terms and conditions for Mom's Kitchen meal delivery in Delhi NCR.",
 };
 
 export default function TermsPage() {
@@ -29,7 +29,7 @@ export default function TermsPage() {
         <div className="space-y-12 font-medium leading-relaxed text-brutal-text">
           <section>
             <h3 className="text-3xl font-black uppercase mb-4">1. Service Description</h3>
-            <p>Tiffin Serv provides subscription-based meal preparation and delivery services within designated zones in Delhi NCR. All orders are initiated through our WhatsApp-based automated system.</p>
+            <p>Mom&apos;s Kitchen provides subscription-based meal preparation and delivery services within designated zones in Delhi NCR. All orders are initiated through our WhatsApp-based automated system.</p>
           </section>
 
           <section>
@@ -37,7 +37,7 @@ export default function TermsPage() {
             <ul className="list-disc pl-6 space-y-4">
               <li>Payments are processed securely via Razorpay.</li>
               <li>Subscriptions (Starter, Regular, Family) are pre-paid.</li>
-              <li>"Meals Remaining" are tracked within our database and updated upon each delivery.</li>
+              <li>&quot;Meals Remaining&quot; are tracked within our database and updated upon each delivery.</li>
               <li>One-time trial boxes are non-refundable.</li>
             </ul>
           </section>
@@ -54,7 +54,7 @@ export default function TermsPage() {
 
           <section>
             <h3 className="text-3xl font-black uppercase mb-4">4. Pause & Cancellation</h3>
-            <p>Users can pause their meals by texting "PAUSE" to our WhatsApp bot. Pause requests for Lunch must be received before 9:00 AM, and for Dinner before 4:00 PM on the same day.</p>
+            <p>Users can pause their meals by texting &quot;PAUSE&quot; to our WhatsApp bot. Pause requests for Lunch must be received before 9:00 AM, and for Dinner before 4:00 PM on the same day.</p>
           </section>
 
           <section className="bg-brutal-bg p-8 border-[3px] border-brutal-border">

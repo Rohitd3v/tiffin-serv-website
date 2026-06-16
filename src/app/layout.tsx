@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Mono } from "next/font/google";
+import { Sakura } from "@/components/Sakura";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -14,8 +15,8 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tiffin Serv | Fresh Home-Cooked Meals",
-  description: "Official delivery partner for home-style tiffins. Order via WhatsApp for a seamless experience.",
+  title: "Mom's Kitchen | Authentic Home-Style Comfort Delivered",
+  description: "Mom's Kitchen brings you the warmth and flavor of a mother's cooking, delivered straight to your door. Fresh, nutritious, and made with love.",
 };
 
 export default function RootLayout({
@@ -28,7 +29,10 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${dmMono.variable} antialiased font-display`}
       >
-        {children}
+        <Sakura />
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );

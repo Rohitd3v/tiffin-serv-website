@@ -4,8 +4,8 @@ import { ArrowRight, Calendar, Clock } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tiffin Serv Blog | Delhi Food & Healthy Living Insights",
-  description: "Stay updated with the latest in Delhi food delivery, healthy meal planning, and home-style cooking from Tiffin Serv.",
+  title: "Mom's Kitchen Blog | Delhi Food & Healthy Living Insights",
+  description: "Stay updated with the latest in Delhi food delivery, healthy meal planning, and home-style cooking from Mom's Kitchen.",
 };
 
 export default function BlogPage() {
@@ -14,9 +14,9 @@ export default function BlogPage() {
       <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/80 backdrop-blur-md z-50">
         <Link href="/" className="text-2xl font-bold tracking-tight uppercase text-brutal-text flex items-center gap-2">
           <div className="bg-brutal-pop p-1.5 border-2 border-brutal-border">
-            <span className="text-white text-xs">TS</span>
+            <span className="text-white text-xs">MK</span>
           </div>
-          Tiffin Serv
+          Mom&apos;s Kitchen
         </Link>
         <Link href="/" className="font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
           Back to Home
@@ -35,7 +35,7 @@ export default function BlogPage() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {BLOG_POSTS.map((post, idx) => (
+          {BLOG_POSTS.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`} className="group">
               <article className="brutalist-card bg-white h-full flex flex-col group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform shadow-brutal">
                 <div className="bg-brutal-border text-white text-[10px] font-black uppercase px-2 py-1 w-fit mb-4 shadow-brutal-sm">

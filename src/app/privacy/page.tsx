@@ -3,8 +3,8 @@ import { ArrowLeft, Lock } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Tiffin Serv",
-  description: "How we handle your data, WhatsApp numbers, and location for tiffin delivery in Delhi.",
+  title: "Privacy Policy | Mom's Kitchen",
+  description: "How we handle your data, WhatsApp numbers, and location for meal delivery.",
 };
 
 export default function PrivacyPage() {
@@ -29,7 +29,7 @@ export default function PrivacyPage() {
         <div className="space-y-12 font-medium leading-relaxed text-brutal-text">
           <section>
             <h3 className="text-3xl font-black uppercase mb-4">1. Information We Collect</h3>
-            <p>To provide automated tiffin delivery via WhatsApp, we collect:</p>
+            <p>To provide automated meal delivery via WhatsApp, we collect:</p>
             <ul className="list-disc pl-6 mt-4 space-y-2">
               <li><strong>Phone Number:</strong> Used as your unique account identifier.</li>
               <li><strong>Geolocation:</strong> Captured once via WhatsApp to verify if your address falls within our Delhi delivery zones.</li>
@@ -55,12 +55,12 @@ export default function PrivacyPage() {
 
           <section>
             <h3 className="text-3xl font-black uppercase mb-4">4. Retention</h3>
-            <p>We retain your delivery history for 12 months to provide subscription insights. You may request account deletion at any time by texting "DELETE" to our WhatsApp bot.</p>
+            <p>We retain your delivery history for 12 months to provide subscription insights. You may request account deletion at any time by texting &quot;DELETE&quot; to our WhatsApp bot.</p>
           </section>
 
           <section className="bg-brutal-card-mint p-8 border-[3px] border-brutal-border">
             <h3 className="text-2xl font-black uppercase mb-2">Contact DPO</h3>
-            <p className="text-sm font-mono font-bold">privacy@tiffinserv.ops — Industrial Area 5, Block B, Delhi.</p>
+            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Industrial Area 5, Block B, Delhi.</p>
           </section>
         </div>
       </article>
