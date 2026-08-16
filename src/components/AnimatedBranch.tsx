@@ -17,7 +17,7 @@ const flowers = [
 
 export function AnimatedBranch() {
   return (
-    <div className="absolute top-0 right-0 md:-right-30 w-[400px] h-[300px] md:w-[600px] md:h-[400px] pointer-events-none opacity-90 z-0">
+    <div className="hidden md:block absolute top-0 right-0 md:-right-30 w-[400px] h-[300px] md:w-[600px] md:h-[400px] pointer-events-none opacity-90 z-0">
       <svg
         viewBox="0 0 400 300"
         className="w-full h-full overflow-visible drop-shadow-[2px_2px_0px_rgba(45,27,78,0.2)]"

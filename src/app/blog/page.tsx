@@ -70,7 +70,7 @@ export default function BlogPage() {
             Get Delhi food guides and subscription deals directly on WhatsApp.
           </p>
           <a 
-            href="https://wa.me/919800111101?text=Subscribe me to blog updates"
+            href="https://wa.me/917033558836?text=Subscribe me to blog updates"
             className="bg-brutal-border text-white text-2xl font-black px-10 py-6 shadow-brutal uppercase hover:bg-brutal-pop transition-colors border-[3px] border-brutal-border inline-block"
           >
             Join the List

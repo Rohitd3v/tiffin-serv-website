@@ -49,7 +49,7 @@ export default function TermsPage() {
               <li>Lunch: 12:00 PM - 2:00 PM</li>
               <li>Dinner: 7:00 PM - 9:00 PM</li>
             </ul>
-            <p className="mt-4">Delays caused by extreme weather or traffic in Delhi will be communicated via WhatsApp.</p>
+            <p className="mt-4">Delays caused by extreme weather or traffic in Delhi NCR will be communicated via WhatsApp.</p>
           </section>
 
           <section>
@@ -59,7 +59,7 @@ export default function TermsPage() {
 
           <section className="bg-brutal-bg p-8 border-[3px] border-brutal-border">
             <h3 className="text-2xl font-black uppercase mb-2">Governing Law</h3>
-            <p className="text-sm">These terms are governed by the laws of the Republic of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Delhi.</p>
+            <p className="text-sm">These terms are governed by the laws of the Republic of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Gurugram.</p>
           </section>
         </div>
       </article>

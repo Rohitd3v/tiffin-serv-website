@@ -32,7 +32,7 @@ export default function PrivacyPage() {
             <p>To provide automated meal delivery via WhatsApp, we collect:</p>
             <ul className="list-disc pl-6 mt-4 space-y-2">
               <li><strong>Phone Number:</strong> Used as your unique account identifier.</li>
-              <li><strong>Geolocation:</strong> Captured once via WhatsApp to verify if your address falls within our Delhi delivery zones.</li>
+              <li><strong>Geolocation:</strong> Captured once via WhatsApp to verify if your address falls within our Delhi NCR delivery zones.</li>
               <li><strong>Delivery Address:</strong> Text-based address for our delivery partners.</li>
               <li><strong>Transaction Data:</strong> Payment confirmation via Razorpay.</li>
             </ul>
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
 
           <section className="bg-brutal-card-mint p-8 border-[3px] border-brutal-border">
             <h3 className="text-2xl font-black uppercase mb-2">Contact DPO</h3>
-            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Industrial Area 5, Block B, Delhi.</p>
+            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Udyog Vihar, Sector 18, Gurugram, India, 122022.</p>
           </section>
         </div>
       </article>
