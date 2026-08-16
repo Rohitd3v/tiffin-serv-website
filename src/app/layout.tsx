@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, DM_Mono } from "next/font/google";
 import { Sakura } from "@/components/Sakura";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -30,12 +31,13 @@ export default function RootLayout({
         <meta name="facebook-domain-verification" content="e9d87g49chunoybrjmjooxz3ovic5k" />
       </head>
       <body
-        className={`${spaceGrotesk.variable} ${dmMono.variable} antialiased font-display`}
+        className={`${spaceGrotesk.variable} ${dmMono.variable} antialiased font-display flex flex-col min-h-screen`}
       >
         <Sakura />
-        <div className="relative z-10">
+        <div className="relative z-10 flex-1 flex flex-col">
           {children}
         </div>
+        <Footer />
       </body>
     </html>
   );
