@@ -26,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <meta name="facebook-domain-verification" content="e9d87g49chunoybrjmjooxz3ovic5k" />
+      </head>
       <body
         className={`${spaceGrotesk.variable} ${dmMono.variable} antialiased font-display`}
       >

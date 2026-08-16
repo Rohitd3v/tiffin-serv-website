@@ -81,7 +81,7 @@ export default async function BlogPostPage({ params }: Props) {
             <h3 className="text-3xl font-black uppercase mb-4">Want more content like this?</h3>
             <p className="font-bold font-mono mb-8">Join our Delhi community on WhatsApp for daily menus, nutrition tips, and exclusive subscription offers.</p>
             <a 
-              href="https://wa.me/919800111101?text=I read your blog and want to subscribe"
+              href="https://wa.me/917033558836?text=I read your blog and want to subscribe"
               className="bg-brutal-border text-white text-xl font-bold px-8 py-4 shadow-brutal uppercase flex items-center gap-3 w-fit hover:bg-brutal-pop transition-colors border-[3px] border-brutal-border"
             >
               <MessageCircle className="w-6 h-6" /> Chat with Us

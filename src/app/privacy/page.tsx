@@ -60,7 +60,7 @@ export default function PrivacyPage() {
 
           <section className="bg-brutal-card-mint p-8 border-[3px] border-brutal-border">
             <h3 className="text-2xl font-black uppercase mb-2">Contact DPO</h3>
-            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Industrial Area 5, Block B, Delhi.</p>
+            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Udyog Vihar, Sector 18, Gurugram, India, 122022.</p>
           </section>
         </div>
       </article>

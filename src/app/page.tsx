@@ -17,7 +17,7 @@ import {
 
 export default function Home() {
   const whatsappUrl =
-    "https://wa.me/919800111101?text=Hello! I want to order a tiffin.";
+    "https://wa.me/917033558836?text=Hello! I want to order a tiffin.";
 
   return (
     <main className="min-h-screen">
@@ -477,7 +477,7 @@ export default function Home() {
             <motion.a
               whileHover={{ scale: 1.05, x: 4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              href="https://maps.google.com/?q=Mom's+Kitchen+Industrial+Area+Delhi"
+              href="https://maps.google.com/?q=Mom's+Kitchen+Udyog+Vihar+Sector+18+Gurugram"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white border-[3px] border-brutal-border px-8 py-4 font-bold uppercase shadow-brutal flex items-center gap-3 hover:bg-brutal-accent transition-colors"
@@ -527,12 +527,12 @@ export default function Home() {
             image: "https://tiffinserv.delivery/logo.png",
             "@id": "https://tiffinserv.delivery",
             url: "https://tiffinserv.delivery",
-            telephone: "+919800111101",
+            telephone: "+917033558836",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "Industrial Area 5, Block B",
-              addressLocality: "Delhi",
-              postalCode: "110001",
+              streetAddress: "Udyog Vihar, Sector 18",
+              addressLocality: "Gurugram",
+              postalCode: "122022",
               addressCountry: "IN",
             },
             geo: {
@@ -572,8 +572,8 @@ export default function Home() {
               </h1>
             </div>
             <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs">
-              Home-cooked excellence delivered hot since 2024. Industrial Area
-              5, Block B, Delhi.
+              Home-cooked excellence delivered hot since 2024. Udyog Vihar,
+              Sector 18, Gurugram.
             </p>
           </div>
 
