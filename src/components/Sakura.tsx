@@ -20,16 +20,16 @@ export function Sakura() {
   const [petals, setPetals] = useState<Petal[]>([]);
 
   useEffect(() => {
-    // Generate petals only on the client side to avoid hydration mismatch
-    const newPetals = Array.from({ length: 40 }).map((_, i) => {
+    // Generate fresh culinary leaves and spice flecks only on the client side
+    const newPetals = Array.from({ length: 22 }).map((_, i) => {
       return {
         id: i,
         startX: Math.random() * 100, // random start X position (vw)
         swayAmount: Math.random() * 15 + 10, // how far it sways left/right
         delay: Math.random() * 10, // random start delay
-        fallDuration: Math.random() * 10 + 10, // fall duration between 10s and 20s
+        fallDuration: Math.random() * 10 + 12, // fall duration between 12s and 22s
         swayDuration: Math.random() * 4 + 4, // sway cycle duration between 4s and 8s
-        size: Math.random() * 10 + 12, // size between 12px and 22px
+        size: Math.random() * 8 + 12, // size between 12px and 20px
         rotateX: Math.random() * 360,
         rotateY: Math.random() * 360,
         rotateZ: Math.random() * 360,
@@ -63,7 +63,7 @@ export function Sakura() {
             rotateX: [0, petal.rotateX + 360],
             rotateY: [0, petal.rotateY + 360],
             rotateZ: [0, petal.rotateZ + 360],
-            opacity: [0, 1, 1, 0]
+            opacity: [0, 0.85, 0.85, 0]
           }}
           transition={{
             y: {
@@ -112,22 +112,36 @@ export function Sakura() {
             transformStyle: "preserve-3d"
           }}
         >
-          <svg 
-            viewBox="0 0 16 18" 
-            style={{ 
-              width: '100%', 
-              height: '100%', 
-              filter: 'drop-shadow(2px 2px 0px rgba(45, 27, 78, 0.2))' 
-            }}
-          >
-            <path 
-              d="M 8,18 C 2,10 0,3 8,0 C 16,3 14,10 8,18 Z" 
-              fill="#ffb7c5" 
-              stroke="#2d1b4e" 
-              strokeWidth="1" 
-              strokeLinejoin="round"
-            />
-          </svg>
+          {petal.id % 2 === 0 ? (
+            <svg 
+              viewBox="0 0 16 18" 
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                filter: 'drop-shadow(2px 2px 0px rgba(12, 74, 72, 0.15))' 
+              }}
+            >
+              <path 
+                d="M 8,18 C 2,10 0,3 8,0 C 16,3 14,10 8,18 Z" 
+                fill="#2F7D4E" 
+                stroke="#0C4A48" 
+                strokeWidth="1.2" 
+                strokeLinejoin="round"
+              />
+              <path d="M 8,3 L 8,14" stroke="#0C4A48" strokeWidth="0.8" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg 
+              viewBox="0 0 16 18" 
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                filter: 'drop-shadow(2px 2px 0px rgba(12, 74, 72, 0.15))' 
+              }}
+            >
+              <circle cx="8" cy="9" r="4.5" fill="#F5A623" stroke="#0C4A48" strokeWidth="1" />
+            </svg>
+          )}
         </motion.div>
       ))}
     </div>

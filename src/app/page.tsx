@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { AnimatedBranch } from "@/components/AnimatedBranch";
 import {
   ArrowRight,
@@ -22,25 +21,30 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Navigation */}
-      <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/80 backdrop-blur-md z-50">
-        <div className="flex items-center gap-2">
-          <div className="bg-brutal-pop p-1.5 border-2 border-brutal-border">
-            <Utensils className="w-6 h-6 text-white" />
+      <nav className="border-b-[3px] border-brutal-border p-4 md:p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/90 backdrop-blur-md z-50">
+        <div className="flex items-center gap-3">
+          <div className="bg-brutal-pop p-2 border-2 border-brutal-border shadow-brutal-sm">
+            <Utensils className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight uppercase text-brutal-text">
-            Mom&apos;s Kitchen
-          </h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-black tracking-tight uppercase text-brutal-text leading-none">
+              Mom&apos;s Kitchen
+            </h1>
+            <span className="text-[10px] md:text-xs font-mono font-bold tracking-wider text-brutal-muted uppercase block">
+              Homestyle Tiffin &amp; Cloud Kitchen
+            </span>
+          </div>
         </div>
-        <div className="hidden md:flex gap-6 font-medium uppercase text-sm">
+        <div className="hidden md:flex items-center gap-6 font-bold uppercase text-sm">
           <a
             href="#how"
-            className="hover:bg-brutal-accent px-2 transition-colors"
+            className="hover:text-brutal-pop px-2 transition-colors"
           >
             Process
           </a>
           <a
             href="#plans"
-            className="hover:bg-brutal-pop hover:text-white px-2 transition-colors"
+            className="hover:text-brutal-pop px-2 transition-colors"
           >
             Plans
           </a>
@@ -48,31 +52,33 @@ export default function Home() {
             whileHover={{ scale: 1.05, x: 2, y: -2 }}
             whileTap={{ scale: 0.95 }}
             href={whatsappUrl}
-            className="bg-brutal-accent border-2 border-brutal-border px-3 py-1 shadow-brutal-sm hover:shadow-brutal transition-shadow"
+            className="bg-[#25D366] text-white font-black border-2 border-brutal-border px-4 py-2 shadow-brutal-sm hover:shadow-brutal hover:bg-[#20BA5A] transition-all flex items-center gap-2"
           >
-            Order on WhatsApp
+            <MessageCircle className="w-4 h-4 fill-white" /> Order on WhatsApp
           </motion.a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b-[3px] border-brutal-border py-16 md:py-32">
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(rgb(45_27_78_/_0.1)_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+      <section className="relative overflow-hidden border-b-[3px] border-brutal-border py-16 md:py-28 bg-brutal-bg">
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(rgb(12_74_72_/_0.08)_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
 
         <AnimatedBranch />
 
         <div className="relative z-10 px-6 max-w-5xl mx-auto flex flex-col items-center text-center">
           <motion.div
-            initial={{ y: -50, opacity: 0 }}
+            initial={{ y: -30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-brutal-pop text-white text-xs font-bold uppercase px-3 py-1 border-2 border-brutal-border mb-6 shadow-brutal-sm inline-block"
+            className="bg-brutal-pop text-white text-xs font-black uppercase tracking-wider px-4 py-1.5 border-2 border-brutal-border mb-6 shadow-brutal-sm inline-flex items-center gap-2"
           >
-            Freshly Cooked • Delivered Hot
+            <span>Freshly Cooked</span>
+            <span>•</span>
+            <span>Delivered Hot Daily</span>
           </motion.div>
 
           <motion.h2
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{
               type: "spring",
@@ -80,12 +86,12 @@ export default function Home() {
               damping: 15,
               delay: 0.1,
             }}
-            className="text-6xl md:text-8xl lg:text-[9rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
+            className="text-6xl md:text-8xl lg:text-[8.5rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
           >
             Eat Like <br />
-            <span className="text-brutal-pop stroke-black">Home,</span> <br />
+            <span className="text-brutal-pop">Home,</span> <br />
             <motion.span
-              initial={{ rotate: -5, opacity: 0 }}
+              initial={{ rotate: -4, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               transition={{
                 type: "spring",
@@ -93,7 +99,7 @@ export default function Home() {
                 damping: 12,
                 delay: 0.4,
               }}
-              className="bg-brutal-accent px-4 border-[3px] border-brutal-border inline-block mt-4"
+              className="bg-brutal-accent text-brutal-text px-6 border-[3px] border-brutal-border inline-block mt-4 shadow-brutal"
             >
               Anywhere.
             </motion.span>
@@ -103,11 +109,26 @@ export default function Home() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-xl md:text-2xl font-medium max-w-2xl mx-auto mb-10 text-brutal-muted leading-tight"
+            className="text-lg md:text-2xl font-medium max-w-2xl mx-auto mb-8 text-brutal-muted leading-tight"
           >
-            Subscription-based home-style meals delivered daily. Zero junk. Full
-            flavor. Automated via WhatsApp for your convenience.
+            Tiffin ordered in seconds. Homestyle dal, butter rotis, seasonal sabzi, and steamed rice delivered hot every day directly via WhatsApp.
           </motion.p>
+
+          {/* Card WhatsApp Bubble Mockup */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white border-[3px] border-brutal-border p-4 md:px-6 md:py-3 mb-8 shadow-brutal flex flex-col sm:flex-row items-center gap-4 max-w-lg"
+          >
+            <div className="bg-[#25D366] text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+              <span>Hi Mom&apos;s Kitchen, Order 1 Tiffin!</span>
+            </div>
+            <div className="text-xs font-mono font-bold text-brutal-muted uppercase">
+              Order Now: +91 70335 58836
+            </div>
+          </motion.div>
 
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -119,16 +140,16 @@ export default function Home() {
               href={whatsappUrl}
               whileHover={{ scale: 1.05, x: 4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-brutal-border text-brutal-accent text-xl font-bold px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-brutal-pop hover:text-white transition-colors border-[3px] border-brutal-border"
+              className="bg-[#25D366] text-white text-xl font-black px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-[#20BA5A] transition-colors border-[3px] border-brutal-border"
             >
-              <MessageCircle className="w-6 h-6" /> Start on WhatsApp
+              <MessageCircle className="w-6 h-6 fill-white" /> Order on WhatsApp
             </motion.a>
 
             <motion.a
               href="#plans"
               whileHover={{ scale: 1.05, x: -4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-brutal-text text-xl font-bold px-8 py-5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-bg transition-colors uppercase"
+              className="bg-white text-brutal-text text-xl font-bold px-8 py-5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-accent transition-colors uppercase"
             >
               View Plans
             </motion.a>
@@ -448,12 +469,12 @@ export default function Home() {
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className="w-5 h-5 fill-brutal-pop text-brutal-pop"
+                        className="w-5 h-5 fill-brutal-accent text-brutal-accent"
                       />
                     ))}
                   </div>
                   <p className="font-bold text-lg md:text-xl leading-snug">
-                    "{testimonial.quote}"
+                    &ldquo;{testimonial.quote}&rdquo;
                   </p>
                 </div>
                 <div className="border-t-[3px] border-brutal-border pt-4 mt-4 bg-white/50 p-4 -mx-6 -mb-6">
@@ -488,31 +509,79 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-brutal-pop p-10 md:p-24 border-b-[3px] border-brutal-border overflow-hidden">
+      {/* CTA Section - Replicating the Card Back (Deep Forest Teal + Organic Waves + Scan/Chat Order) */}
+      <section className="bg-brutal-border text-white p-10 md:p-24 border-b-[3px] border-brutal-border overflow-hidden relative">
+        {/* Organic wavy contours mirroring card2/card back */}
+        <div className="absolute inset-0 opacity-25 pointer-events-none">
+          <svg className="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="none">
+            <path
+              d="M0,150 C300,50 600,250 1000,100 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#147B78"
+              strokeWidth="28"
+            />
+            <path
+              d="M0,280 C350,180 700,380 1000,220 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#1B938F"
+              strokeWidth="18"
+            />
+            <path
+              d="M0,420 C400,320 650,480 1000,380 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#2DD4BF"
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.92 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ type: "spring", stiffness: 100 }}
-          className="max-w-4xl mx-auto text-center flex flex-col items-center"
+          className="max-w-4xl mx-auto text-center flex flex-col items-center relative z-10"
         >
-          <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
-            Hungry <br /> Already?
+          <div className="bg-brutal-pop text-white font-mono text-xs md:text-sm font-black uppercase px-4 py-1.5 border-2 border-white mb-6 shadow-brutal-sm">
+            Scan &amp; Order in Seconds
+          </div>
+
+          <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.88] mb-6">
+            Scan to Order <br />
+            <span className="text-[#25D366]">On WhatsApp</span>
           </h3>
-          <p className="text-xl md:text-3xl font-bold text-brutal-border mb-12 max-w-2xl leading-tight">
-            Our kitchens are buzzing. The delivery bikes are ready. Your next
-            great home meal is one text away.
+
+          <p className="text-xl md:text-3xl font-bold text-white/90 mb-10 max-w-2xl leading-tight">
+            Fresh, Healthy, Homestyle Meals Delivered Daily! Zero apps, zero logins. Just one WhatsApp text.
           </p>
-          <motion.a
-            href={whatsappUrl}
-            whileHover={{ scale: 1.05, rotate: 2 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white text-brutal-text text-2xl md:text-4xl font-black px-12 py-8 border-[3px] border-brutal-border shadow-brutal-lg uppercase flex items-center gap-6 group hover:bg-brutal-accent transition-colors"
-          >
-            Chat to Start{" "}
-            <MessageCircle className="w-10 h-10 fill-brutal-pop text-brutal-pop" />
-          </motion.a>
+
+          {/* Quick contact / Order Card Mockup mirroring card back */}
+          <div className="bg-white text-brutal-text p-6 md:p-8 border-[3px] border-white shadow-brutal-lg max-w-md w-full mb-6 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-brutal-pop p-1.5 border-2 border-brutal-border">
+                <Utensils className="w-5 h-5 text-white" />
+              </div>
+              <h4 className="text-2xl font-black uppercase tracking-tight">Mom&apos;s Kitchen</h4>
+            </div>
+            
+            <p className="font-mono text-xs font-bold text-brutal-muted uppercase mb-6 text-center">
+              Fresh, Healthy, Homestyle Meals Delivered Daily!
+            </p>
+
+            <motion.a
+              href={whatsappUrl}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full bg-[#25D366] text-white text-xl font-black py-4 px-6 border-[3px] border-brutal-border shadow-brutal uppercase flex items-center justify-center gap-3 hover:bg-[#20BA5A] transition-colors"
+            >
+              <MessageCircle className="w-6 h-6 fill-white" /> Chat to Order Now
+            </motion.a>
+
+            <div className="mt-6 pt-4 border-t-2 border-brutal-border w-full flex flex-col gap-1 text-xs font-mono font-bold text-brutal-muted text-center">
+              <span>WhatsApp: +91 70335 58836</span>
+              <span>Email: orders@momskitchen.com</span>
+            </div>
+          </div>
         </motion.div>
       </section>
 

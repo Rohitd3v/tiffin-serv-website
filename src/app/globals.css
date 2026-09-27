@@ -1,29 +1,37 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brutal-bg: rgb(255 245 251);
-  --color-brutal-card: rgb(255 251 247);
-  --color-brutal-card-mint: rgb(232 255 244);
-  --color-brutal-card-peach: rgb(255 240 235);
-  --color-brutal-card-lilac: rgb(244 238 255);
-  --color-brutal-card-lemon: rgb(255 251 213);
-  --color-brutal-border: rgb(45 27 78);
-  --color-brutal-ink: rgb(45 27 78);
-  --color-brutal-accent: rgb(255 229 102);
-  --color-brutal-accent-hover: rgb(255 217 61);
-  --color-brutal-pop: rgb(255 107 157);
-  --color-brutal-pop-hover: rgb(255 80 136);
-  --color-brutal-sea: rgb(94 234 212);
-  --color-brutal-sky: rgb(125 211 252);
-  --color-brutal-text: rgb(45 27 78);
+  --color-brutal-bg: rgb(255 248 237);
+  --color-brutal-card: rgb(255 255 255);
+  --color-brutal-card-mint: rgb(235 247 245);
+  --color-brutal-card-peach: rgb(255 242 234);
+  --color-brutal-card-lilac: rgb(240 248 247);
+  --color-brutal-card-lemon: rgb(255 248 225);
+  --color-brutal-card-pink: rgb(255 237 232);
+  --color-brutal-border: rgb(12 74 72);
+  --color-brutal-ink: rgb(12 74 72);
+  --color-brutal-accent: rgb(245 166 35);
+  --color-brutal-accent-hover: rgb(224 150 24);
+  --color-brutal-pop: rgb(232 90 52);
+  --color-brutal-pop-hover: rgb(210 74 38);
+  --color-brutal-sea: rgb(37 211 102);
+  --color-brutal-sky: rgb(20 123 120);
+  --color-brutal-whatsapp: rgb(37 211 102);
+  --color-brutal-whatsapp-hover: rgb(32 186 90);
+  --color-brutal-text: rgb(12 74 72);
+  --color-brutal-muted: rgb(46 101 99);
   
+  --shadow-brutal-sm: 2px 2px 0px var(--color-brutal-border);
+  --shadow-brutal: 4px 4px 0px var(--color-brutal-border);
+  --shadow-brutal-lg: 8px 8px 0px var(--color-brutal-border);
+
   --font-display: var(--font-space-grotesk);
   --font-mono: var(--font-dm-mono);
 }
 
 :root {
-  --background: #fff5fb;
-  --foreground: #2d1b4e;
+  --background: #fff8ed;
+  --foreground: #0c4a48;
 }
 
 html {
