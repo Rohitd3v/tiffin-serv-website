@@ -15,6 +15,7 @@ import {
   CreditCard,
 } from "lucide-react";
 import { getPublicPlans, PublicPlan, DEFAULT_PLANS } from "@/lib/plans";
+import { MenuVotingWidget } from "@/components/MenuVotingWidget";
 
 export default function Home() {
   const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
@@ -63,6 +64,12 @@ export default function Home() {
             className="hover:text-brutal-pop px-2 transition-colors"
           >
             Plans
+          </a>
+          <a
+            href="#vote"
+            className="hover:text-brutal-pop px-2 transition-colors"
+          >
+            Menu Vote
           </a>
           <motion.a
             whileHover={{ scale: 1.05, x: 2, y: -2 }}
@@ -376,6 +383,26 @@ export default function Home() {
               Get Trial Box
             </motion.a>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Menu Voting Section */}
+      <section
+        id="vote"
+        className="p-8 md:p-24 border-b-[3px] border-brutal-border bg-brutal-bg overflow-hidden"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-12 border-l-[10px] border-brutal-pop pl-6">
+            <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-3">
+              Vote On <br className="hidden md:block" />
+              <span className="text-brutal-pop">Next Week&apos;s Menu</span>
+            </h3>
+            <p className="text-lg md:text-xl font-bold font-mono text-brutal-muted uppercase">
+              Exclusive to active subscribers. Decide Friday&apos;s chef special.
+            </p>
+          </div>
+
+          <MenuVotingWidget plansHref="#plans" />
         </div>
       </section>
 
