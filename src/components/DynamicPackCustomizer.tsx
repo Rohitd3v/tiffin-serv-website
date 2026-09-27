@@ -7,19 +7,20 @@ import {
   Clock,
   Sparkles,
   MessageCircle,
-  Plus,
   Utensils,
   Calendar,
   Flame,
   ArrowRight,
   ShieldCheck,
   RefreshCw,
+  Heart,
+  Truck,
+  Leaf,
 } from "lucide-react";
 import {
   Plan,
   MealSlot,
   DEFAULT_PLANS,
-  ADDON_OPTIONS,
   calculateOrderPricing,
   generateWhatsAppOrderUrl,
 } from "@/lib/plans";
@@ -28,7 +29,6 @@ export function DynamicPackCustomizer() {
   const [plans, setPlans] = useState<Plan[]>(DEFAULT_PLANS);
   const [selectedCode, setSelectedCode] = useState<string>("regular");
   const [slot, setSlot] = useState<MealSlot>("lunch");
-  const [selectedAddonIds, setSelectedAddonIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLiveSource, setIsLiveSource] = useState(false);
 
@@ -74,18 +74,12 @@ export function DynamicPackCustomizer() {
   }, [activePlan.meals, slot]);
 
   const pricing = useMemo(() => {
-    return calculateOrderPricing(activePlan, effectiveSlot, selectedAddonIds);
-  }, [activePlan, effectiveSlot, selectedAddonIds]);
+    return calculateOrderPricing(activePlan, effectiveSlot);
+  }, [activePlan, effectiveSlot]);
 
   const whatsappOrderUrl = useMemo(() => {
-    return generateWhatsAppOrderUrl(activePlan, effectiveSlot, selectedAddonIds, pricing);
-  }, [activePlan, effectiveSlot, selectedAddonIds, pricing]);
-
-  const toggleAddon = (addonId: string) => {
-    setSelectedAddonIds((prev) =>
-      prev.includes(addonId) ? prev.filter((id) => id !== addonId) : [...prev, addonId]
-    );
-  };
+    return generateWhatsAppOrderUrl(activePlan, effectiveSlot, pricing);
+  }, [activePlan, effectiveSlot, pricing]);
 
   return (
     <div className="w-full">
@@ -97,7 +91,7 @@ export function DynamicPackCustomizer() {
           {isLoading && <RefreshCw className="w-3 h-3 animate-spin text-brutal-muted" />}
         </div>
         <div className="text-xs font-mono font-bold text-brutal-muted uppercase">
-          Zero commitment • Pause or swap meals anytime
+          Zero commitment • Pause, resume, or swap meals anytime
         </div>
       </div>
 
@@ -168,7 +162,7 @@ export function DynamicPackCustomizer() {
                   </div>
 
                   <ul className="space-y-2 mb-6 border-t-2 border-brutal-border/20 pt-4">
-                    {plan.features.slice(0, 4).map((f, i) => (
+                    {plan.features.slice(0, 5).map((f, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs font-medium text-brutal-text">
                         <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5 text-brutal-pop" />
                         <span>{f}</span>
@@ -192,10 +186,10 @@ export function DynamicPackCustomizer() {
         </div>
       </div>
 
-      {/* Two Column Layout: Customizer Options & Live Order Summary */}
+      {/* Two Column Layout: Delivery Slot & Live Order Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Delivery Slot & Add-ons (8 cols) */}
-        <div className="lg:col-span-7 space-y-8">
+        {/* Left Column: Delivery Slot Selection & Meal Features (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
           {/* Step 2: Meal Slot Selection */}
           <div className="brutalist-card bg-white">
             <div className="flex items-center gap-2 mb-4">
@@ -208,7 +202,7 @@ export function DynamicPackCustomizer() {
             </div>
 
             <p className="text-xs font-mono text-brutal-muted mb-4">
-              Cooked hot and delivered in insulated spill-proof containers at your preferred timing.
+              Prepared fresh and dispatched in insulated hot containers at your preferred timing.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -268,68 +262,35 @@ export function DynamicPackCustomizer() {
             </div>
           </div>
 
-          {/* Step 3: Add-on Enhancements */}
-          <div className="brutalist-card bg-white">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="bg-brutal-sea text-white font-mono text-xs font-black px-2 py-0.5 border border-brutal-border">
-                STEP 3
-              </span>
-              <h4 className="text-xl font-black uppercase text-brutal-text">
-                Add-on Enhancements
-              </h4>
-              <span className="text-xs font-mono font-bold text-brutal-muted ml-auto">
-                (Optional)
-              </span>
-            </div>
+          {/* Included in Every Tiffin Box */}
+          <div className="brutalist-card bg-brutal-card-lemon/60 p-6 border-[3px] border-brutal-border">
+            <h5 className="text-lg font-black uppercase text-brutal-text mb-3 flex items-center gap-2">
+              <Heart className="w-5 h-5 text-brutal-pop fill-brutal-pop" />
+              What Makes Mom&apos;s Kitchen Special?
+            </h5>
 
-            <p className="text-xs font-mono text-brutal-muted mb-4">
-              Fresh additions packed daily with each meal in your subscription.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {ADDON_OPTIONS.map((addon) => {
-                const isSelected = selectedAddonIds.includes(addon.id);
-                return (
-                  <div
-                    key={addon.id}
-                    onClick={() => toggleAddon(addon.id)}
-                    className={`p-4 border-2 border-brutal-border cursor-pointer transition-all flex flex-col justify-between ${
-                      isSelected
-                        ? "bg-brutal-card-lemon ring-2 ring-brutal-border shadow-brutal-sm"
-                        : "bg-brutal-bg hover:bg-white"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="font-bold text-sm text-brutal-text leading-snug">
-                          {addon.name}
-                        </span>
-                        <div
-                          className={`w-5 h-5 shrink-0 border-2 border-brutal-border flex items-center justify-center transition-colors ${
-                            isSelected ? "bg-brutal-pop text-white" : "bg-white"
-                          }`}
-                        >
-                          {isSelected ? (
-                            <CheckCircle2 className="w-3.5 h-3.5 fill-white text-brutal-pop" />
-                          ) : (
-                            <Plus className="w-3 h-3 text-brutal-muted" />
-                          )}
-                        </div>
-                      </div>
-                      <p className="text-xs font-mono text-brutal-muted leading-tight mb-3">
-                        {addon.description}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-brutal-border/20 pt-2 text-xs font-mono font-bold">
-                      <span className="text-brutal-pop">+₹{addon.pricePerMeal} / meal</span>
-                      <span className="text-brutal-muted">
-                        (+₹{addon.pricePerMeal * activePlan.meals} total)
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-medium text-brutal-text pt-2">
+              <div className="flex items-start gap-2">
+                <Leaf className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block font-bold">100% Homestyle</strong>
+                  Zero soda, zero palm oil, pure whole spices.
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Truck className="w-4 h-4 text-brutal-pop shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block font-bold">Free Daily Delivery</strong>
+                  Hot doorstep drop in spill-proof packaging.
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <RefreshCw className="w-4 h-4 text-brutal-border shrink-0 mt-0.5" />
+                <div>
+                  <strong className="block font-bold">Pause Anytime</strong>
+                  Going on leave? Text WhatsApp to pause.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -358,14 +319,14 @@ export function DynamicPackCustomizer() {
             <div className="space-y-3 font-mono text-sm mb-6">
               <div className="flex justify-between items-center text-brutal-text">
                 <span className="font-bold flex items-center gap-1.5">
-                  <Utensils className="w-4 h-4 text-brutal-pop" /> Base Meal Pack:
+                  <Utensils className="w-4 h-4 text-brutal-pop" /> Total Meals:
                 </span>
-                <span className="font-black text-base">₹{pricing.basePrice.toLocaleString("en-IN")}</span>
+                <span className="font-black text-base">{pricing.totalMeals} Full Meals</span>
               </div>
 
               <div className="flex justify-between items-center text-brutal-text">
                 <span className="font-bold flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-brutal-pop" /> Delivery Timing:
+                  <Clock className="w-4 h-4 text-brutal-pop" /> Delivery Slot:
                 </span>
                 <span className="font-bold text-xs uppercase bg-white px-2 py-0.5 border border-brutal-border">
                   {effectiveSlot === "lunch" ? "Lunch" : effectiveSlot === "dinner" ? "Dinner" : "Both (2x)"}
@@ -384,15 +345,6 @@ export function DynamicPackCustomizer() {
                       )} Wks)`}
                 </span>
               </div>
-
-              {pricing.addonsTotal > 0 && (
-                <div className="flex justify-between items-center text-brutal-pop border-t border-dashed border-brutal-border/40 pt-2">
-                  <span className="font-bold">
-                    Add-ons ({selectedAddonIds.length} chosen):
-                  </span>
-                  <span className="font-black text-base">+₹{pricing.addonsTotal}</span>
-                </div>
-              )}
             </div>
 
             {/* Total and Per-Meal Highlights */}

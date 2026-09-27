@@ -13,41 +13,7 @@ export interface Plan {
   features: string[];
 }
 
-export interface AddonOption {
-  id: string;
-  name: string;
-  description: string;
-  pricePerMeal: number; // in Rupees per meal
-}
-
 export type MealSlot = "lunch" | "dinner" | "both";
-
-export const ADDON_OPTIONS: AddonOption[] = [
-  {
-    id: "extra_rotis",
-    name: "Extra Butter Rotis (2 Pcs)",
-    description: "Tawa hot whole-wheat rotis brushed with pure butter",
-    pricePerMeal: 20,
-  },
-  {
-    id: "fresh_curd",
-    name: "Fresh Dahi / Spiced Boondi Raita",
-    description: "Chilled homemade curd with roasted cumin & mint",
-    pricePerMeal: 25,
-  },
-  {
-    id: "sweet_dish",
-    name: "Dessert / Sweet Dish",
-    description: "Gulab Jamun, Moong Dal Halwa, or Kheer",
-    pricePerMeal: 30,
-  },
-  {
-    id: "green_salad",
-    name: "Fresh Green Salad Bowl",
-    description: "Crisp cucumber, carrots, onion, lemon & green chili",
-    pricePerMeal: 15,
-  },
-];
 
 export const DEFAULT_PLANS: Plan[] = [
   {
@@ -199,35 +165,24 @@ export interface OrderCalculation {
   perMealPrice: number;
   mealsPerDay: number;
   estimatedDays: number;
-  addonsPerMeal: number;
-  addonsTotal: number;
   finalTotal: number;
   savingsTotal: number;
 }
 
 export function calculateOrderPricing(
   plan: Plan,
-  slot: MealSlot,
-  selectedAddonIds: string[]
+  slot: MealSlot
 ): OrderCalculation {
   const totalMeals = plan.meals;
   const basePrice = plan.price;
   const mealsPerDay = slot === "both" ? 2 : 1;
   const estimatedDays = Math.ceil(totalMeals / mealsPerDay);
 
-  const selectedAddons = ADDON_OPTIONS.filter((a) =>
-    selectedAddonIds.includes(a.id)
-  );
-  const addonsPerMeal = selectedAddons.reduce(
-    (sum, a) => sum + a.pricePerMeal,
-    0
-  );
-  const addonsTotal = addonsPerMeal * totalMeals;
-  const finalTotal = basePrice + addonsTotal;
+  const finalTotal = basePrice;
   const perMealPrice = Math.round(finalTotal / totalMeals);
 
   // Compare to single meal baseline (₹120)
-  const baselineTotal = 120 * totalMeals + addonsTotal;
+  const baselineTotal = 120 * totalMeals;
   const savingsTotal = Math.max(0, baselineTotal - finalTotal);
 
   return {
@@ -236,8 +191,6 @@ export function calculateOrderPricing(
     perMealPrice,
     mealsPerDay,
     estimatedDays,
-    addonsPerMeal,
-    addonsTotal,
     finalTotal,
     savingsTotal,
   };
@@ -246,7 +199,6 @@ export function calculateOrderPricing(
 export function generateWhatsAppOrderUrl(
   plan: Plan,
   slot: MealSlot,
-  selectedAddonIds: string[],
   calc: OrderCalculation
 ): string {
   const phone = "917033558836";
@@ -256,14 +208,6 @@ export function generateWhatsAppOrderUrl(
       : slot === "dinner"
       ? "Dinner (7:30 PM - 8:30 PM)"
       : "Both Lunch & Dinner (2 meals/day)";
-
-  const selectedAddons = ADDON_OPTIONS.filter((a) =>
-    selectedAddonIds.includes(a.id)
-  );
-  const addonsText =
-    selectedAddons.length > 0
-      ? selectedAddons.map((a) => a.name).join(", ")
-      : "Standard Thali (No add-ons)";
 
   const durationText =
     plan.meals === 1
@@ -278,7 +222,6 @@ I would like to order a tiffin pack:
 📦 *Plan:* ${plan.name} (${plan.meals} Meals)
 ⏰ *Slot:* ${slotLabel}
 📅 *Schedule:* Mon - Sat (${durationText})
-🥗 *Add-ons:* ${addonsText}
 💰 *Total:* ₹${calc.finalTotal.toLocaleString("en-IN")} (₹${calc.perMealPrice}/meal${calc.savingsTotal > 0 ? ` • Saved ₹${calc.savingsTotal}` : ""})
 
 Please check delivery availability for my location!`;
