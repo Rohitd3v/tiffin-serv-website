@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import { AnimatedBranch } from "@/components/AnimatedBranch";
-import { DynamicPackCustomizer } from "@/components/DynamicPackCustomizer";
 import {
+  ArrowRight,
   Utensils,
   Truck,
   Star,
   MessageCircle,
+  CheckCircle2,
   MapPin,
   Map,
   CreditCard,
@@ -248,10 +249,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Dynamic Plans Section */}
+      {/* Plans Section */}
       <section
         id="plans"
-        className="p-6 md:p-20 border-b-[3px] border-brutal-border bg-brutal-bg overflow-hidden"
+        className="p-8 md:p-24 border-b-[3px] border-brutal-border bg-white overflow-hidden"
       >
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -259,25 +260,147 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ type: "spring", stiffness: 100 }}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6"
+            className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-8"
           >
-            <div>
-              <div className="bg-brutal-pop text-white text-xs font-black uppercase px-3 py-1 border-2 border-brutal-border w-fit mb-3 shadow-brutal-sm inline-block">
-                Configurable Tiffin Subscriptions
-              </div>
-              <h3 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-none">
-                Choose Your Pack
-              </h3>
-            </div>
+            <h3 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-none">
+              Choose Your Pack
+            </h3>
             <div className="bg-brutal-accent p-4 border-[3px] border-brutal-border shadow-brutal-sm">
-              <p className="text-xs md:text-sm font-mono font-bold uppercase italic text-brutal-text">
-                Free Hot Delivery • Pure Ingredients • WhatsApp Automated
+              <p className="text-sm font-mono font-bold uppercase italic">
+                Includes Delivery • Weekly Menus • Eco-Friendly Packaging
               </p>
             </div>
           </motion.div>
 
-          {/* Dynamic Pack Customizer with Live Pricing & Supabase Integration */}
-          <DynamicPackCustomizer />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {[
+              {
+                name: "Starter",
+                meals: 6,
+                price: "480",
+                color: "bg-brutal-card-peach",
+                features: [
+                  "4 Butter Rotis",
+                  "Seasonal Veggie",
+                  "Dal Tadka",
+                  "Steamed Rice",
+                  "Salad & Pickle",
+                ],
+              },
+              {
+                name: "Regular",
+                meals: 12,
+                price: "900",
+                color: "bg-brutal-accent",
+                popular: true,
+                features: [
+                  "4 Butter Rotis",
+                  "Two Seasonal Veggies",
+                  "Premium Dal",
+                  "Basmati Rice",
+                  "Dessert (Fri)",
+                  "Salad & Pickle",
+                ],
+              },
+              {
+                name: "Family",
+                meals: 24,
+                price: "1680",
+                color: "bg-brutal-card-lilac",
+                features: [
+                  "Standard Thali x 2",
+                  "Large Portions",
+                  "Extra Sides",
+                  "Full Week Variety",
+                  "Free Weekend Special",
+                ],
+              },
+            ].map((plan, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ y: 50, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.4,
+                  delay: idx * 0.15,
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className={`brutalist-card ${plan.color} flex flex-col h-full relative overflow-hidden`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-8 -right-12 bg-brutal-pop text-white font-black text-[10px] uppercase py-1 px-12 rotate-45 border-y-2 border-brutal-border">
+                    Most Chosen
+                  </div>
+                )}
+
+                <h4 className="text-4xl font-black uppercase mb-2 text-brutal-text">
+                  {plan.name}
+                </h4>
+                <div className="font-mono font-bold text-sm mb-6 opacity-70 uppercase tracking-wider">
+                  {plan.meals} Full Meals
+                </div>
+
+                <div className="text-5xl font-black mb-8 border-b-2 border-brutal-border pb-4">
+                  ₹{plan.price}
+                </div>
+
+                <ul className="flex-1 space-y-3 mb-10">
+                  {plan.features.map((f, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 font-medium text-sm"
+                    >
+                      <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-brutal-text" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <motion.a
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  href={whatsappUrl}
+                  className="bg-brutal-border text-white text-center py-4 font-bold uppercase shadow-brutal hover:bg-brutal-pop transition-colors flex items-center justify-center gap-2 group border-[3px] border-brutal-border"
+                >
+                  Order This{" "}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </motion.a>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
+            className="mt-16 brutalist-card bg-brutal-card-lemon flex flex-col md:flex-row items-center justify-between gap-8"
+          >
+            <div className="flex items-center gap-6">
+              <div className="bg-brutal-border text-white p-4 hidden sm:block">
+                <Star className="w-8 h-8 fill-brutal-accent text-brutal-accent" />
+              </div>
+              <div>
+                <h5 className="text-2xl font-bold uppercase text-brutal-text">
+                  One-Time Trial Pack
+                </h5>
+                <p className="font-mono text-sm font-medium text-brutal-muted">
+                  Try our quality for just ₹100. No commitment.
+                </p>
+              </div>
+            </div>
+            <motion.a
+              whileHover={{ scale: 1.05, x: 4, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+              href={whatsappUrl}
+              className="w-full md:w-auto bg-white border-[3px] border-brutal-border px-8 py-3 font-bold uppercase shadow-brutal text-center"
+            >
+              Get Trial Box
+            </motion.a>
+          </motion.div>
         </div>
       </section>
 
