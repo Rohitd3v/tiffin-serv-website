@@ -46,9 +46,10 @@ export async function sendWhatsAppOtp(
       }
 
       return { ok: true };
-    } catch (err: any) {
-      console.warn("Error calling Meta Cloud API:", err?.message || err);
-      return { ok: false, error: err?.message || "Network error" };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Network error";
+      console.warn("Error calling Meta Cloud API:", message);
+      return { ok: false, error: message };
     }
   }
 

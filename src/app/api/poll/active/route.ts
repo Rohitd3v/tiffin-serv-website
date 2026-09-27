@@ -39,8 +39,8 @@ export async function GET() {
       }
     }
 
-    const options = Array.isArray(poll.options) ? poll.options : [];
-    const enrichedOptions = options.map((opt: any) => {
+    const options = Array.isArray(poll.options) ? (poll.options as Array<{ id: string; label?: string; text?: string }>) : [];
+    const enrichedOptions = options.map((opt) => {
       const count = voteCounts[opt.id] || 0;
       const percent = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
       return {
@@ -61,7 +61,8 @@ export async function GET() {
         closesAt: poll.closes_at,
       },
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Internal server error" }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

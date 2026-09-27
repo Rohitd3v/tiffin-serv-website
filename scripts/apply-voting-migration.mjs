@@ -92,7 +92,7 @@ if (votesError) {
   console.error('❌ Failed to query poll_votes table:', votesError);
   process.exit(1);
 }
-console.log(`✅ Successfully queried 'poll_votes' table.`);
+console.log(`✅ Successfully queried 'poll_votes' table (${votes ? votes.length : 0} rows found).`);
 
 // 3. Verify poll_otps table
 const { data: otps, error: otpsError } = await supabase
@@ -104,7 +104,7 @@ if (otpsError) {
   console.error('❌ Failed to query poll_otps table:', otpsError);
   process.exit(1);
 }
-console.log(`✅ Successfully queried 'poll_otps' table.`);
+console.log(`✅ Successfully queried 'poll_otps' table (${otps ? otps.length : 0} rows found).`);
 
 console.log('\nActive Poll(s) in Database:');
 console.dir(polls, { depth: null });
