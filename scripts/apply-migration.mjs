@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { execSync } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -38,7 +38,6 @@ const migrationPath = join(
 
 if (existsSync(migrationPath)) {
   console.log(`Found migration file at: ${migrationPath}`);
-  const sql = readFileSync(migrationPath, 'utf8');
 
   if (dbPassword) {
     console.log('Applying migration via PostgreSQL connection...');
