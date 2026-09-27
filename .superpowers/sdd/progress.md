@@ -1,12 +1,12 @@
-# SDD Progress Ledger
+# SDD Progress Ledger: Customer Menu Voting System
 
-Plan: docs/superpowers/plans/2026-09-27-dynamic-pricing-plans.md
+Plan: docs/superpowers/plans/2026-09-27-customer-menu-voting.md
 Branch: feat/card-theme-redesign
 Started: 2026-09-27
 
-- [x] Task 1: Supabase Database Migration & Schema Extension (commit 91145b1, DB columns added & backfilled)
-- [x] Task 2: Dashboard Server Actions (tiffin-service/dashboard) (commit bb6c417, create/update/delete actions with safety guards)
-- [x] Task 3: Dashboard Plans UI Component (tiffin-service/dashboard) (commit 7c8ce1e, Add/Edit/Delete modals, bullet editor, popular badge)
-- [x] Task 4: Website Data Layer (tiffin-website) (commit a61aab8, src/lib/supabase.ts & src/lib/plans.ts with fallback)
-- [x] Task 5: Dynamic "Choose Your Pack" Section (src/app/page.tsx) (commit aee4bc5, dynamic rendering & static WhatsApp CTA)
-- [x] Task 6: Verification & Build Check (clean lint and build, 0 errors, 0 warnings)
+- [x] Task 1: Supabase Database Migration for Polls, Votes, and OTPs (commit 9cf4dcf, tables created, seed poll active)
+- [x] Task 2: WhatsApp OTP Notification Helper (tiffin-website) (commit d8d71e6, src/lib/whatsapp.ts with Meta Cloud API & dev fallback)
+- [x] Task 3: Voting Backend API Routes (tiffin-website) (commit bcbd8c3, active, send-otp, and vote routes)
+- [x] Task 4: Admin Dashboard Polls Management (tiffin-service/dashboard) (commit 7b06afe, /admin/polls with creation, live progress bars, closing)
+- [x] Task 5: Customer Website Voting Widget & Page (tiffin-website) (commit dce5a52, widget, /vote page, #vote section on home)
+- [ ] Task 6: Verification & Full Build Check
