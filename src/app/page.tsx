@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AnimatedBranch } from "@/components/AnimatedBranch";
 import {
@@ -13,8 +14,23 @@ import {
   Map,
   CreditCard,
 } from "lucide-react";
+import { getPublicPlans, PublicPlan, DEFAULT_PLANS } from "@/lib/plans";
 
 export default function Home() {
+  const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
+
+  useEffect(() => {
+    let mounted = true;
+    getPublicPlans().then((fetched) => {
+      if (mounted && fetched.length > 0) {
+        setPlans(fetched);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const whatsappUrl =
     "https://wa.me/917033558836?text=Hello! I want to order a tiffin.";
 
@@ -273,51 +289,9 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              {
-                name: "Starter",
-                meals: 6,
-                price: "480",
-                color: "bg-brutal-card-peach",
-                features: [
-                  "4 Butter Rotis",
-                  "Seasonal Veggie",
-                  "Dal Tadka",
-                  "Steamed Rice",
-                  "Salad & Pickle",
-                ],
-              },
-              {
-                name: "Regular",
-                meals: 12,
-                price: "900",
-                color: "bg-brutal-accent",
-                popular: true,
-                features: [
-                  "4 Butter Rotis",
-                  "Two Seasonal Veggies",
-                  "Premium Dal",
-                  "Basmati Rice",
-                  "Dessert (Fri)",
-                  "Salad & Pickle",
-                ],
-              },
-              {
-                name: "Family",
-                meals: 24,
-                price: "1680",
-                color: "bg-brutal-card-lilac",
-                features: [
-                  "Standard Thali x 2",
-                  "Large Portions",
-                  "Extra Sides",
-                  "Full Week Variety",
-                  "Free Weekend Special",
-                ],
-              },
-            ].map((plan, idx) => (
+            {plans.map((plan, idx) => (
               <motion.div
-                key={idx}
+                key={plan.id || plan.code || idx}
                 initial={{ y: 50, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -359,6 +333,7 @@ export default function Home() {
                   ))}
                 </ul>
 
+                {/* STATIC WhatsApp trigger link without dynamic query params (user requirement) */}
                 <motion.a
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
