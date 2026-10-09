@@ -6,13 +6,13 @@ import {
   Vote,
   Utensils,
   CheckCircle2,
-  MessageCircle,
   Lock,
   Sparkles,
   Clock,
   ArrowRight,
   AlertCircle,
   RefreshCw,
+  Phone,
 } from "lucide-react";
 import { getRecaptchaToken, useRecaptchaInit } from "@/lib/recaptcha";
 
@@ -40,6 +40,27 @@ interface MenuVotingWidgetProps {
    * Defaults to "/#plans"
    */
   plansHref?: string;
+  /**
+   * Optional WhatsApp contact number for fallback ordering link.
+   * Defaults to "917033558836"
+   */
+  whatsappNumber?: string;
+}
+
+/** Pure helper to format closesAt date string cleanly */
+function formatClosesAt(dateStr?: string | null): string | null {
+  if (!dateStr) return null;
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-IN", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+    });
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -47,7 +68,10 @@ interface MenuVotingWidgetProps {
  * and direct ballot casting. Zero-cost frictionless verification protected by
  * invisible reCAPTCHA v3 and distributed rate limiting.
  */
-export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProps) {
+export function MenuVotingWidget({
+  plansHref = "/#plans",
+  whatsappNumber = "917033558836",
+}: MenuVotingWidgetProps) {
   const [poll, setPoll] = useState<PollData | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -91,22 +115,30 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   async function refreshPoll() {
     try {
       const res = await fetch("/api/poll/active", { cache: "no-store" });
-      if (!res.ok) return;
+      if (!res.ok) return null;
       const data = await res.json();
-      setPoll(data.poll || null);
+      const loaded = (data.poll as PollData) || null;
+      setPoll(loaded);
+      return loaded;
     } catch (err: unknown) {
       console.error("Error refreshing poll:", err);
+      return null;
     }
   }
+
+  const formattedClosing = formatClosesAt(poll?.closesAt);
+  const maxVotes = poll?.options?.length
+    ? Math.max(...poll.options.map((o) => o.votes), 0)
+    : 0;
 
   // Direct Phone Verification and Ballot Submission
   async function handleVote(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    if (!poll) return;
+    if (loading || !poll) return;
 
-    const cleanDigits = phone.replace(/[^0-9]/g, "");
+    const cleanDigits = phone.replace(/\D/g, "");
     if (cleanDigits.length < 10) {
-      setErrorMsg("Please enter a valid 10-digit WhatsApp number.");
+      setErrorMsg("Please enter a valid 10-digit mobile number.");
       return;
     }
 
@@ -166,22 +198,6 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     }
   }
 
-  // Format closesAt date if present
-  function formatClosesAt(dateStr?: string | null) {
-    if (!dateStr) return null;
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-IN", {
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-      });
-    } catch {
-      return null;
-    }
-  }
-
   // Initial loading state
   if (initialLoading) {
     return (
@@ -221,8 +237,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     );
   }
 
-  const formattedClosing = formatClosesAt(poll.closesAt);
-  const maxVotes = Math.max(...poll.options.map((o) => o.votes), 0);
+  const whatsappOrderNumber = whatsappNumber;
 
   return (
     <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-6 md:p-10 relative overflow-hidden">
@@ -277,7 +292,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
               Step 1: Choose This Week&apos;s Special Dish
             </span>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-3" role="radiogroup" aria-label="Dish options">
               {poll.options.map((option) => {
                 const isSelected = selectedOption === option.id;
                 return (
@@ -289,7 +304,8 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
                       setSelectedOption(option.id);
                       setErrorMsg(null);
                     }}
-                    role="button"
+                    role="radio"
+                    aria-checked={isSelected}
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -330,14 +346,14 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
             </div>
           </div>
 
-          {/* WhatsApp Phone Input */}
+          {/* Mobile Phone Input */}
           <div className="space-y-2 pt-2">
             <label
               htmlFor={phoneInputId}
               className="text-xs font-mono font-bold uppercase text-brutal-text flex items-center gap-1.5"
             >
-              <MessageCircle className="w-4 h-4 fill-[#25D366] text-brutal-border" />
-              Step 2: Enter WhatsApp Number (Active Subscribers Only)
+              <Phone className="w-4 h-4 text-brutal-pop" />
+              Step 2: Enter Subscriber Mobile Number
             </label>
 
             <div className="flex items-stretch border-[3px] border-brutal-border bg-white shadow-brutal">
@@ -541,12 +557,12 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
 
           <div className="pt-2 border-t-2 border-brutal-border">
             <a
-              href="https://wa.me/917033558836?text=Hello!%20I%20want%20to%20subscribe%20to%20a%20meal%20pack%20and%20vote%20on%20weekly%20menus."
+              href={`https://wa.me/${whatsappOrderNumber}?text=Hello!%20I%20want%20to%20subscribe%20to%20a%20meal%20pack%20and%20vote%20on%20weekly%20menus.`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs font-mono font-bold uppercase text-brutal-muted hover:text-[#25D366] inline-flex items-center gap-1.5 transition-colors"
             >
-              <MessageCircle className="w-3.5 h-3.5 fill-[#25D366] text-transparent" /> Order or Subscribe via WhatsApp
+              Order or Subscribe via WhatsApp
             </a>
           </div>
         </motion.div>
