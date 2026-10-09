@@ -1,7 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { AnimatedBranch } from "@/components/AnimatedBranch";
 import {
   ArrowRight,
@@ -14,65 +14,125 @@ import {
   Map,
   CreditCard,
 } from "lucide-react";
+import { getPublicPlans, PublicPlan, DEFAULT_PLANS } from "@/lib/plans";
+import { getSiteContent, LOCAL_DEFAULTS, SiteContent } from "@/lib/siteContent";
+import { MenuVotingWidget } from "@/components/MenuVotingWidget";
 
+// Icon lookup for dashboard-editable process steps
+const PROCESS_ICONS: Record<string, typeof MapPin> = {
+  MapPin,
+  Utensils,
+  Truck,
+  Star,
+  CreditCard,
+  MessageCircle,
+  CheckCircle2,
+};
+
+/** "Word on the Street" → last word drops to its own line on md+ screens. */
+function TestimonialTitle({ title }: { title: string }) {
+  const words = title.split(" ");
+  return (
+    <>
+      {words.map((word, i) =>
+        i === words.length - 1 ? (
+          <span key={i}>
+            <br className="hidden md:block" /> {word}
+          </span>
+        ) : (
+          <span key={i}>{word} </span>
+        )
+      )}
+    </>
+  );
+}
+
+/** Renders the homepage with local defaults, loading plans and content on mount. */
 export default function Home() {
-  const whatsappUrl =
-    "https://wa.me/917033558836?text=Hello! I want to order a tiffin.";
+  const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
+  const [content, setContent] = useState<SiteContent>(LOCAL_DEFAULTS);
+
+  useEffect(() => {
+    let mounted = true;
+    Promise.all([getPublicPlans(), getSiteContent()]).then(([fetchedPlans, fetchedContent]) => {
+      if (!mounted) return;
+      setPlans(fetchedPlans);
+      setContent(fetchedContent);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const whatsappUrl = "https://wa.me/917033558836?text=Hello!%20I%20want%20to%20order%20a%20tiffin.";
 
   return (
     <main className="min-h-screen">
       {/* Navigation */}
-      <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/80 backdrop-blur-md z-50">
-        <div className="flex items-center gap-2">
-          <div className="bg-brutal-pop p-1.5 border-2 border-brutal-border">
-            <Utensils className="w-6 h-6 text-white" />
+      <nav className="border-b-[3px] border-brutal-border p-4 md:p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/90 backdrop-blur-md z-50">
+        <div className="flex items-center gap-3">
+          <div className="bg-brutal-pop p-2 border-2 border-brutal-border shadow-brutal-sm">
+            <Utensils className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight uppercase text-brutal-text">
-            Mom&apos;s Kitchen
-          </h1>
+          <div>
+            <h1 className="text-xl md:text-2xl font-black tracking-tight uppercase text-brutal-text leading-none">
+              Mom&apos;s Kitchen
+            </h1>
+            <span className="text-[10px] md:text-xs font-mono font-bold tracking-wider text-brutal-muted uppercase block">
+              Homestyle Tiffin &amp; Cloud Kitchen
+            </span>
+          </div>
         </div>
-        <div className="hidden md:flex gap-6 font-medium uppercase text-sm">
+        <div className="hidden md:flex items-center gap-6 font-bold uppercase text-sm">
           <a
             href="#how"
-            className="hover:bg-brutal-accent px-2 transition-colors"
+            className="hover:text-brutal-pop px-2 transition-colors"
           >
             Process
           </a>
           <a
             href="#plans"
-            className="hover:bg-brutal-pop hover:text-white px-2 transition-colors"
+            className="hover:text-brutal-pop px-2 transition-colors"
           >
             Plans
+          </a>
+          <a
+            href="#vote"
+            className="hover:text-brutal-pop px-2 transition-colors"
+          >
+            Menu Vote
           </a>
           <motion.a
             whileHover={{ scale: 1.05, x: 2, y: -2 }}
             whileTap={{ scale: 0.95 }}
             href={whatsappUrl}
-            className="bg-brutal-accent border-2 border-brutal-border px-3 py-1 shadow-brutal-sm hover:shadow-brutal transition-shadow"
+            className="bg-[#25D366] text-white font-black border-2 border-brutal-border px-4 py-2 shadow-brutal-sm hover:shadow-brutal hover:bg-[#20BA5A] transition-all flex items-center gap-2"
           >
-            Order on WhatsApp
+            <MessageCircle className="w-4 h-4 fill-white" /> Order on WhatsApp
           </motion.a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden border-b-[3px] border-brutal-border py-16 md:py-32">
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(rgb(45_27_78_/_0.1)_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
+      <section className="relative overflow-hidden border-b-[3px] border-brutal-border py-16 md:py-28 bg-brutal-bg">
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(rgb(12_74_72_/_0.08)_1.5px,transparent_1.5px)] [background-size:24px_24px]"></div>
 
         <AnimatedBranch />
 
         <div className="relative z-10 px-6 max-w-5xl mx-auto flex flex-col items-center text-center">
           <motion.div
-            initial={{ y: -50, opacity: 0 }}
+            initial={{ y: -30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="bg-brutal-pop text-white text-xs font-bold uppercase px-3 py-1 border-2 border-brutal-border mb-6 shadow-brutal-sm inline-block"
+            className="bg-brutal-pop text-white text-xs font-black uppercase tracking-wider px-4 py-1.5 border-2 border-brutal-border mb-6 shadow-brutal-sm inline-flex items-center gap-2"
           >
-            Freshly Cooked • Delivered Hot
+            <span>{content.hero.badgeLine1}</span>
+            <span>•</span>
+            <span>{content.hero.badgeLine2}</span>
           </motion.div>
 
           <motion.h2
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{
               type: "spring",
@@ -80,12 +140,12 @@ export default function Home() {
               damping: 15,
               delay: 0.1,
             }}
-            className="text-6xl md:text-8xl lg:text-[9rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
+            className="text-6xl md:text-8xl lg:text-[8.5rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
           >
-            Eat Like <br />
-            <span className="text-brutal-pop stroke-black">Home,</span> <br />
+            {content.hero.titleLine1} <br />
+            <span className="text-brutal-pop">{content.hero.titleAccent}</span> <br />
             <motion.span
-              initial={{ rotate: -5, opacity: 0 }}
+              initial={{ rotate: -4, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               transition={{
                 type: "spring",
@@ -93,9 +153,9 @@ export default function Home() {
                 damping: 12,
                 delay: 0.4,
               }}
-              className="bg-brutal-accent px-4 border-[3px] border-brutal-border inline-block mt-4"
+              className="bg-brutal-accent text-brutal-text px-6 border-[3px] border-brutal-border inline-block mt-4 shadow-brutal"
             >
-              Anywhere.
+              {content.hero.titleLine2}
             </motion.span>
           </motion.h2>
 
@@ -103,11 +163,26 @@ export default function Home() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-xl md:text-2xl font-medium max-w-2xl mx-auto mb-10 text-brutal-muted leading-tight"
+            className="text-lg md:text-2xl font-medium max-w-2xl mx-auto mb-8 text-brutal-muted leading-tight"
           >
-            Subscription-based home-style meals delivered daily. Zero junk. Full
-            flavor. Automated via WhatsApp for your convenience.
+            {content.hero.subtitle}
           </motion.p>
+
+          {/* Card WhatsApp Bubble Mockup */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white border-[3px] border-brutal-border p-4 md:px-6 md:py-3 mb-8 shadow-brutal flex flex-col sm:flex-row items-center gap-4 max-w-lg"
+          >
+            <div className="bg-[#25D366] text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+              <span>Hi Mom&apos;s Kitchen, Order 1 Tiffin!</span>
+            </div>
+            <div className="text-xs font-mono font-bold text-brutal-muted uppercase">
+              Order Now: {content.contact.whatsappDisplay}
+            </div>
+          </motion.div>
 
           <motion.div
             initial={{ y: 20, opacity: 0 }}
@@ -119,16 +194,16 @@ export default function Home() {
               href={whatsappUrl}
               whileHover={{ scale: 1.05, x: 4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-brutal-border text-brutal-accent text-xl font-bold px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-brutal-pop hover:text-white transition-colors border-[3px] border-brutal-border"
+              className="bg-[#25D366] text-white text-xl font-black px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-[#20BA5A] transition-colors border-[3px] border-brutal-border"
             >
-              <MessageCircle className="w-6 h-6" /> Start on WhatsApp
+              <MessageCircle className="w-6 h-6 fill-white" /> Order on WhatsApp
             </motion.a>
 
             <motion.a
               href="#plans"
               whileHover={{ scale: 1.05, x: -4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-brutal-text text-xl font-bold px-8 py-5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-bg transition-colors uppercase"
+              className="bg-white text-brutal-text text-xl font-bold px-8 py-5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-accent transition-colors uppercase"
             >
               View Plans
             </motion.a>
@@ -167,36 +242,17 @@ export default function Home() {
             className="mb-20"
           >
             <h3 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-4">
-              The WhatsApp Way
+              {content.process.title}
             </h3>
             <p className="text-xl font-mono font-bold text-brutal-muted">
-              No apps to download. No websites to login. Just chat.
+              {content.process.subtitle}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              {
-                icon: MapPin,
-                title: "Zone Check",
-                desc: "Share location on WhatsApp. We instantly check if we serve your area.",
-              },
-              {
-                icon: Utensils,
-                title: "Select Pack",
-                desc: "Pick a plan (Starter, Regular, or Family) directly from the WhatsApp menu.",
-              },
-              {
-                icon: CreditCard,
-                title: "Quick Pay",
-                desc: "Pay securely via Razorpay link sent to your chat. Immediate activation.",
-              },
-              {
-                icon: Truck,
-                title: "Eat Daily",
-                desc: "Receive hot meals daily. Pause or resume anytime with a simple text.",
-              },
-            ].map((item, idx) => (
+            {content.process.steps.map((step, idx) => {
+              const Icon = PROCESS_ICONS[step.icon] || Utensils;
+              return (
               <motion.div
                 key={idx}
                 initial={{ y: 50, opacity: 0 }}
@@ -211,19 +267,21 @@ export default function Home() {
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="brutalist-card bg-white flex flex-col gap-6"
               >
-                <div className="bg-brutal-border text-brutal-accent p-4 w-fit shadow-brutal-sm">
-                  <item.icon className="w-8 h-8" />
+                <div className="bg-brutal-border text-brutal-accent p-4 w-fit shadow-brutal-sm">                  <Icon className="w-8 h-8" />
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold uppercase mb-2 text-brutal-text">
-                    {item.title}
+                    {step.title}
                   </h4>
                   <p className="text-sm font-medium font-mono text-brutal-muted leading-relaxed">
-                    {item.desc}
+                    {step.desc}
                   </p>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
+
+
           </div>
         </div>
       </section>
@@ -252,51 +310,10 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {[
-              {
-                name: "Starter",
-                meals: 6,
-                price: "480",
-                color: "bg-brutal-card-peach",
-                features: [
-                  "4 Butter Rotis",
-                  "Seasonal Veggie",
-                  "Dal Tadka",
-                  "Steamed Rice",
-                  "Salad & Pickle",
-                ],
-              },
-              {
-                name: "Regular",
-                meals: 12,
-                price: "900",
-                color: "bg-brutal-accent",
-                popular: true,
-                features: [
-                  "4 Butter Rotis",
-                  "Two Seasonal Veggies",
-                  "Premium Dal",
-                  "Basmati Rice",
-                  "Dessert (Fri)",
-                  "Salad & Pickle",
-                ],
-              },
-              {
-                name: "Family",
-                meals: 24,
-                price: "1680",
-                color: "bg-brutal-card-lilac",
-                features: [
-                  "Standard Thali x 2",
-                  "Large Portions",
-                  "Extra Sides",
-                  "Full Week Variety",
-                  "Free Weekend Special",
-                ],
-              },
-            ].map((plan, idx) => (
+            {plans.map((plan, idx) => {
+              return (
               <motion.div
-                key={idx}
+                key={plan.id || plan.code || idx}
                 initial={{ y: 50, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -338,6 +355,7 @@ export default function Home() {
                   ))}
                 </ul>
 
+                {/* STATIC WhatsApp trigger link without dynamic query params (user requirement) */}
                 <motion.a
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -348,7 +366,10 @@ export default function Home() {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.a>
               </motion.div>
-            ))}
+              );
+            })}
+
+
           </div>
 
           <motion.div
@@ -383,6 +404,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Menu Voting Section */}
+      <section
+        id="vote"
+        className="p-8 md:p-24 border-b-[3px] border-brutal-border bg-brutal-bg overflow-hidden"
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-12 border-l-[10px] border-brutal-pop pl-6">
+            <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-3">
+              Vote On <br className="hidden md:block" />
+              <span className="text-brutal-pop">Next Week&apos;s Menu</span>
+            </h3>
+            <p className="text-lg md:text-xl font-bold font-mono text-brutal-muted uppercase">
+              Exclusive to active subscribers. Decide Friday&apos;s chef special.
+            </p>
+          </div>
+
+          <MenuVotingWidget plansHref="#plans" />
+        </div>
+      </section>
+
       {/* Testimonials Section */}
       <section className="bg-brutal-bg p-6 md:p-24 border-b-[3px] border-brutal-border overflow-hidden">
         <div className="max-w-7xl mx-auto">
@@ -393,7 +434,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-4"
             >
-              Word on the <br className="hidden md:block" /> Street
+              <TestimonialTitle title={content.testimonials.title} />
             </motion.h3>
             <motion.p
               initial={{ x: -20, opacity: 0 }}
@@ -402,34 +443,13 @@ export default function Home() {
               transition={{ delay: 0.1 }}
               className="text-xl font-bold font-mono text-brutal-muted uppercase"
             >
-              What our regulars are saying.
+              {content.testimonials.subtitle}
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Rahul Verma",
-                role: "Tech Lead",
-                quote:
-                  "Finally found a tiffin that doesn't make me miss home. The Rajma Chawal is legendary.",
-                color: "bg-brutal-card-pink",
-              },
-              {
-                name: "Priya Singh",
-                role: "Student",
-                quote:
-                  "Saves me 2 hours of cooking every day. The portions are huge and packaging is spill-proof.",
-                color: "bg-brutal-accent",
-              },
-              {
-                name: "Amit Patel",
-                role: "Banker",
-                quote:
-                  "No acid reflux. No excessive oil. Just clean, delicious home food. Worth every penny.",
-                color: "bg-brutal-card-lemon",
-              },
-            ].map((testimonial, i) => (
+            {content.testimonials.items.map((testimonial, i) => {
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 50 }}
@@ -448,12 +468,12 @@ export default function Home() {
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className="w-5 h-5 fill-brutal-pop text-brutal-pop"
+                        className="w-5 h-5 fill-brutal-accent text-brutal-accent"
                       />
                     ))}
                   </div>
                   <p className="font-bold text-lg md:text-xl leading-snug">
-                    "{testimonial.quote}"
+                    &ldquo;{testimonial.quote}&rdquo;
                   </p>
                 </div>
                 <div className="border-t-[3px] border-brutal-border pt-4 mt-4 bg-white/50 p-4 -mx-6 -mb-6">
@@ -465,7 +485,10 @@ export default function Home() {
                   </p>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
+
+
           </div>
 
           <motion.div
@@ -479,8 +502,8 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               href="https://maps.google.com/?q=Mom's+Kitchen+Udyog+Vihar+Sector+18+Gurugram"
               target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white border-[3px] border-brutal-border px-8 py-4 font-bold uppercase shadow-brutal flex items-center gap-3 hover:bg-brutal-accent transition-colors"
+              rel="noopener noreferrer"                  className="bg-white border-[3px] border-brutal-border px-8 py-4 font-bold uppercase shadow-brutal flex items-center gap-3 hover:bg-brutal-accent transition-colors"
+            
             >
               <Map className="w-6 h-6" /> Rate us on Google Maps
             </motion.a>
@@ -488,31 +511,79 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-brutal-pop p-10 md:p-24 border-b-[3px] border-brutal-border overflow-hidden">
+      {/* CTA Section - Replicating the Card Back (Deep Forest Teal + Organic Waves + Scan/Chat Order) */}
+      <section className="bg-brutal-border text-white p-10 md:p-24 border-b-[3px] border-brutal-border overflow-hidden relative">
+        {/* Organic wavy contours mirroring card2/card back */}
+        <div className="absolute inset-0 opacity-25 pointer-events-none">
+          <svg className="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="none">
+            <path
+              d="M0,150 C300,50 600,250 1000,100 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#147B78"
+              strokeWidth="28"
+            />
+            <path
+              d="M0,280 C350,180 700,380 1000,220 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#1B938F"
+              strokeWidth="18"
+            />
+            <path
+              d="M0,420 C400,320 650,480 1000,380 L1000,600 L0,600 Z"
+              fill="none"
+              stroke="#2DD4BF"
+              strokeWidth="10"
+            />
+          </svg>
+        </div>
+
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.92 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ type: "spring", stiffness: 100 }}
-          className="max-w-4xl mx-auto text-center flex flex-col items-center"
+          className="max-w-4xl mx-auto text-center flex flex-col items-center relative z-10"
         >
-          <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-8">
-            Hungry <br /> Already?
+          <div className="bg-brutal-pop text-white font-mono text-xs md:text-sm font-black uppercase px-4 py-1.5 border-2 border-white mb-6 shadow-brutal-sm">
+            Scan &amp; Order in Seconds
+          </div>
+
+          <h3 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.88] mb-6">
+            Scan to Order <br />
+            <span className="text-[#25D366]">On WhatsApp</span>
           </h3>
-          <p className="text-xl md:text-3xl font-bold text-brutal-border mb-12 max-w-2xl leading-tight">
-            Our kitchens are buzzing. The delivery bikes are ready. Your next
-            great home meal is one text away.
+
+          <p className="text-xl md:text-3xl font-bold text-white/90 mb-10 max-w-2xl leading-tight">
+            Fresh, Healthy, Homestyle Meals Delivered Daily! Zero apps, zero logins. Just one WhatsApp text.
           </p>
-          <motion.a
-            href={whatsappUrl}
-            whileHover={{ scale: 1.05, rotate: 2 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white text-brutal-text text-2xl md:text-4xl font-black px-12 py-8 border-[3px] border-brutal-border shadow-brutal-lg uppercase flex items-center gap-6 group hover:bg-brutal-accent transition-colors"
-          >
-            Chat to Start{" "}
-            <MessageCircle className="w-10 h-10 fill-brutal-pop text-brutal-pop" />
-          </motion.a>
+
+          {/* Quick contact / Order Card Mockup mirroring card back */}
+          <div className="bg-white text-brutal-text p-6 md:p-8 border-[3px] border-white shadow-brutal-lg max-w-md w-full mb-6 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="bg-brutal-pop p-1.5 border-2 border-brutal-border">
+                <Utensils className="w-5 h-5 text-white" />
+              </div>
+              <h4 className="text-2xl font-black uppercase tracking-tight">Mom&apos;s Kitchen</h4>
+            </div>
+            
+            <p className="font-mono text-xs font-bold text-brutal-muted uppercase mb-6 text-center">
+              Fresh, Healthy, Homestyle Meals Delivered Daily!
+            </p>
+
+            <motion.a
+              href={whatsappUrl}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full bg-[#25D366] text-white text-xl font-black py-4 px-6 border-[3px] border-brutal-border shadow-brutal uppercase flex items-center justify-center gap-3 hover:bg-[#20BA5A] transition-colors"
+            >
+              <MessageCircle className="w-6 h-6 fill-white" /> Chat to Order Now
+            </motion.a>
+
+            <div className="mt-6 pt-4 border-t-2 border-brutal-border w-full flex flex-col gap-1 text-xs font-mono font-bold text-brutal-muted text-center">
+              <span>WhatsApp: {content.contact.whatsappDisplay}</span>
+              <span>Email: {content.contact.email}</span>
+            </div>
+          </div>
         </motion.div>
       </section>
 
