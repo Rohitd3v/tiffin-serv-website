@@ -17,13 +17,33 @@ export async function generateMetadata(
   if (!post) return { title: "Post Not Found" };
 
   return {
-    title: `${post.title} | Mom's Kitchen Blog`,
+    title: `${post.title} | Mom's Kitchen`,
     description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
+      url: `https://momskitchen.co.in/blog/${slug}`,
+      siteName: "Mom's Kitchen",
+      locale: "en_IN",
+      images: [
+        {
+          url: "/og-image.jpg",
+          width: 1280,
+          height: 737,
+          alt: post.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: ["/og-image.jpg"],
     },
   };
 }
@@ -34,8 +54,78 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        "@id": `https://momskitchen.co.in/blog/${post.slug}#article`,
+        isPartOf: {
+          "@type": "WebPage",
+          "@id": `https://momskitchen.co.in/blog/${post.slug}`,
+          url: `https://momskitchen.co.in/blog/${post.slug}`,
+          name: post.title,
+        },
+        headline: post.title,
+        description: post.excerpt,
+        datePublished: post.date,
+        dateModified: post.date,
+        articleSection: post.category,
+        inLanguage: "en-IN",
+        image: "https://momskitchen.co.in/og-image.jpg",
+        author: {
+          "@type": "Person",
+          name: post.author.name,
+          jobTitle: post.author.role,
+          url: "https://momskitchen.co.in",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "Mom's Kitchen",
+          url: "https://momskitchen.co.in",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://momskitchen.co.in/og-image.jpg",
+          },
+        },
+        mainEntityOfPage: {
+          "@type": "WebPage",
+          "@id": `https://momskitchen.co.in/blog/${post.slug}`,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `https://momskitchen.co.in/blog/${post.slug}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://momskitchen.co.in",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: "https://momskitchen.co.in/blog",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: post.title,
+            item: `https://momskitchen.co.in/blog/${post.slug}`,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
         <Link href="/blog" className="flex items-center gap-2 font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Blog
@@ -65,7 +155,9 @@ export default async function BlogPostPage({ params }: Props) {
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4" /> {post.readTime}
             </span>
-            <span className="md:ml-auto">By Mom&apos;s Kitchen Editorial</span>
+            <span className="md:ml-auto">
+              By {post.author.name} • <span className="text-brutal-pop">{post.author.role}</span>
+            </span>
           </div>
         </header>
 

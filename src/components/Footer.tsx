@@ -7,30 +7,45 @@ export function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Utensils className="w-6 h-6" />
-            <h1 className="text-xl font-bold uppercase">
+            <Utensils className="w-6 h-6 text-brutal-pop" />
+            <span className="text-xl font-black uppercase tracking-tight text-brutal-text">
               Mom&apos;s Kitchen
-            </h1>
+            </span>
           </div>
-          <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs">
-            Home-cooked excellence delivered hot since 2024. Udyog Vihar,
-            Sector 18, Gurugram.
+          <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs mb-3">
+            Authentic homestyle tiffin &amp; meal subscription delivered hot daily across Delhi NCR &amp; Gurugram.
           </p>
+          <div className="inline-flex items-center gap-2 bg-white px-2.5 py-1 border-2 border-brutal-border text-[10px] font-mono font-bold uppercase shadow-brutal-sm">
+            <span className="w-2 h-2 rounded-full bg-[#25D366]"></span>
+            <span>FSSAI Compliant Cloud Kitchen</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-4 font-bold uppercase text-sm">
           <Link
+            href="/"
+            className="hover:text-brutal-pop transition-colors"
+          >
+            Home
+          </Link>
+          <Link
+            href="/#plans"
+            className="hover:text-brutal-pop transition-colors"
+          >
+            Meal Plans
+          </Link>
+          <Link
+            href="/vote"
+            className="hover:text-brutal-pop transition-colors"
+          >
+            Menu Voting
+          </Link>
+          <Link
             href="/blog"
             className="hover:text-brutal-pop transition-colors"
           >
-            Blog
+            Food Blog
           </Link>
-          <a href="#" className="hover:text-brutal-pop transition-colors">
-            Instagram
-          </a>
-          <a href="#" className="hover:text-brutal-pop transition-colors">
-            Twitter
-          </a>
           <Link
             href="/privacy"
             className="hover:text-brutal-pop transition-colors"

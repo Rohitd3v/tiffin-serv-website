@@ -21,8 +21,18 @@ export function Sakura() {
   const [petals, setPetals] = useState<Petal[]>([]);
 
   useEffect(() => {
+    // Respect user's accessibility motion preference
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      return;
+    }
+
+    // Adapt particle count for mobile vs desktop to safeguard INP and frame rates
+    const isMobile = window.innerWidth < 768;
+    const count = isMobile ? 8 : 16;
+
     // Generate fresh culinary leaves and spice flecks only on the client side
-    const newPetals = Array.from({ length: 22 }).map((_, i) => {
+    const newPetals = Array.from({ length: count }).map((_, i) => {
       return {
         id: i,
         startX: Math.random() * 100, // random start X position (vw)

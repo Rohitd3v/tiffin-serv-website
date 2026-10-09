@@ -3,18 +3,77 @@ import { ArrowLeft, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Mom's Kitchen",
-  description: "Standard terms and conditions for Mom's Kitchen meal delivery in Delhi NCR.",
+  title: "Terms & Conditions | Subscription & Delivery Policy",
+  description:
+    "Review service terms, delivery zones, order cutoffs, pause policies, and Razorpay payment conditions for Mom's Kitchen meal delivery in Delhi NCR & Gurugram.",
+  alternates: {
+    canonical: "/terms",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://momskitchen.co.in/terms",
+    title: "Terms & Conditions | Mom's Kitchen",
+    description:
+      "Review subscription guidelines, delivery slots, and policies for Mom's Kitchen.",
+    images: [{ url: "/og-image.jpg", width: 1280, height: 737, alt: "Mom's Kitchen Terms" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms & Conditions | Mom's Kitchen",
+    description: "Subscription policies, delivery windows, and service guidelines.",
+    images: ["/og-image.jpg"],
+  },
+};
+
+const termsSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://momskitchen.co.in/terms/#webpage",
+      url: "https://momskitchen.co.in/terms",
+      name: "Terms & Conditions | Mom's Kitchen",
+      description:
+        "Standard terms and conditions for Mom's Kitchen meal delivery in Delhi NCR.",
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": "https://momskitchen.co.in/#website",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://momskitchen.co.in/terms/#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://momskitchen.co.in",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Terms",
+          item: "https://momskitchen.co.in/terms",
+        },
+      ],
+    },
+  ],
 };
 
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(termsSchema) }}
+      />
       <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
         <Link href="/" className="flex items-center gap-2 font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back Home
         </Link>
-        <h1 className="text-xl font-black uppercase text-brutal-text">Terms & Conditions</h1>
+        <span className="text-xl font-black uppercase text-brutal-text">Terms &amp; Conditions</span>
       </nav>
 
       <article className="max-w-4xl mx-auto p-6 md:p-20">
@@ -22,7 +81,7 @@ export default function TermsPage() {
           <div className="bg-brutal-accent p-4 border-2 border-brutal-border w-fit mb-6">
             <ShieldCheck className="w-12 h-12" />
           </div>
-          <h2 className="text-6xl font-black uppercase tracking-tighter mb-4">Legal <br /> Framework</h2>
+          <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">Terms &amp; <br /> Conditions</h1>
           <p className="font-mono font-bold text-brutal-muted uppercase">Last Updated: April 2026</p>
         </header>
 

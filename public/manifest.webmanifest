@@ -1,0 +1,22 @@
+{
+  "name": "Mom's Kitchen - Homestyle Tiffin & Meal Subscription",
+  "short_name": "Mom's Kitchen",
+  "description": "Authentic homestyle tiffin service delivering fresh hot meals across Delhi NCR and Gurugram via WhatsApp.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8ED",
+  "theme_color": "#0C4A48",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/og-image.jpg",
+      "sizes": "1280x737",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
