@@ -1,8 +1,8 @@
 /**
  * Server-side reCAPTCHA v3 verification.
- * Degraded mode: if RECAPTCHA_SECRET_KEY is not configured (empty env vars),
- * verification is skipped and requests pass through — so the site keeps
- * working until keys are added to .env.local.
+ * Degraded mode: when RECAPTCHA_SECRET_KEY is not configured, verification
+ * is skipped and requests pass through — so the site keeps working until
+ * keys are added to .env.local.
  */
 
 const SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || "";
@@ -14,32 +14,26 @@ export interface RecaptchaResult {
   score?: number;
 }
 
+function denied(score?: number): RecaptchaResult {
+  return { ok: false, skipped: false, score };
+}
+
 export async function verifyRecaptcha(
   token: unknown,
   action: string
 ): Promise<RecaptchaResult> {
-  if (!SECRET_KEY) {
-    return { ok: true, skipped: true };
-  }
+  if (!SECRET_KEY) return { ok: true, skipped: true };
 
-  if (!token || typeof token !== "string" || token.length < 10) {
-    return { ok: false, skipped: false };
-  }
+  if (typeof token !== "string" || token.length < 10) return denied();
 
   try {
-    const body = new URLSearchParams({
-      secret: SECRET_KEY,
-      response: token,
-    });
-
     const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: body.toString(),
+      body: new URLSearchParams({ secret: SECRET_KEY, response: token }).toString(),
       cache: "no-store",
     });
-
-    if (!res.ok) return { ok: false, skipped: false };
+    if (!res.ok) return denied();
 
     const data = (await res.json()) as {
       success?: boolean;
@@ -47,17 +41,15 @@ export async function verifyRecaptcha(
       action?: string;
     };
 
-    if (!data.success) return { ok: false, skipped: false };
+    if (!data.success) return denied();
 
-    // Action check is advisory: v3 action strings must match exactly.
+    // Action mismatch is advisory only; v3 action strings must match exactly.
     if (data.action && data.action !== action) {
       console.warn(`[recaptcha] action mismatch: expected=${action} got=${data.action}`);
     }
 
     const score = typeof data.score === "number" ? data.score : undefined;
-    if (score !== undefined && score < MIN_SCORE) {
-      return { ok: false, skipped: false, score };
-    }
+    if (score !== undefined && score < MIN_SCORE) return denied(score);
 
     return { ok: true, skipped: false, score };
   } catch (err: unknown) {

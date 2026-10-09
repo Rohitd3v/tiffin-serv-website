@@ -95,25 +95,27 @@ export const LOCAL_DEFAULTS: SiteContent = {
  * Shallow-merges a DB section over its local fallback, preserving
  * fallback values for missing/empty strings and arrays.
  */
-function mergeSection(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fallback: any,
+function mergeSection<T extends object>(
+  fallback: T,
   db: Record<string, unknown> | null
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+): T {
   if (!db) return fallback;
+
   const merged = { ...fallback } as Record<string, unknown>;
-  for (const key of Object.keys(fallback)) {
-    if (key === "steps" || key === "items") continue; // arrays handled below
-    const v = db[key];
-    if (typeof v === "string" && v.trim()) merged[key] = v;
-  }
   const arrayKey = "steps" in fallback ? "steps" : "items";
-  const dbArr = db[arrayKey];
-  if (Array.isArray(dbArr) && dbArr.length > 0) {
-    merged[arrayKey] = dbArr;
+
+  for (const key of Object.keys(fallback)) {
+    if (key === arrayKey) continue; // arrays handled below
+    const value = db[key];
+    if (typeof value === "string" && value.trim()) merged[key] = value;
   }
-  return merged;
+
+  const dbArray = db[arrayKey];
+  if (Array.isArray(dbArray) && dbArray.length > 0) {
+    merged[arrayKey] = dbArray;
+  }
+
+  return merged as T;
 }
 
 /**
@@ -138,12 +140,18 @@ export async function getSiteContent(): Promise<SiteContent> {
       }
     }
 
+    const section = <K extends keyof SiteContent, DbKey extends string>(
+      key: K,
+      dbKey: DbKey
+    ): SiteContent[K] =>
+      mergeSection(LOCAL_DEFAULTS[key], byKey.get(dbKey) ?? null);
+
     return {
-      hero: mergeSection(LOCAL_DEFAULTS.hero, byKey.get("hero") ?? null) as HeroContent,
-      contact: mergeSection(LOCAL_DEFAULTS.contact, byKey.get("contact") ?? null) as ContactContent,
-      process: mergeSection(LOCAL_DEFAULTS.process, byKey.get("process") ?? null) as ProcessContent,
-      testimonials: mergeSection(LOCAL_DEFAULTS.testimonials, byKey.get("testimonials") ?? null) as TestimonialsContent,
-      voteBanner: mergeSection(LOCAL_DEFAULTS.voteBanner, byKey.get("vote_banner") ?? null) as VoteBannerContent,
+      hero: section("hero", "hero"),
+      contact: section("contact", "contact"),
+      process: section("process", "process"),
+      testimonials: section("testimonials", "testimonials"),
+      voteBanner: section("voteBanner", "vote_banner"),
     };
   } catch {
     return LOCAL_DEFAULTS;

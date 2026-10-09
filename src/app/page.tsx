@@ -29,6 +29,24 @@ const PROCESS_ICONS: Record<string, typeof MapPin> = {
   CheckCircle2,
 };
 
+/** "Word on the Street" → last word drops to its own line on md+ screens. */
+function TestimonialTitle({ title }: { title: string }) {
+  const words = title.split(" ");
+  return (
+    <>
+      {words.map((word, i) =>
+        i === words.length - 1 ? (
+          <span key={i}>
+            <br className="hidden md:block" /> {word}
+          </span>
+        ) : (
+          <span key={i}>{word} </span>
+        )
+      )}
+    </>
+  );
+}
+
 export default function Home() {
   const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
   const [content, setContent] = useState<SiteContent>(LOCAL_DEFAULTS);
@@ -231,9 +249,8 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {content.process.steps.map((rawStep, idx) => {
-              const Icon = PROCESS_ICONS[rawStep.icon] || Utensils;
-              const item = { icon: Icon, title: rawStep.title, desc: rawStep.desc };
+            {content.process.steps.map((step, idx) => {
+              const Icon = PROCESS_ICONS[step.icon] || Utensils;
               return (
               <motion.div
                 key={idx}
@@ -249,17 +266,17 @@ export default function Home() {
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="brutalist-card bg-white flex flex-col gap-6"
               >
-                <div className="bg-brutal-border text-brutal-accent p-4 w-fit shadow-brutal-sm">
-                  <item.icon className="w-8 h-8" />
+                <div className="bg-brutal-border text-brutal-accent p-4 w-fit shadow-brutal-sm">                  <Icon className="w-8 h-8" />
                 </div>
                 <div>
                   <h4 className="text-2xl font-bold uppercase mb-2 text-brutal-text">
-                    {item.title}
+                    {step.title}
                   </h4>
                   <p className="text-sm font-medium font-mono text-brutal-muted leading-relaxed">
-                    {item.desc}
+                    {step.desc}
                   </p>
-                </div>              </motion.div>
+                </div>
+              </motion.div>
               );
             })}
 
@@ -416,15 +433,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-4"
             >
-              {content.testimonials.title.split(" ").map((word, wi, arr) =>
-                wi === arr.length - 1 ? (
-                  <span key={wi}>
-                    <br className="hidden md:block" /> {word}
-                  </span>
-                ) : (
-                  <span key={wi}>{word} </span>
-                )
-              )}
+              <TestimonialTitle title={content.testimonials.title} />
             </motion.h3>
             <motion.p
               initial={{ x: -20, opacity: 0 }}
