@@ -12,9 +12,13 @@ export function Footer() {
               Mom&apos;s Kitchen
             </span>
           </div>
-          <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs">
+          <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs mb-3">
             Authentic homestyle tiffin &amp; meal subscription delivered hot daily across Delhi NCR &amp; Gurugram.
           </p>
+          <div className="inline-flex items-center gap-2 bg-white px-2.5 py-1 border-2 border-brutal-border text-[10px] font-mono font-bold uppercase shadow-brutal-sm">
+            <span className="w-2 h-2 rounded-full bg-[#25D366]"></span>
+            <span>FSSAI Compliant Cloud Kitchen</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-4 font-bold uppercase text-sm">

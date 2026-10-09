@@ -74,8 +74,9 @@ export default async function BlogPostPage({ params }: Props) {
         inLanguage: "en-IN",
         image: "https://momskitchen.co.in/og-image.jpg",
         author: {
-          "@type": "Organization",
-          name: "Mom's Kitchen Editorial",
+          "@type": "Person",
+          name: post.author.name,
+          jobTitle: post.author.role,
           url: "https://momskitchen.co.in",
         },
         publisher: {
@@ -154,7 +155,9 @@ export default async function BlogPostPage({ params }: Props) {
             <span className="flex items-center gap-2">
               <Clock className="w-4 h-4" /> {post.readTime}
             </span>
-            <span className="md:ml-auto">By Mom&apos;s Kitchen Editorial</span>
+            <span className="md:ml-auto">
+              By {post.author.name} • <span className="text-brutal-pop">{post.author.role}</span>
+            </span>
           </div>
         </header>
 

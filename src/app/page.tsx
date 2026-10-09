@@ -621,6 +621,11 @@ export default function Home() {
                   "Vegetarian",
                   "Thali",
                 ],
+                knowsAbout: [
+                  "FSSAI Food Safety Standards",
+                  "Daily Homestyle Meal Subscriptions",
+                  "Hygienic Cloud Kitchen Operations",
+                ],
                 address: {
                   "@type": "PostalAddress",
                   streetAddress: "Udyog Vihar Phase 4, Sector 18",
