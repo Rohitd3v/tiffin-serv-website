@@ -119,9 +119,10 @@ function mergeSection<T extends object>(
 }
 
 /**
- * Fetches all dashboard-managed content in a single roundtrip.
- * Returns LOCAL_DEFAULTS merged with whatever keys exist in the DB,
- * so partial data never blanks out the site.
+ * Fetches dashboard-managed sections and merges them over LOCAL_DEFAULTS.
+ * Missing or blank strings and empty arrays retain their defaults; nonempty
+ * arrays replace defaults without validating their entries. Missing database
+ * configuration, query errors, or caught exceptions return LOCAL_DEFAULTS.
  */
 export async function getSiteContent(): Promise<SiteContent> {
   if (!supabase) return LOCAL_DEFAULTS;

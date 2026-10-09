@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+/**
+ * Returns the newest active poll with vote counts and rounded percentages,
+ * or { poll: null } when none exists. At or after its deadline, attempts to
+ * close the poll and record its leading option (null without votes), then
+ * returns no poll even if the update reports an error. Vote-query errors
+ * with no data are treated as zero votes. Missing configuration, poll-query
+ * errors, and caught exceptions return a JSON error with status 500.
+ */
 export async function GET() {
   if (!supabase) {
     return NextResponse.json({ error: "Database not configured" }, { status: 500 });

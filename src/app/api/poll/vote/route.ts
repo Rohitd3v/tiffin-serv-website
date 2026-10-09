@@ -2,6 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
+/**
+ * Accepts JSON phone, pollId, optionId, otp, and optional recaptchaToken to
+ * record a customer's vote using their latest phone verification code.
+ * Strips phone punctuation and prefixes 10-digit numbers with 91. Rejects
+ * polls at or past their deadline and codes strictly past their expiry;
+ * attempts to delete expired or successfully used codes and increment attempts
+ * on mismatches. Does not recheck subscription
+ * status or validate option membership here.
+ * Returns 400 for missing fields or invalid codes, 403 for failed captcha or
+ * an unrecognized customer, 410 for missing/inactive/expired polls, 409 for
+ * duplicate votes, and 500 for missing configuration, other insert errors,
+ * or caught exceptions. Success returns { ok: true, message }.
+ */
 export async function POST(req: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: "Database not configured" }, { status: 500 });

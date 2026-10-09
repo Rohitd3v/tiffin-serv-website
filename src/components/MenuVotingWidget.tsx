@@ -42,6 +42,12 @@ interface MenuVotingWidgetProps {
   plansHref?: string;
 }
 
+/**
+ * Loads the active poll and guides dish selection, WhatsApp verification, and
+ * voting. Shows an empty state if the initial load fails; standings refresh
+ * after voting, when a prior vote is reported, or on request. plansHref is the
+ * meal-plan link shown in the empty and non-subscriber states.
+ */
 export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProps) {
   const [poll, setPoll] = useState<PollData | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
@@ -87,6 +93,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   }, []);
 
   // Standalone fetch for refreshing standings after vote
+  /** Refreshes standings, retaining the current poll on HTTP or caught errors. */
   async function refreshPoll() {
     try {
       const res = await fetch("/api/poll/active", { cache: "no-store" });
@@ -108,6 +115,12 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   }, [step, timer]);
 
   // 3. Send OTP
+  /**
+   * Requests or resends a code for the selected dish and phone, preventing form
+   * submission when an event is supplied. Success starts a 60-second resend
+   * countdown; 403/NO_ACTIVE_PLAN opens the subscription prompt, and
+   * 409/ALREADY_VOTED opens results. Other failures become inline errors.
+   */
   async function handleSendOtp(e?: React.FormEvent) {
     if (e) e.preventDefault();
     if (!poll) return;
@@ -178,6 +191,11 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   }
 
   // 4. Confirm Vote with OTP
+  /**
+   * Submits the selected vote with a four-character trimmed code, preventing
+   * form submission when an event is supplied. Success or a reported duplicate
+   * opens refreshed results; other response or caught errors appear inline.
+   */
   async function handleConfirmVote(e?: React.FormEvent) {
     if (e) e.preventDefault();
     if (!poll) return;
@@ -234,6 +252,10 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   }
 
   // Format closesAt date if present
+  /**
+   * Formats a deadline in en-IN using the browser's time zone. Missing input or
+   * a thrown formatting error returns null; invalid dates can yield "Invalid Date".
+   */
   function formatClosesAt(dateStr?: string | null) {
     if (!dateStr) return null;
     try {

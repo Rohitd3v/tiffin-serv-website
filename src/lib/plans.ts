@@ -71,6 +71,12 @@ const CARD_COLORS = [
   "bg-brutal-card-mint",
 ];
 
+/**
+ * Returns active plans other than `one_time`, ordered by price, with card colors
+ * and fallback features. Numeric prices are rounded from paise to whole rupees;
+ * nonnumeric prices become zero. Missing configuration, empty results, query
+ * errors, and caught exceptions return DEFAULT_PLANS.
+ */
 export async function getPublicPlans(): Promise<PublicPlan[]> {
   if (!supabase) {
     return DEFAULT_PLANS;

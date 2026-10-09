@@ -1,6 +1,10 @@
 /**
- * WhatsApp Messaging Utility for Sending Verification OTPs.
- * Supports Meta Cloud API with safe development fallback.
+ * Sends an OTP as a WhatsApp text through Meta when configured. Strips phone
+ * punctuation and prefixes 10-digit numbers with India's country code (91).
+ * Returns { ok: false, error } for HTTP failures or caught request errors.
+ * Without Meta configuration, prints the OTP locally and returns { ok: true }
+ * without sending a message. The message advertises a five-minute lifetime;
+ * this helper does not store or expire the code.
  */
 
 export async function sendWhatsAppOtp(

@@ -47,6 +47,7 @@ function TestimonialTitle({ title }: { title: string }) {
   );
 }
 
+/** Renders the homepage with local defaults, loading plans and content on mount. */
 export default function Home() {
   const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
   const [content, setContent] = useState<SiteContent>(LOCAL_DEFAULTS);

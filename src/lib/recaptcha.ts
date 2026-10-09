@@ -32,9 +32,10 @@ export function initializeRecaptcha(): void {
 }
 
 /**
- * Returns a fresh reCAPTCHA token for the action, or null when captcha
- * is disabled or unavailable. Never rejects — a captcha failure must not
- * block a subscriber from voting.
+ * Requests a fresh reCAPTCHA token labeled with the action. Returns null outside
+ * the browser, without a site key or loaded API, or when execute rejects.
+ * A synchronous error from ready rejects the returned promise; synchronous
+ * errors in a deferred ready callback are not caught here.
  */
 export function getRecaptchaToken(action: string): Promise<string | null> {
   if (typeof window === "undefined" || !SITE_KEY) {

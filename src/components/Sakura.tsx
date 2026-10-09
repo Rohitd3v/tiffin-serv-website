@@ -16,6 +16,7 @@ interface Petal {
   rotateZ: number;
 }
 
+/** Renders a noninteractive falling leaf and spice overlay, randomized on mount. */
 export function Sakura() {
   const [petals, setPetals] = useState<Petal[]>([]);
 

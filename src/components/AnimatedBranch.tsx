@@ -15,6 +15,7 @@ const leaves = [
   { cx: 65, cy: 155, delay: 2.7, size: 1.05, rotate: -20 },
 ];
 
+/** Renders a decorative animated herb vine and cooking pot on md+ screens. */
 export function AnimatedBranch() {
   return (
     <div className="hidden md:block absolute top-0 right-0 md:-right-20 w-[420px] h-[320px] md:w-[580px] md:h-[380px] pointer-events-none opacity-90 z-0">

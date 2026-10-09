@@ -9,6 +9,7 @@ export const metadata: Metadata = {
     "Active subscribers decide our Friday chef special! Vote for your favorite homestyle dish securely via WhatsApp OTP.",
 };
 
+/** Renders the dedicated menu voting page with instructions and WhatsApp help. */
 export default function VotePage() {
   const whatsappUrl =
     "https://wa.me/917033558836?text=Hello!%20I%20have%20a%20question%20about%20the%20weekly%20menu%20vote.";

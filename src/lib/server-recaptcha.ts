@@ -14,10 +14,19 @@ export interface RecaptchaResult {
   score?: number;
 }
 
+/** Returns a failed verification result, retaining the score when supplied. */
 function denied(score?: number): RecaptchaResult {
   return { ok: false, skipped: false, score };
 }
 
+/**
+ * Verifies a token with Google. Returns ok: false for nonstrings, tokens shorter
+ * than 10 characters, unsuccessful responses, or scores below RECAPTCHA_MIN_SCORE
+ * (default 0.5). A missing score or mismatched action does not cause rejection.
+ * The action is the expected client action label and is advisory only.
+ * Returns ok/skipped flags and a score when available; missing configuration
+ * or caught request/response errors return { ok: true, skipped: true }.
+ */
 export async function verifyRecaptcha(
   token: unknown,
   action: string

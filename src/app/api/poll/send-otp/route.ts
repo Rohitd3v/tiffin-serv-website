@@ -3,6 +3,17 @@ import { supabase } from "@/lib/supabase";
 import { sendWhatsAppOtp } from "@/lib/whatsapp";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
+/**
+ * Accepts JSON phone, pollId, and optional recaptchaToken to create a four-digit
+ * OTP for an active subscriber. Strips phone punctuation and prefixes 10-digit
+ * numbers with 91. Replaces that phone's stored codes with a five-minute code
+ * and attempts WhatsApp delivery; delivery failure results do not prevent a
+ * successful response containing phoneMasked. Does not check poll status.
+ * Returns 400 for missing/invalid phone or pollId, 403 for failed captcha or
+ * subscriber lookup (including query errors), 409 for an existing vote, and
+ * 429 when at least three stored codes were created in the last ten minutes.
+ * Missing configuration, insert errors, and caught exceptions return 500.
+ */
 export async function POST(req: NextRequest) {
   if (!supabase) {
     return NextResponse.json({ error: "Database not configured" }, { status: 500 });
