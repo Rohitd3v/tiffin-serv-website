@@ -32,7 +32,7 @@ export interface PollData {
   closesAt?: string | null;
 }
 
-export type VotingStep = "SELECT" | "OTP" | "VOTED" | "NOT_SUBSCRIBER";
+export type VotingStep = "SELECT" | "VOTED" | "NOT_SUBSCRIBER";
 
 interface MenuVotingWidgetProps {
   /**
@@ -43,25 +43,20 @@ interface MenuVotingWidgetProps {
 }
 
 /**
- * Loads the active poll and guides dish selection, WhatsApp verification, and
- * voting. Shows an empty state if the initial load fails; standings refresh
- * after voting, when a prior vote is reported, or on request. plansHref is the
- * meal-plan link shown in the empty and non-subscriber states.
+ * Loads the active poll and guides dish selection, active subscriber verification,
+ * and direct ballot casting. Zero-cost frictionless verification protected by
+ * invisible reCAPTCHA v3 and distributed rate limiting.
  */
 export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProps) {
   const [poll, setPoll] = useState<PollData | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [step, setStep] = useState<VotingStep>("SELECT");
-  const [otp, setOtp] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [timer, setTimer] = useState<number>(0);
-  const [maskedPhone, setMaskedPhone] = useState<string>("");
 
   const phoneInputId = useId();
-  const otpInputId = useId();
 
   useRecaptchaInit();
 
@@ -93,7 +88,6 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
   }, []);
 
   // Standalone fetch for refreshing standings after vote
-  /** Refreshes standings, retaining the current poll on HTTP or caught errors. */
   async function refreshPoll() {
     try {
       const res = await fetch("/api/poll/active", { cache: "no-store" });
@@ -105,23 +99,8 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     }
   }
 
-  // 2. Countdown timer for OTP resend
-  useEffect(() => {
-    if (step !== "OTP" || timer <= 0) return;
-    const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [step, timer]);
-
-  // 3. Send OTP
-  /**
-   * Requests or resends a code for the selected dish and phone, preventing form
-   * submission when an event is supplied. Success starts a 60-second resend
-   * countdown; 403/NO_ACTIVE_PLAN opens the subscription prompt, and
-   * 409/ALREADY_VOTED opens results. Other failures become inline errors.
-   */
-  async function handleSendOtp(e?: React.FormEvent) {
+  // Direct Phone Verification and Ballot Submission
+  async function handleVote(e?: React.FormEvent) {
     if (e) e.preventDefault();
     if (!poll) return;
 
@@ -140,13 +119,14 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     setErrorMsg(null);
 
     try {
-      const recaptchaToken = await getRecaptchaToken("send_otp");
-      const res = await fetch("/api/poll/send-otp", {
+      const recaptchaToken = await getRecaptchaToken("poll_vote");
+      const res = await fetch("/api/poll/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: cleanDigits,
           pollId: poll.id,
+          optionId: selectedOption,
           recaptchaToken,
         }),
       });
@@ -171,17 +151,13 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
         setErrorMsg(
           data.error ||
             data.message ||
-            "Failed to send verification code. Please check your WhatsApp number."
+            "Failed to cast your vote. Please check your number and try again."
         );
         return;
       }
 
-      setMaskedPhone(
-        data.phoneMasked || `+91 ••••• •${cleanDigits.slice(-4)}`
-      );
-      setStep("OTP");
-      setTimer(60);
-      setOtp("");
+      await refreshPoll();
+      setStep("VOTED");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Network error. Please try again.";
       setErrorMsg(message);
@@ -190,72 +166,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     }
   }
 
-  // 4. Confirm Vote with OTP
-  /**
-   * Submits the selected vote with a four-character trimmed code, preventing
-   * form submission when an event is supplied. Success or a reported duplicate
-   * opens refreshed results; other response or caught errors appear inline.
-   */
-  async function handleConfirmVote(e?: React.FormEvent) {
-    if (e) e.preventDefault();
-    if (!poll) return;
-
-    if (otp.trim().length !== 4) {
-      setErrorMsg("Please enter the 4-digit code sent to your WhatsApp.");
-      return;
-    }
-
-    setLoading(true);
-    setErrorMsg(null);
-
-    try {
-      const cleanDigits = phone.replace(/[^0-9]/g, "");
-      const recaptchaToken = await getRecaptchaToken("poll_vote");
-      const res = await fetch("/api/poll/vote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: cleanDigits,
-          pollId: poll.id,
-          optionId: selectedOption,
-          otp: otp.trim(),
-          recaptchaToken,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 409 || data.code === "ALREADY_VOTED") {
-        await refreshPoll();
-        setStep("VOTED");
-        return;
-      }
-
-      if (!res.ok) {
-        setErrorMsg(
-          data.error ||
-            data.message ||
-            "Verification code is incorrect or expired."
-        );
-        return;
-      }
-
-      // Re-fetch latest poll standings and advance to VOTED
-      await refreshPoll();
-      setStep("VOTED");
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to confirm vote. Please try again.";
-      setErrorMsg(message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   // Format closesAt date if present
-  /**
-   * Formats a deadline in en-IN using the browser's time zone. Missing input or
-   * a thrown formatting error returns null; invalid dates can yield "Invalid Date".
-   */
   function formatClosesAt(dateStr?: string | null) {
     if (!dateStr) return null;
     try {
@@ -285,38 +196,39 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     );
   }
 
-  // Empty state when no active poll
+  // Empty state if no active poll exists
   if (!poll) {
     return (
-      <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-8 md:p-12 text-center">
-        <div className="inline-flex items-center justify-center p-4 bg-brutal-accent border-2 border-brutal-border mb-4 shadow-brutal-sm">
+      <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-8 md:p-12 text-center space-y-4">
+        <div className="inline-flex items-center justify-center p-4 bg-brutal-card-lemon border-2 border-brutal-border shadow-brutal-sm">
           <Utensils className="w-8 h-8 text-brutal-text" />
         </div>
-        <h4 className="text-2xl md:text-3xl font-black uppercase text-brutal-text tracking-tight mb-2">
+        <h3 className="text-2xl md:text-3xl font-black uppercase text-brutal-text tracking-tight">
           No Active Poll Right Now
-        </h4>
-        <p className="font-mono text-sm text-brutal-muted max-w-md mx-auto mb-6">
-          Our kitchen posts weekly specials every Monday. Active subscribers get to vote on upcoming Friday meals. Check back soon!
+        </h3>
+        <p className="font-mono text-sm text-brutal-muted max-w-md mx-auto">
+          Our chef is currently preparing the next weekly menu vote. Check back soon or explore our meal plans!
         </p>
-        <a
-          href={plansHref}
-          className="inline-flex items-center gap-2 bg-brutal-pop text-white font-black px-6 py-3 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-pop-hover transition-colors uppercase text-sm"
-        >
-          Explore Meal Plans <ArrowRight className="w-4 h-4" />
-        </a>
+        <div className="pt-2">
+          <a
+            href={plansHref}
+            className="inline-flex items-center gap-2 bg-brutal-pop text-white font-black px-6 py-3 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-pop-hover transition-colors uppercase text-sm"
+          >
+            Explore Meal Plans <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     );
   }
 
-  // Find leading option
-  const maxVotes = Math.max(...poll.options.map((o) => o.votes), 0);
   const formattedClosing = formatClosesAt(poll.closesAt);
+  const maxVotes = Math.max(...poll.options.map((o) => o.votes), 0);
 
   return (
     <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-6 md:p-10 relative overflow-hidden">
-      {/* Decorative Corner Accent */}
-      <div className="absolute top-0 right-0 w-24 h-24 overflow-hidden pointer-events-none">
-        <div className="bg-brutal-accent w-36 h-8 rotate-45 transform origin-bottom-left -translate-y-4 translate-x-2 border-y-2 border-brutal-border" />
+      {/* Decorative Badge */}
+      <div className="absolute -top-3 -right-3 rotate-6 bg-brutal-card-lemon border-2 border-brutal-border shadow-brutal-sm px-3 py-1 text-[11px] font-mono font-black uppercase text-brutal-text hidden sm:block">
+        Subscriber Choice 🗳️
       </div>
 
       {/* Header Info */}
@@ -357,9 +269,9 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
         )}
       </AnimatePresence>
 
-      {/* STEP: SELECT */}
+      {/* STEP: SELECT (Dish Selection & Direct Subscriber Verification) */}
       {step === "SELECT" && (
-        <form onSubmit={handleSendOtp} className="space-y-6">
+        <form onSubmit={handleVote} className="space-y-6">
           <div className="space-y-3">
             <span className="block text-xs font-mono font-bold uppercase text-brutal-muted tracking-wider">
               Step 1: Choose This Week&apos;s Special Dish
@@ -389,7 +301,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
                     className={`border-[3px] border-brutal-border p-4 transition-all text-left flex items-center justify-between gap-4 select-none ${
                       isSelected
                         ? "bg-brutal-accent text-brutal-text shadow-brutal translate-x-1 -translate-y-0.5"
-                        : "bg-white hover:bg-brutal-card-mint shadow-brutal-sm text-brutal-text"
+                        : "bg-white hover:bg-brutal-card-mint shadow-brutal-sm text-brutal-text cursor-pointer"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -446,7 +358,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
               />
             </div>
             <p className="text-[11px] font-mono text-brutal-muted">
-              🔒 We verify your active subscription and send a 4-digit OTP via WhatsApp. No spam ever.
+              🔒 Instant verification for active subscribers. Protected by bot &amp; spam shield.
             </p>
           </div>
 
@@ -459,7 +371,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
             className={`w-full py-4 px-6 border-[3px] border-brutal-border shadow-brutal font-black uppercase text-base flex items-center justify-center gap-3 transition-colors ${
               loading || !selectedOption
                 ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-brutal-pop text-white hover:bg-brutal-pop-hover"
+                : "bg-brutal-pop text-white hover:bg-brutal-pop-hover cursor-pointer"
             }`}
           >
             {loading ? (
@@ -468,102 +380,8 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
               </>
             ) : (
               <>
-                <MessageCircle className="w-5 h-5 fill-white" /> Verify &amp; Send Code
+                <Vote className="w-5 h-5" /> Cast Your Vote
                 <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </motion.button>
-        </form>
-      )}
-
-      {/* STEP: OTP */}
-      {step === "OTP" && (
-        <form onSubmit={handleConfirmVote} className="space-y-6">
-          <div className="p-4 bg-white border-[3px] border-brutal-border shadow-brutal-sm flex items-center gap-3">
-            <div className="p-2 bg-[#25D366] border-2 border-brutal-border text-white">
-              <MessageCircle className="w-5 h-5 fill-white" />
-            </div>
-            <div>
-              <p className="font-mono text-xs font-bold uppercase text-brutal-muted">
-                OTP Sent via WhatsApp
-              </p>
-              <p className="font-bold text-sm md:text-base text-brutal-text">
-                Check WhatsApp on <span className="font-mono font-black">{maskedPhone}</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor={otpInputId}
-              className="text-xs font-mono font-bold uppercase text-brutal-text flex items-center gap-1.5"
-            >
-              Enter 4-Digit Verification Code
-            </label>
-
-            <input
-              id={otpInputId}
-              type="text"
-              inputMode="numeric"
-              maxLength={4}
-              value={otp}
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9]/g, "");
-                setOtp(val);
-                setErrorMsg(null);
-              }}
-              placeholder="••••"
-              autoFocus
-              className="w-full text-center text-4xl font-mono font-black tracking-[0.5em] px-4 py-4 border-[3px] border-brutal-border bg-white shadow-brutal focus:outline-none focus:bg-brutal-card-lemon text-brutal-text"
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-xs font-mono">
-            {timer > 0 ? (
-              <span className="text-brutal-muted flex items-center gap-1 font-bold">
-                <Clock className="w-3.5 h-3.5" /> Resend code in {timer}s
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => handleSendOtp()}
-                disabled={loading}
-                className="font-bold text-brutal-pop hover:underline uppercase flex items-center gap-1"
-              >
-                <RefreshCw className="w-3.5 h-3.5" /> Resend OTP via WhatsApp
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={() => {
-                setStep("SELECT");
-                setErrorMsg(null);
-              }}
-              className="text-brutal-muted hover:text-brutal-text underline uppercase font-bold"
-            >
-              Change Number
-            </button>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={loading || otp.trim().length !== 4}
-            className={`w-full py-4 px-6 border-[3px] border-brutal-border shadow-brutal font-black uppercase text-base flex items-center justify-center gap-3 transition-colors ${
-              loading || otp.trim().length !== 4
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-[#25D366] text-white hover:bg-[#20BA5A]"
-            }`}
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" /> Recording Vote...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="w-5 h-5 fill-white text-brutal-border" /> Confirm Vote
               </>
             )}
           </motion.button>
@@ -670,7 +488,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
           <div className="pt-2 text-center">
             <button
               onClick={() => refreshPoll()}
-              className="text-xs font-mono font-bold text-brutal-muted hover:text-brutal-text uppercase inline-flex items-center gap-1.5 transition-colors"
+              className="text-xs font-mono font-bold text-brutal-muted hover:text-brutal-text uppercase inline-flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Refresh Live Standings
             </button>
@@ -715,7 +533,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
                 setStep("SELECT");
                 setErrorMsg(null);
               }}
-              className="bg-white text-brutal-text font-bold px-6 py-3.5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-accent transition-colors uppercase text-sm"
+              className="bg-white text-brutal-text font-bold px-6 py-3.5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-accent transition-colors uppercase text-sm cursor-pointer"
             >
               Try Another Number
             </button>
