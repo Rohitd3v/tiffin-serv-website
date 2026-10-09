@@ -4,9 +4,79 @@ import { MenuVotingWidget } from "@/components/MenuVotingWidget";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Weekly Menu Voting | Mom's Kitchen",
+  title: "Weekly Menu Voting | Curate Friday Chef Special",
   description:
-    "Active subscribers decide our Friday chef special! Vote for your favorite homestyle dish securely via WhatsApp OTP.",
+    "Active meal plan subscribers decide our Friday chef special! Vote for your favorite homestyle dishes securely via WhatsApp OTP.",
+  keywords: [
+    "tiffin menu voting",
+    "weekly meal special delhi",
+    "subscriber menu choice",
+    "moms kitchen vote",
+    "homestyle special thali",
+  ],
+  alternates: {
+    canonical: "/vote",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_IN",
+    url: "https://momskitchen.co.in/vote",
+    siteName: "Mom's Kitchen",
+    title: "Weekly Menu Voting | Mom's Kitchen",
+    description:
+      "Active subscribers curate our Friday special menu. Cast your vote securely via WhatsApp OTP.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1280,
+        height: 737,
+        alt: "Mom's Kitchen - Weekly Menu Voting",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Weekly Menu Voting | Mom's Kitchen",
+    description:
+      "Subscribers decide our Friday chef special! Cast your vote securely via WhatsApp OTP.",
+    images: ["/og-image.jpg"],
+  },
+};
+
+const voteSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://momskitchen.co.in/vote/#webpage",
+      url: "https://momskitchen.co.in/vote",
+      name: "Weekly Menu Voting | Mom's Kitchen",
+      description:
+        "Active meal plan subscribers decide our Friday chef special via secure WhatsApp OTP.",
+      isPartOf: {
+        "@type": "WebSite",
+        "@id": "https://momskitchen.co.in/#website",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://momskitchen.co.in/vote/#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://momskitchen.co.in",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Menu Voting",
+          item: "https://momskitchen.co.in/vote",
+        },
+      ],
+    },
+  ],
 };
 
 /** Renders the dedicated menu voting page with instructions and WhatsApp help. */
@@ -16,6 +86,10 @@ export default function VotePage() {
 
   return (
     <main className="min-h-screen bg-brutal-bg pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(voteSchema) }}
+      />
       {/* Top Navigation */}
       <nav className="border-b-[3px] border-brutal-border p-4 md:p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/90 backdrop-blur-md z-50">
         <Link
@@ -25,19 +99,19 @@ export default function VotePage() {
           <ArrowLeft className="w-4 h-4" /> Back to Home
         </Link>
 
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="bg-brutal-pop p-1.5 md:p-2 border-2 border-brutal-border shadow-brutal-sm">
             <Utensils className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg md:text-xl font-black tracking-tight uppercase text-brutal-text leading-none">
+            <span className="text-lg md:text-xl font-black tracking-tight uppercase text-brutal-text leading-none block">
               Mom&apos;s Kitchen
-            </h1>
+            </span>
             <span className="text-[9px] md:text-[11px] font-mono font-bold tracking-wider text-brutal-muted uppercase block">
               Menu Voting
             </span>
           </div>
-        </div>
+        </Link>
 
         <a
           href={whatsappUrl}
@@ -56,10 +130,10 @@ export default function VotePage() {
           <div className="inline-flex items-center gap-2 bg-brutal-accent text-brutal-text text-xs font-mono font-bold uppercase px-3 py-1 border-2 border-brutal-border mb-3 shadow-brutal-sm">
             <Sparkles className="w-3.5 h-3.5" /> Subscriber Exclusive Privilege
           </div>
-          <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-[0.9] mb-4">
+          <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-[0.9] mb-4">
             Curate This <br />
             <span className="text-brutal-pop">Week&apos;s Special.</span>
-          </h2>
+          </h1>
           <p className="font-mono text-sm md:text-base font-bold text-brutal-muted uppercase max-w-xl">
             Active meal plan subscribers vote on our upcoming Friday comfort special. Verified directly through your WhatsApp.
           </p>

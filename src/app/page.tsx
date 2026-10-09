@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { AnimatedBranch } from "@/components/AnimatedBranch";
 import {
@@ -70,19 +71,19 @@ export default function Home() {
     <main className="min-h-screen">
       {/* Navigation */}
       <nav className="border-b-[3px] border-brutal-border p-4 md:p-6 flex justify-between items-center sticky top-0 bg-brutal-bg/90 backdrop-blur-md z-50">
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="bg-brutal-pop p-2 border-2 border-brutal-border shadow-brutal-sm">
             <Utensils className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-black tracking-tight uppercase text-brutal-text leading-none">
+            <span className="text-xl md:text-2xl font-black tracking-tight uppercase text-brutal-text leading-none block">
               Mom&apos;s Kitchen
-            </h1>
+            </span>
             <span className="text-[10px] md:text-xs font-mono font-bold tracking-wider text-brutal-muted uppercase block">
-              Homestyle Tiffin &amp; Cloud Kitchen
+              Homestyle Tiffin &amp; Meal Subscription
             </span>
           </div>
-        </div>
+        </Link>
         <div className="hidden md:flex items-center gap-6 font-bold uppercase text-sm">
           <a
             href="#how"
@@ -96,12 +97,18 @@ export default function Home() {
           >
             Plans
           </a>
-          <a
-            href="#vote"
+          <Link
+            href="/vote"
             className="hover:text-brutal-pop px-2 transition-colors"
           >
             Menu Vote
-          </a>
+          </Link>
+          <Link
+            href="/blog"
+            className="hover:text-brutal-pop px-2 transition-colors"
+          >
+            Blog
+          </Link>
           <motion.a
             whileHover={{ scale: 1.05, x: 2, y: -2 }}
             whileTap={{ scale: 0.95 }}
@@ -131,7 +138,7 @@ export default function Home() {
             <span>{content.hero.badgeLine2}</span>
           </motion.div>
 
-          <motion.h2
+          <motion.h1
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{
@@ -157,7 +164,10 @@ export default function Home() {
             >
               {content.hero.titleLine2}
             </motion.span>
-          </motion.h2>
+            <span className="sr-only">
+              {" "}— Homestyle Tiffin &amp; Meal Subscription in Delhi NCR &amp; Gurugram
+            </span>
+          </motion.h1>
 
           <motion.p
             initial={{ y: 20, opacity: 0 }}
@@ -587,45 +597,153 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* SEO Schema */}
+      {/* Rich SEO Structured Data (LocalBusiness, FoodDelivery, Menu Plans & FAQ) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: "Mom's Kitchen",
-            image: "https://tiffinserv.delivery/logo.png",
-            "@id": "https://tiffinserv.delivery",
-            url: "https://tiffinserv.delivery",
-            telephone: "+917033558836",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "Udyog Vihar, Sector 18",
-              addressLocality: "Gurugram",
-              postalCode: "122022",
-              addressCountry: "IN",
-            },
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: 28.6139,
-              longitude: 77.209,
-            },
-            servesCuisine: "Indian",
-            priceRange: "₹",
-            openingHoursSpecification: [
+            "@graph": [
               {
-                "@type": "OpeningHoursSpecification",
-                dayOfWeek: [
-                  "Monday",
-                  "Tuesday",
-                  "Wednesday",
-                  "Thursday",
-                  "Friday",
-                  "Saturday",
+                "@type": ["LocalBusiness", "FoodEstablishment", "DeliveryService"],
+                "@id": "https://momskitchen.co.in/#localbusiness",
+                name: "Mom's Kitchen",
+                alternateName: "Mom's Kitchen Homestyle Tiffin Service",
+                image: "https://momskitchen.co.in/og-image.jpg",
+                url: "https://momskitchen.co.in",
+                telephone: "+917033558836",
+                email: "orders@momskitchen.com",
+                priceRange: "₹480 - ₹1680",
+                servesCuisine: [
+                  "North Indian",
+                  "Homestyle",
+                  "Ghar Ka Khana",
+                  "Vegetarian",
+                  "Thali",
                 ],
-                opens: "08:00",
-                closes: "21:00",
+                address: {
+                  "@type": "PostalAddress",
+                  streetAddress: "Udyog Vihar Phase 4, Sector 18",
+                  addressLocality: "Gurugram",
+                  addressRegion: "Haryana",
+                  postalCode: "122022",
+                  addressCountry: "IN",
+                },
+                geo: {
+                  "@type": "GeoCoordinates",
+                  latitude: 28.5034,
+                  longitude: 77.0844,
+                },
+                areaServed: [
+                  { "@type": "AdministrativeArea", name: "Delhi NCR" },
+                  { "@type": "City", name: "Delhi" },
+                  { "@type": "City", name: "South Delhi" },
+                  { "@type": "City", name: "Central Delhi" },
+                  { "@type": "City", name: "Gurugram" },
+                  { "@type": "City", name: "Noida" },
+                ],
+                hasMenu: "https://momskitchen.co.in/#plans",
+                openingHoursSpecification: [
+                  {
+                    "@type": "OpeningHoursSpecification",
+                    dayOfWeek: [
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                    ],
+                    opens: "08:00",
+                    closes: "21:30",
+                  },
+                ],
+                potentialAction: {
+                  "@type": "OrderAction",
+                  target: {
+                    "@type": "EntryPoint",
+                    urlTemplate:
+                      "https://wa.me/917033558836?text=Hello!%20I%20want%20to%20order%20a%20tiffin.",
+                    inLanguage: "en-IN",
+                    actionPlatform: [
+                      "http://schema.org/DesktopWebPlatform",
+                      "http://schema.org/MobileWebPlatform",
+                      "http://schema.org/IOSPlatform",
+                      "http://schema.org/AndroidPlatform",
+                    ],
+                  },
+                  deliveryMethod: "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet",
+                },
+              },
+              {
+                "@type": "ItemList",
+                "@id": "https://momskitchen.co.in/#plans-list",
+                name: "Mom's Kitchen Tiffin Meal Plans",
+                itemListElement: plans.map((plan, index) => ({
+                  "@type": "ListItem",
+                  position: index + 1,
+                  item: {
+                    "@type": "Product",
+                    name: `Mom's Kitchen ${plan.name} Pack`,
+                    description: `${plan.meals} freshly cooked homestyle meals. Includes ${plan.features.join(", ")}.`,
+                    offers: {
+                      "@type": "Offer",
+                      price: plan.price,
+                      priceCurrency: "INR",
+                      availability: "https://schema.org/InStock",
+                      url: "https://momskitchen.co.in/#plans",
+                      seller: {
+                        "@id": "https://momskitchen.co.in/#localbusiness",
+                      },
+                    },
+                  },
+                })),
+              },
+              {
+                "@type": "FAQPage",
+                "@id": "https://momskitchen.co.in/#faq",
+                mainEntity: [
+                  {
+                    "@type": "Question",
+                    name: "How does Mom's Kitchen tiffin service work?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Ordering is handled 100% via WhatsApp. Send your delivery pin, choose a meal pack (Starter, Regular, or Family), make payment via Razorpay, and receive hot homestyle meals daily. Pause or resume anytime by texting the bot.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "Which areas in Delhi NCR and Gurugram do you deliver to?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "We deliver across South Delhi, Central Delhi, North Delhi, and Gurugram (including Udyog Vihar, DLF phases, and Cyber City). Delivery eligibility is verified in seconds through WhatsApp location sharing.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "What time are meals delivered?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Lunch is delivered between 12:00 PM and 2:00 PM. Dinner is delivered between 7:00 PM and 9:00 PM. Cutoff for lunch pause is 9:00 AM; cutoff for dinner pause is 4:00 PM.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "Can I try a single meal before subscribing?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Yes! We offer a One-Time Trial Pack for just ₹100 so you can experience our quality, freshness, and authentic homestyle taste before committing to a plan.",
+                    },
+                  },
+                  {
+                    "@type": "Question",
+                    name: "What is included in each homestyle tiffin box?",
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text: "Each meal includes freshly cooked butter rotis, seasonal sabzi, homestyle dal tadka, steamed basmati rice, fresh salad, and pickle, made with fresh daily ingredients and minimal oil.",
+                    },
+                  },
+                ],
               },
             ],
           }),
