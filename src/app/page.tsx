@@ -15,25 +15,37 @@ import {
   CreditCard,
 } from "lucide-react";
 import { getPublicPlans, PublicPlan, DEFAULT_PLANS } from "@/lib/plans";
+import { getSiteContent, LOCAL_DEFAULTS, SiteContent } from "@/lib/siteContent";
 import { MenuVotingWidget } from "@/components/MenuVotingWidget";
+
+// Icon lookup for dashboard-editable process steps
+const PROCESS_ICONS: Record<string, typeof MapPin> = {
+  MapPin,
+  Utensils,
+  Truck,
+  Star,
+  CreditCard,
+  MessageCircle,
+  CheckCircle2,
+};
 
 export default function Home() {
   const [plans, setPlans] = useState<PublicPlan[]>(DEFAULT_PLANS);
+  const [content, setContent] = useState<SiteContent>(LOCAL_DEFAULTS);
 
   useEffect(() => {
     let mounted = true;
-    getPublicPlans().then((fetched) => {
-      if (mounted && fetched.length > 0) {
-        setPlans(fetched);
-      }
+    Promise.all([getPublicPlans(), getSiteContent()]).then(([fetchedPlans, fetchedContent]) => {
+      if (!mounted) return;
+      if (fetchedPlans.length > 0) setPlans(fetchedPlans);
+      setContent(fetchedContent);
     });
     return () => {
       mounted = false;
     };
   }, []);
 
-  const whatsappUrl =
-    "https://wa.me/917033558836?text=Hello! I want to order a tiffin.";
+  const whatsappUrl = `https://wa.me/${content.contact.whatsappNumber}?text=${encodeURIComponent(content.contact.whatsappMessage)}`;
 
   return (
     <main className="min-h-screen">
@@ -95,9 +107,9 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="bg-brutal-pop text-white text-xs font-black uppercase tracking-wider px-4 py-1.5 border-2 border-brutal-border mb-6 shadow-brutal-sm inline-flex items-center gap-2"
           >
-            <span>Freshly Cooked</span>
+            <span>{content.hero.badgeLine1}</span>
             <span>•</span>
-            <span>Delivered Hot Daily</span>
+            <span>{content.hero.badgeLine2}</span>
           </motion.div>
 
           <motion.h2
@@ -111,8 +123,8 @@ export default function Home() {
             }}
             className="text-6xl md:text-8xl lg:text-[8.5rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
           >
-            Eat Like <br />
-            <span className="text-brutal-pop">Home,</span> <br />
+            {content.hero.titleLine1} <br />
+            <span className="text-brutal-pop">{content.hero.titleAccent}</span> <br />
             <motion.span
               initial={{ rotate: -4, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
@@ -124,7 +136,7 @@ export default function Home() {
               }}
               className="bg-brutal-accent text-brutal-text px-6 border-[3px] border-brutal-border inline-block mt-4 shadow-brutal"
             >
-              Anywhere.
+              {content.hero.titleLine2}
             </motion.span>
           </motion.h2>
 
@@ -134,7 +146,7 @@ export default function Home() {
             transition={{ delay: 0.3 }}
             className="text-lg md:text-2xl font-medium max-w-2xl mx-auto mb-8 text-brutal-muted leading-tight"
           >
-            Tiffin ordered in seconds. Homestyle dal, butter rotis, seasonal sabzi, and steamed rice delivered hot every day directly via WhatsApp.
+            {content.hero.subtitle}
           </motion.p>
 
           {/* Card WhatsApp Bubble Mockup */}
@@ -149,7 +161,7 @@ export default function Home() {
               <span>Hi Mom&apos;s Kitchen, Order 1 Tiffin!</span>
             </div>
             <div className="text-xs font-mono font-bold text-brutal-muted uppercase">
-              Order Now: +91 70335 58836
+              Order Now: {content.contact.whatsappDisplay}
             </div>
           </motion.div>
 
@@ -211,36 +223,18 @@ export default function Home() {
             className="mb-20"
           >
             <h3 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-4">
-              The WhatsApp Way
+              {content.process.title}
             </h3>
             <p className="text-xl font-mono font-bold text-brutal-muted">
-              No apps to download. No websites to login. Just chat.
+              {content.process.subtitle}
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              {
-                icon: MapPin,
-                title: "Zone Check",
-                desc: "Share location on WhatsApp. We instantly check if we serve your area.",
-              },
-              {
-                icon: Utensils,
-                title: "Select Pack",
-                desc: "Pick a plan (Starter, Regular, or Family) directly from the WhatsApp menu.",
-              },
-              {
-                icon: CreditCard,
-                title: "Quick Pay",
-                desc: "Pay securely via Razorpay link sent to your chat. Immediate activation.",
-              },
-              {
-                icon: Truck,
-                title: "Eat Daily",
-                desc: "Receive hot meals daily. Pause or resume anytime with a simple text.",
-              },
-            ].map((item, idx) => (
+            {content.process.steps.map((rawStep, idx) => {
+              const Icon = PROCESS_ICONS[rawStep.icon] || Utensils;
+              const item = { icon: Icon, title: rawStep.title, desc: rawStep.desc };
+              return (
               <motion.div
                 key={idx}
                 initial={{ y: 50, opacity: 0 }}
@@ -265,9 +259,11 @@ export default function Home() {
                   <p className="text-sm font-medium font-mono text-brutal-muted leading-relaxed">
                     {item.desc}
                   </p>
-                </div>
-              </motion.div>
-            ))}
+                </div>              </motion.div>
+              );
+            })}
+
+
           </div>
         </div>
       </section>
@@ -296,7 +292,8 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {plans.map((plan, idx) => (
+            {plans.map((plan, idx) => {
+              return (
               <motion.div
                 key={plan.id || plan.code || idx}
                 initial={{ y: 50, opacity: 0 }}
@@ -351,7 +348,10 @@ export default function Home() {
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </motion.a>
               </motion.div>
-            ))}
+              );
+            })}
+
+
           </div>
 
           <motion.div
@@ -416,7 +416,15 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-4"
             >
-              Word on the <br className="hidden md:block" /> Street
+              {content.testimonials.title.split(" ").map((word, wi, arr) =>
+                wi === arr.length - 1 ? (
+                  <span key={wi}>
+                    <br className="hidden md:block" /> {word}
+                  </span>
+                ) : (
+                  <span key={wi}>{word} </span>
+                )
+              )}
             </motion.h3>
             <motion.p
               initial={{ x: -20, opacity: 0 }}
@@ -425,34 +433,13 @@ export default function Home() {
               transition={{ delay: 0.1 }}
               className="text-xl font-bold font-mono text-brutal-muted uppercase"
             >
-              What our regulars are saying.
+              {content.testimonials.subtitle}
             </motion.p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Rahul Verma",
-                role: "Tech Lead",
-                quote:
-                  "Finally found a tiffin that doesn't make me miss home. The Rajma Chawal is legendary.",
-                color: "bg-brutal-card-pink",
-              },
-              {
-                name: "Priya Singh",
-                role: "Student",
-                quote:
-                  "Saves me 2 hours of cooking every day. The portions are huge and packaging is spill-proof.",
-                color: "bg-brutal-accent",
-              },
-              {
-                name: "Amit Patel",
-                role: "Banker",
-                quote:
-                  "No acid reflux. No excessive oil. Just clean, delicious home food. Worth every penny.",
-                color: "bg-brutal-card-lemon",
-              },
-            ].map((testimonial, i) => (
+            {content.testimonials.items.map((testimonial, i) => {
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 50 }}
@@ -488,7 +475,10 @@ export default function Home() {
                   </p>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
+
+
           </div>
 
           <motion.div
@@ -502,8 +492,8 @@ export default function Home() {
               whileTap={{ scale: 0.95 }}
               href="https://maps.google.com/?q=Mom's+Kitchen+Udyog+Vihar+Sector+18+Gurugram"
               target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white border-[3px] border-brutal-border px-8 py-4 font-bold uppercase shadow-brutal flex items-center gap-3 hover:bg-brutal-accent transition-colors"
+              rel="noopener noreferrer"                  className="bg-white border-[3px] border-brutal-border px-8 py-4 font-bold uppercase shadow-brutal flex items-center gap-3 hover:bg-brutal-accent transition-colors"
+            
             >
               <Map className="w-6 h-6" /> Rate us on Google Maps
             </motion.a>

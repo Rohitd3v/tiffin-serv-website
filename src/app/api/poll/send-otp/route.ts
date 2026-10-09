@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { sendWhatsAppOtp } from "@/lib/whatsapp";
+import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
 export async function POST(req: NextRequest) {
   if (!supabase) {
@@ -8,7 +9,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { phone, pollId } = await req.json();
+    const { phone, pollId, recaptchaToken } = await req.json();
     if (!phone || typeof phone !== "string") {
       return NextResponse.json({ error: "Valid phone number is required" }, { status: 400 });
     }
@@ -16,8 +17,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Poll ID is required" }, { status: 400 });
     }
 
+    // reCAPTCHA v3 (graceful skip when keys are not configured).
+    const captcha = await verifyRecaptcha(recaptchaToken, "send_otp");
+    if (!captcha.ok) {
+      return NextResponse.json(
+        { error: "Security check failed. Please refresh the page and try again." },
+        { status: 403 }
+      );
+    }
+
     let cleanPhone = phone.replace(/[^0-9]/g, "");
     if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
+
+    // Rate limit: max 3 OTP sends per phone per 10 minutes (spam protection).
+    const { data: recentOtps } = await supabase
+      .from("poll_otps")
+      .select("id")
+      .eq("phone", cleanPhone)
+      .gte("created_at", new Date(Date.now() - 10 * 60 * 1000).toISOString())
+      .order("created_at", { ascending: false });
+
+    if (recentOtps && recentOtps.length >= 3) {
+      return NextResponse.json(
+        { error: "Too many verification attempts. Please wait 10 minutes and try again." },
+        { status: 429 }
+      );
+    }
 
     // 1. Verify customer exists and has an active subscription
     const { data: customer, error: custErr } = await supabase

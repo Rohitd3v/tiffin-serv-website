@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
 export async function POST(req: NextRequest) {
   if (!supabase) {
@@ -7,10 +8,34 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { phone, pollId, optionId, otp } = await req.json();
+    const { phone, pollId, optionId, otp, recaptchaToken } = await req.json();
 
     if (!phone || !pollId || !optionId || !otp) {
       return NextResponse.json({ error: "Missing required voting parameters" }, { status: 400 });
+    }
+
+    // reCAPTCHA v3 (graceful skip when keys are not configured).
+    const captcha = await verifyRecaptcha(recaptchaToken, "poll_vote");
+    if (!captcha.ok) {
+      return NextResponse.json({ error: "Security check failed. Please try again." }, { status: 403 });
+    }
+
+    // Guard: poll must still be active and its deadline not passed.
+    const { data: activePoll } = await supabase
+      .from("polls")
+      .select("id, status, closes_at")
+      .eq("id", pollId)
+      .maybeSingle();
+
+    if (
+      !activePoll ||
+      activePoll.status !== "active" ||
+      (activePoll.closes_at && new Date(activePoll.closes_at).getTime() <= Date.now())
+    ) {
+      return NextResponse.json(
+        { error: "This poll has ended and is no longer accepting votes." },
+        { status: 410 }
+      );
     }
 
     let cleanPhone = phone.replace(/[^0-9]/g, "");

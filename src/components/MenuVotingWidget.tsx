@@ -14,6 +14,7 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
+import { getRecaptchaToken, useRecaptchaInit } from "@/lib/recaptcha";
 
 export interface PollOption {
   id: string;
@@ -55,6 +56,8 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
 
   const phoneInputId = useId();
   const otpInputId = useId();
+
+  useRecaptchaInit();
 
   // 1. Fetch active poll on mount
   useEffect(() => {
@@ -124,12 +127,14 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
     setErrorMsg(null);
 
     try {
+      const recaptchaToken = await getRecaptchaToken("send_otp");
       const res = await fetch("/api/poll/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: cleanDigits,
           pollId: poll.id,
+          recaptchaToken,
         }),
       });
 
@@ -187,6 +192,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
 
     try {
       const cleanDigits = phone.replace(/[^0-9]/g, "");
+      const recaptchaToken = await getRecaptchaToken("poll_vote");
       const res = await fetch("/api/poll/vote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -195,6 +201,7 @@ export function MenuVotingWidget({ plansHref = "/#plans" }: MenuVotingWidgetProp
           pollId: poll.id,
           optionId: selectedOption,
           otp: otp.trim(),
+          recaptchaToken,
         }),
       });
 

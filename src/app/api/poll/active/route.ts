@@ -20,6 +20,45 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Auto-close: if the active poll's deadline has passed, tag the winner,
+    // mark it closed, and return no active poll to the client.
+    if (
+      poll &&
+      poll.closes_at &&
+      new Date(poll.closes_at).getTime() <= Date.now()
+    ) {
+      const { data: deadlineVotes } = await supabase
+        .from("poll_votes")
+        .select("option_id")
+        .eq("poll_id", poll.id);
+
+      const deadlineCounts: Record<string, number> = {};
+      for (const v of deadlineVotes || []) {
+        deadlineCounts[v.option_id] = (deadlineCounts[v.option_id] || 0) + 1;
+      }
+
+      let winnerId: string | null = null;
+      let maxCount = 0;
+      for (const [optId, count] of Object.entries(deadlineCounts)) {
+        if (count > maxCount) {
+          maxCount = count;
+          winnerId = optId;
+        }
+      }
+
+      await supabase
+        .from("polls")
+        .update({
+          status: "closed",
+          closed_at: new Date().toISOString(),
+          winner_option_id: winnerId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", poll.id);
+
+      return NextResponse.json({ poll: null });
+    }
+
     if (!poll) {
       return NextResponse.json({ poll: null });
     }
