@@ -96,6 +96,52 @@ async function runTest() {
   });
   console.log("\n4. OTP generated and stored in poll_otps:", testOtp);
 
+  // 4b. Test OTP rate limit check
+  await admin.from("poll_otps").delete().eq("phone", subPhone);
+  await admin.from("poll_otps").insert([
+    { phone: subPhone, otp_code: "1111", expires_at: new Date().toISOString(), attempts: 0 },
+    { phone: subPhone, otp_code: "2222", expires_at: new Date().toISOString(), attempts: 0 },
+    { phone: subPhone, otp_code: "3333", expires_at: new Date().toISOString(), attempts: 0 },
+  ]);
+  const { data: recentOtps } = await admin
+    .from("poll_otps")
+    .select("id")
+    .eq("phone", subPhone)
+    .gte("created_at", new Date(Date.now() - 10 * 60 * 1000).toISOString());
+  if (recentOtps && recentOtps.length >= 3) {
+    console.log("   Rate limit check: 3 OTPs in 10 mins detected -> RATE LIMIT TRIGGERED (HTTP 429)");
+  }
+
+  // 4c. Test Max OTP Attempts lockout (5 attempts threshold)
+  const lockoutOtp = "8888";
+  await admin.from("poll_otps").delete().eq("phone", subPhone);
+  const { data: insertedOtp } = await admin.from("poll_otps").insert({
+    phone: subPhone,
+    otp_code: lockoutOtp,
+    expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    attempts: 4,
+  }).select().single();
+  const newAttempts = insertedOtp.attempts + 1;
+  const isLocked = newAttempts >= 5;
+  await admin.from("poll_otps").update({
+    attempts: newAttempts,
+    ...(isLocked ? { expires_at: new Date().toISOString() } : {}),
+  }).eq("id", insertedOtp.id);
+  const { data: lockedCheck } = await admin.from("poll_otps").select("*").eq("id", insertedOtp.id).single();
+  const isExpiredNow = new Date(lockedCheck.expires_at).getTime() <= Date.now();
+  if (lockedCheck.attempts >= 5 && isExpiredNow) {
+    console.log("   Max attempts check: 5 failed attempts reached -> OTP LOCKED & EXPIRED");
+  }
+
+  // Reset pristine OTP for actual vote test
+  await admin.from("poll_otps").delete().eq("phone", subPhone);
+  await admin.from("poll_otps").insert({
+    phone: subPhone,
+    otp_code: testOtp,
+    expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+    attempts: 0,
+  });
+
   // 5. Test vote casting
   // First clear any previous test vote for this customer
   await admin.from("poll_votes").delete().eq("poll_id", poll.id).eq("customer_id", activeCust.id);

@@ -52,9 +52,10 @@ export async function verifyRecaptcha(
 
     if (!data.success) return denied();
 
-    // Action mismatch is advisory only; v3 action strings must match exactly.
+    // Action mismatch: v3 action strings must match expected action to prevent token replay attacks.
     if (data.action && data.action !== action) {
       console.warn(`[recaptcha] action mismatch: expected=${action} got=${data.action}`);
+      return denied(data.score);
     }
 
     const score = typeof data.score === "number" ? data.score : undefined;

@@ -72,9 +72,41 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Verification code has expired. Please request a new one." }, { status: 400 });
     }
 
+    const MAX_OTP_ATTEMPTS = 5;
+
+    if (otpRow.attempts >= MAX_OTP_ATTEMPTS) {
+      await supabase
+        .from("poll_otps")
+        .update({ expires_at: new Date().toISOString() })
+        .eq("id", otpRow.id);
+      return NextResponse.json(
+        { error: "Too many failed attempts. This verification code has been locked. Please request a new code." },
+        { status: 429 }
+      );
+    }
+
     if (otpRow.otp_code.trim() !== String(otp).trim()) {
-      await supabase.from("poll_otps").update({ attempts: otpRow.attempts + 1 }).eq("id", otpRow.id);
-      return NextResponse.json({ error: "Incorrect verification code. Please check your WhatsApp." }, { status: 400 });
+      const newAttempts = otpRow.attempts + 1;
+      const isLocked = newAttempts >= MAX_OTP_ATTEMPTS;
+      await supabase
+        .from("poll_otps")
+        .update({
+          attempts: newAttempts,
+          ...(isLocked ? { expires_at: new Date().toISOString() } : {}),
+        })
+        .eq("id", otpRow.id);
+
+      if (isLocked) {
+        return NextResponse.json(
+          { error: "Too many failed attempts. This verification code has been locked. Please request a new code." },
+          { status: 429 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: "Incorrect verification code. Please check your WhatsApp." },
+        { status: 400 }
+      );
     }
 
     // 2. Fetch customer ID
@@ -107,7 +139,10 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Invalidate used OTP
-    await supabase.from("poll_otps").delete().eq("id", otpRow.id);
+    await supabase
+      .from("poll_otps")
+      .update({ expires_at: new Date().toISOString() })
+      .eq("id", otpRow.id);
 
     return NextResponse.json({
       ok: true,

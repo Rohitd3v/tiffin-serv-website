@@ -105,8 +105,12 @@ export async function POST(req: NextRequest) {
     const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
-    // Delete existing OTPs for this phone to avoid stacking
-    await supabase.from("poll_otps").delete().eq("phone", cleanPhone);
+    // Invalidate/expire previous active OTPs for this phone to avoid stacking while preserving rate limit history
+    await supabase
+      .from("poll_otps")
+      .update({ expires_at: new Date().toISOString() })
+      .eq("phone", cleanPhone)
+      .gt("expires_at", new Date().toISOString());
 
     const { error: otpInsertErr } = await supabase.from("poll_otps").insert({
       phone: cleanPhone,
