@@ -26,8 +26,14 @@ if (!supabaseUrl || !serviceRoleKey) {
 const projectRef = supabaseUrl.replace(/^https?:\/\//, '').split('.')[0];
 console.log(`Connecting to Supabase project: ${projectRef}`);
 
-// Migration file path
-const migrationPath = join(
+// Migration file path (check local checkout first, fallback to sibling repo)
+const localMigrationPath = join(
+  websiteRoot,
+  'supabase',
+  'migrations',
+  '20260927000001_create_polls_and_votes.sql'
+);
+const siblingMigrationPath = join(
   websiteRoot,
   '..',
   'tiffin-service',
@@ -36,28 +42,36 @@ const migrationPath = join(
   '20260927000001_create_polls_and_votes.sql'
 );
 
-if (existsSync(migrationPath)) {
-  console.log(`Found migration file at: ${migrationPath}`);
+const migrationPath = existsSync(localMigrationPath)
+  ? localMigrationPath
+  : existsSync(siblingMigrationPath)
+  ? siblingMigrationPath
+  : null;
 
-  if (dbPassword) {
-    console.log('Applying migration via PostgreSQL connection...');
-    const poolerHost = process.env.SUPABASE_DB_HOST || 'aws-1-ap-south-1.pooler.supabase.com';
-    const poolerPort = process.env.SUPABASE_DB_PORT || '5432';
-    const dbUrl = `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@${poolerHost}:${poolerPort}/postgres`;
+if (!migrationPath) {
+  console.error(`❌ Migration file not found at ${localMigrationPath} or ${siblingMigrationPath}`);
+  process.exit(1);
+}
 
-    try {
-      execSync(`psql "${dbUrl}" -f "${migrationPath}"`, { stdio: 'inherit' });
-      // Notify PostgREST to reload schema cache so newly created tables are accessible via client immediately
-      execSync(`psql "${dbUrl}" -c "NOTIFY pgrst, 'reload schema';"`, { stdio: 'inherit' });
-      console.log('✅ Migration SQL executed successfully and schema cache reloaded.');
-    } catch (err) {
-      console.error('⚠️ Direct psql execution failed, checking table status via Supabase client...', err.message);
-    }
-  } else {
-    console.warn('⚠️ No SUPABASE_DB_PASSWORD provided; skipping direct psql execution.');
-  }
-} else {
-  console.error(`❌ Migration file not found at ${migrationPath}`);
+console.log(`Found migration file at: ${migrationPath}`);
+
+if (!dbPassword) {
+  console.error('❌ Missing SUPABASE_DB_PASSWORD in environment. Cannot execute migration.');
+  process.exit(1);
+}
+
+console.log('Applying migration via PostgreSQL connection...');
+const poolerHost = process.env.SUPABASE_DB_HOST || 'aws-1-ap-south-1.pooler.supabase.com';
+const poolerPort = process.env.SUPABASE_DB_PORT || '5432';
+const dbUrl = `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@${poolerHost}:${poolerPort}/postgres`;
+
+try {
+  execSync(`psql -v ON_ERROR_STOP=1 "${dbUrl}" -f "${migrationPath}"`, { stdio: 'inherit' });
+  // Notify PostgREST to reload schema cache so newly created tables are accessible via client immediately
+  execSync(`psql -v ON_ERROR_STOP=1 "${dbUrl}" -c "NOTIFY pgrst, 'reload schema';"`, { stdio: 'inherit' });
+  console.log('✅ Migration SQL executed successfully and schema cache reloaded.');
+} catch (err) {
+  console.error('❌ Direct psql execution failed:', err.message);
   process.exit(1);
 }
 

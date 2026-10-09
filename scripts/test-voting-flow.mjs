@@ -101,8 +101,13 @@ async function runTest() {
       .select("id")
       .eq("phone", subPhone)
       .gte("created_at", new Date(Date.now() - 10 * 60 * 1000).toISOString());
+    let hasFailed = false;
+
     if (recentAttempts && recentAttempts.length >= 5) {
       console.log("\n4. Spam protection test: 5 attempts in 10 mins detected -> RATE LIMIT TRIGGERED (HTTP 429)");
+    } else {
+      console.error("❌ Spam protection rate limit check failed!");
+      hasFailed = true;
     }
     await admin.from("poll_otps").delete().eq("phone", subPhone);
 
@@ -117,8 +122,9 @@ async function runTest() {
     }).select().single();
     voteInsert = inserted;
 
-    if (voteErr) {
+    if (voteErr || !voteInsert) {
       console.error("❌ Vote insertion failed:", voteErr);
+      hasFailed = true;
     } else {
       console.log("\n5. Vote successfully recorded for option:", selectedOption);
       console.log("   Vote ID:", voteInsert.id);
@@ -135,6 +141,12 @@ async function runTest() {
       console.log("\n6. Duplicate vote attempt: STRICTLY BLOCKED by PostgreSQL constraint! (code 23505 unique_customer_poll_vote)");
     } else {
       console.error("❌ Duplicate vote was NOT blocked!", dupErr);
+      hasFailed = true;
+    }
+
+    if (hasFailed) {
+      console.error("\n❌ ONE OR MORE VOTING VERIFICATION CHECKS FAILED!");
+      process.exit(1);
     }
   } finally {
     // Clean up test data safely in all cases
@@ -151,4 +163,7 @@ async function runTest() {
   console.log("\n✅ ALL VOTING VERIFICATION CHECKS PASSED PERFECTLY!");
 }
 
-runTest().catch(console.error);
+runTest().catch((e) => {
+  console.error("❌ Unexpected test execution error:", e);
+  process.exit(1);
+});

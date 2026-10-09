@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     // 3. Guard: Poll must still be active and its deadline not passed
     const { data: activePoll } = await supabase
       .from("polls")
-      .select("id, status, closes_at")
+      .select("id, status, closes_at, options")
       .eq("id", pollId)
       .maybeSingle();
 
@@ -105,6 +105,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "This poll has ended and is no longer accepting votes." },
         { status: 410 }
+      );
+    }
+
+    // Validate that optionId exists in this poll
+    const pollOptions = Array.isArray(activePoll.options)
+      ? (activePoll.options as Array<{ id?: string }>)
+      : [];
+    const isValidOption = pollOptions.some((opt) => opt && opt.id === optionId);
+    if (!isValidOption) {
+      return NextResponse.json(
+        { error: "Invalid dish option selected for this poll." },
+        { status: 400 }
       );
     }
 

@@ -57,6 +57,11 @@ export async function sendWhatsAppOtp(
     }
   }
 
+  if (process.env.NODE_ENV === "production") {
+    console.error("WhatsApp provider not configured");
+    return { ok: false, error: "WhatsApp provider not configured" };
+  }
+
   // Development fallback: Log OTP to console
   console.log(`\n[DEV WHATSAPP OTP] To: ${cleanPhone} | Code: ${otpCode} | Message: ${messageText}\n`);
   return { ok: true };

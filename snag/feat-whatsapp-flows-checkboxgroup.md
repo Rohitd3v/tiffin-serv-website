@@ -32,7 +32,7 @@
 | 16 | FEATURE / FSM HANDLER | Sunday Rejection Notification in Flow (`awaiting-days/index.ts`) | Added specific Sunday closed notification when flow data contains only Sunday. | ✅ Resolved |
 | 17 | INTEGRATION TESTS | WhatsApp Flow & Interactive Schedule Matrix (`fsm-back-navigation-matrix.integration.test.ts`) | Updated integration suite to verify WhatsApp Flow `nfm_reply` progression, `waFlow` re-dispatch on rewind, and explicit rejection of typed free-text schedules (`"MWF"`, `"Mon, Wed, Fri"`) at `awaiting_days`. | ✅ Resolved |
 | 18 | UNIT TESTS | Extended Flow Test Coverage (`render-prompt-flow.test.ts`, `parse-message-flow.test.ts`, `meta-cloud-flow.test.ts`, `awaiting-days-flow-response.test.ts`) | Added unit tests for Chakra fallback, try/catch error fallback, object `response_json`, `mode: 'draft'`, flow `data`, Sunday notification, and invalid day tokens. | ✅ Resolved |
-| 19 | TEST SUITE & VERIFICATION | Whole-Suite Regression Testing | 154 / 154 test files passed; TypeScript build passes with zero errors. | ✅ Resolved |
+| 19 | TEST SUITE & VERIFICATION | Whole-Suite Regression Testing | 155 / 155 test files passed; TypeScript build passes with zero errors. | ✅ Resolved |
 | 20 | BUG / FSM STEP | Sunday Silent Drop in Multi-Day Selection (`awaiting-days/index.ts`) | Evaluated Sunday rejection upfront before length check, ensuring users selecting Sunday with weekdays receive closure warning rather than silently dropping Sunday. | ✅ Resolved |
 | 21 | FEATURE / ROBUSTNESS | Case-Insensitive & Full-Name Day Token Normalization in WhatsApp Flow (`awaiting-days/index.ts`) | Added `DAY_TOKEN_MAP` and `normalizeFlowDays` to support `"Monday"`, `"Mon"`, `"MON"` without failing schedule selection. | ✅ Resolved |
 | 22 | BUG / PROMPT RENDERER | Schedule Screen Flow Rendering on Back Navigation (`render-prompt.ts`) | Fixed `sd_day_sub_step === 'buttons'` check in `renderStepPrompt` to re-dispatch `waFlow` instead of falling back to legacy buttons when returning from toggle mode. | ✅ Resolved |
@@ -116,7 +116,7 @@ In `chakra.ts`, a dummy `waFlow` method was implemented that unconditionally thr
 
 1. **Cryptographic `flow_token` (`meta-cloud.ts`):**
    - Replaced predictable `Date.now()` timestamp with `crypto.randomUUID()`.
-   - Prevents token guessing, replay attacks, and cross-session CSRF.
+   - Ensures cryptographic unpredictability and prevents token guessing.
 2. **Strict Zod Schema Validation (`parse-message.ts`):**
    - Validates incoming `flow_data` with `flowDataSchema` requiring array types for `selected_days` / `delivery_days`.
    - Rejects malformed JSON payloads and prevents prototype pollution.

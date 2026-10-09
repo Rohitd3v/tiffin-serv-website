@@ -56,7 +56,7 @@ export default function Home() {
     let mounted = true;
     Promise.all([getPublicPlans(), getSiteContent()]).then(([fetchedPlans, fetchedContent]) => {
       if (!mounted) return;
-      if (fetchedPlans.length > 0) setPlans(fetchedPlans);
+      setPlans(fetchedPlans);
       setContent(fetchedContent);
     });
     return () => {
@@ -64,7 +64,7 @@ export default function Home() {
     };
   }, []);
 
-  const whatsappUrl = `https://wa.me/${content.contact.whatsappNumber}?text=${encodeURIComponent(content.contact.whatsappMessage)}`;
+  const whatsappUrl = "https://wa.me/917033558836?text=Hello!%20I%20want%20to%20order%20a%20tiffin.";
 
   return (
     <main className="min-h-screen">
@@ -580,8 +580,8 @@ export default function Home() {
             </motion.a>
 
             <div className="mt-6 pt-4 border-t-2 border-brutal-border w-full flex flex-col gap-1 text-xs font-mono font-bold text-brutal-muted text-center">
-              <span>WhatsApp: +91 70335 58836</span>
-              <span>Email: orders@momskitchen.com</span>
+              <span>WhatsApp: {content.contact.whatsappDisplay}</span>
+              <span>Email: {content.contact.email}</span>
             </div>
           </div>
         </motion.div>

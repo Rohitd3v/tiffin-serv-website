@@ -90,9 +90,13 @@ export async function getPublicPlans(): Promise<PublicPlan[]> {
       .neq("code", "one_time")
       .order("price", { ascending: true });
 
-    if (error || !data || data.length === 0) {
-      if (error) console.warn("Supabase fetch plans error, using defaults:", error.message);
+    if (error) {
+      console.warn("Supabase fetch plans error, using defaults:", error.message);
       return DEFAULT_PLANS;
+    }
+
+    if (!data || data.length === 0) {
+      return [];
     }
 
     return data.map((item, idx) => {

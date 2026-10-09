@@ -26,8 +26,14 @@ if (!supabaseUrl || !serviceRoleKey) {
 const projectRef = supabaseUrl.replace(/^https?:\/\//, '').split('.')[0];
 console.log(`Connecting to Supabase project: ${projectRef}`);
 
-// Migration file path
-const migrationPath = join(
+// Migration file path (check local checkout first, fallback to sibling repo)
+const localMigrationPath = join(
+  websiteRoot,
+  'supabase',
+  'migrations',
+  '20260927000000_add_plan_features_and_popular.sql'
+);
+const siblingMigrationPath = join(
   websiteRoot,
   '..',
   'tiffin-service',
@@ -36,26 +42,35 @@ const migrationPath = join(
   '20260927000000_add_plan_features_and_popular.sql'
 );
 
-if (existsSync(migrationPath)) {
-  console.log(`Found migration file at: ${migrationPath}`);
+const migrationPath = existsSync(localMigrationPath)
+  ? localMigrationPath
+  : existsSync(siblingMigrationPath)
+  ? siblingMigrationPath
+  : null;
 
-  if (dbPassword) {
-    console.log('Applying migration via PostgreSQL connection...');
-    const poolerHost = process.env.SUPABASE_DB_HOST || 'aws-1-ap-south-1.pooler.supabase.com';
-    const poolerPort = process.env.SUPABASE_DB_PORT || '5432';
-    const dbUrl = `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@${poolerHost}:${poolerPort}/postgres`;
+if (!migrationPath) {
+  console.error(`❌ Migration file not found at ${localMigrationPath} or ${siblingMigrationPath}`);
+  process.exit(1);
+}
 
-    try {
-      execSync(`psql "${dbUrl}" -f "${migrationPath}"`, { stdio: 'inherit' });
-      console.log('✅ Migration SQL executed successfully.');
-    } catch (err) {
-      console.error('⚠️ Direct psql execution failed, checking table status via Supabase client...', err.message);
-    }
-  } else {
-    console.warn('⚠️ No SUPABASE_DB_PASSWORD provided; skipping direct psql execution.');
-  }
-} else {
-  console.warn(`⚠️ Migration file not found at ${migrationPath}`);
+console.log(`Found migration file at: ${migrationPath}`);
+
+if (!dbPassword) {
+  console.error('❌ Missing SUPABASE_DB_PASSWORD in environment. Cannot execute migration.');
+  process.exit(1);
+}
+
+console.log('Applying migration via PostgreSQL connection...');
+const poolerHost = process.env.SUPABASE_DB_HOST || 'aws-1-ap-south-1.pooler.supabase.com';
+const poolerPort = process.env.SUPABASE_DB_PORT || '5432';
+const dbUrl = `postgresql://postgres.${projectRef}:${encodeURIComponent(dbPassword)}@${poolerHost}:${poolerPort}/postgres`;
+
+try {
+  execSync(`psql -v ON_ERROR_STOP=1 "${dbUrl}" -f "${migrationPath}"`, { stdio: 'inherit' });
+  console.log('✅ Migration SQL executed successfully.');
+} catch (err) {
+  console.error('❌ Direct psql execution failed:', err.message);
+  process.exit(1);
 }
 
 // Verify plans table structure and content using @supabase/supabase-js
@@ -74,6 +89,12 @@ const { data: plans, error } = await supabase
 
 if (error) {
   console.error('❌ Failed to query plans:', error);
+  process.exit(1);
+}
+
+const missingColumns = plans.some((p) => p.features === undefined || p.popular === undefined);
+if (missingColumns) {
+  console.error("❌ 'plans' table does not expose required 'features' or 'popular' columns");
   process.exit(1);
 }
 

@@ -91,9 +91,32 @@ export const LOCAL_DEFAULTS: SiteContent = {
   },
 };
 
+function isValidArrayItem(item: unknown, arrayKey: string): boolean {
+  if (!item || typeof item !== "object") return false;
+  const obj = item as Record<string, unknown>;
+  if (arrayKey === "steps") {
+    return (
+      typeof obj.icon === "string" &&
+      obj.icon.trim().length > 0 &&
+      typeof obj.title === "string" &&
+      typeof obj.desc === "string"
+    );
+  }
+  if (arrayKey === "items") {
+    return (
+      typeof obj.name === "string" &&
+      typeof obj.quote === "string" &&
+      typeof obj.color === "string" &&
+      obj.color.trim().length > 0
+    );
+  }
+  return true;
+}
+
 /**
  * Shallow-merges a DB section over its local fallback, preserving
- * fallback values for missing/empty strings and arrays.
+ * fallback values for missing/empty strings and arrays. Validates array
+ * items before replacing fallback arrays.
  */
 function mergeSection<T extends object>(
   fallback: T,
@@ -111,7 +134,11 @@ function mergeSection<T extends object>(
   }
 
   const dbArray = db[arrayKey];
-  if (Array.isArray(dbArray) && dbArray.length > 0) {
+  if (
+    Array.isArray(dbArray) &&
+    dbArray.length > 0 &&
+    dbArray.every((item) => isValidArrayItem(item, arrayKey))
+  ) {
     merged[arrayKey] = dbArray;
   }
 
@@ -121,7 +148,7 @@ function mergeSection<T extends object>(
 /**
  * Fetches dashboard-managed sections and merges them over LOCAL_DEFAULTS.
  * Missing or blank strings and empty arrays retain their defaults; nonempty
- * arrays replace defaults without validating their entries. Missing database
+ * arrays replace defaults only when their entries pass validation. Missing database
  * configuration, query errors, or caught exceptions return LOCAL_DEFAULTS.
  */
 export async function getSiteContent(): Promise<SiteContent> {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomInt } from "node:crypto";
 import { supabase } from "@/lib/supabase";
 import { sendWhatsAppOtp } from "@/lib/whatsapp";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
@@ -101,8 +102,8 @@ export async function POST(req: NextRequest) {
       }, { status: 409 });
     }
 
-    // 3. Generate 4-digit OTP
-    const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
+    // 3. Generate 4-digit OTP using cryptographically secure RNG
+    const otpCode = randomInt(1000, 10000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
     // Invalidate/expire previous active OTPs for this phone to avoid stacking while preserving rate limit history
@@ -124,7 +125,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Send WhatsApp notification
-    await sendWhatsAppOtp(cleanPhone, otpCode);
+    const sent = await sendWhatsAppOtp(cleanPhone, otpCode);
+    if (!sent.ok) {
+      return NextResponse.json(
+        { error: sent.error || "Could not deliver WhatsApp code. Please try again." },
+        { status: 502 }
+      );
+    }
 
     const maskedPhone = cleanPhone.slice(-10).replace(/(\d{2})\d{4}(\d{4})/, "$1••••$2");
 
