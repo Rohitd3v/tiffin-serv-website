@@ -157,4 +157,189 @@ export const BLOG_POSTS: BlogPost[] = [
       <p>Savings aren't just monetary. You save the time spent choosing what to eat and the health costs associated with long-term consumption of outside food. Our "Standard Thali" provides the nutritional variety your body needs without the financial strain.</p>
     `,
   },
+  {
+    slug: "best-tiffin-service-north-campus-delhi-university-students",
+    title: "Best Tiffin Service in North Campus DU for Students: Healthy & Budget-Friendly Daily Meals",
+    excerpt: "Tired of oily PG food in North Campus & Mukherjee Nagar? Discover how DU students get fresh, hot ghar ka khana delivered daily starting at ₹70 per meal.",
+    date: "May 18, 2026",
+    readTime: "5 min read",
+    category: "Student Food Guide",
+    author: {
+      name: "Sunita Verma",
+      role: "Co-Founder & Head of Kitchen",
+    },
+    content: `
+      <p>Every year, thousands of students arrive in Delhi to attend prestigious universities like Delhi University (DU) or prepare for UPSC and SSC exams in Mukherjee Nagar. But within weeks of moving into a PG or shared flat in Kamla Nagar, Hudson Lane, or Vijay Nagar, one harsh reality sets in: <em>PG mess food is nearly impossible to eat long-term</em>.</p>
+
+      <div class="my-8 p-6 bg-[#EBF7F5] border-l-4 border-[#0C4A48]">
+        <p class="font-bold text-[#0C4A48] mb-1">Student Advantage:</p>
+        <p class="text-sm">Mom's Kitchen delivers warm, homestyle thalis with 4 soft butter rotis, seasonal sabzi, homestyle dal tadka, and steamed rice directly to student PGs and flats across North Campus. Pause anytime on WhatsApp when heading home for the weekend.</p>
+      </div>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">The Student Food Dilemma: Mess Food vs. Street Food</h2>
+      <p>Most student hostel and PG kitchens cut corners with excessive palm oil, over-salted gravies, and watery dals that lack protein. Relying on Momos, rolls, or delivery apps around Hudson Lane quickly drains monthly student allowances and leads to sluggishness during crucial study hours. Students need balanced nutrition that fuels long study sessions without causing lethargy.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Why DU Students Choose Mom's Kitchen</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Budget-Friendly Packs:</strong> Our <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Starter Pack (6 Meals for ₹480)</a> lets students try flexible schedules, while our Regular Pack brings per-meal costs down to just ₹75.</li>
+        <li><strong>One-Tap Weekend Pause:</strong> Traveling home to Punjab, Haryana, or UP for the weekend? Text "PAUSE" to our WhatsApp bot before 9:00 AM on Friday, and your meal credit rolls over automatically.</li>
+        <li><strong>Zero Gas, Zero Utensil Washing:</strong> Spend your time studying at the Central Library instead of washing greasy tiffin boxes or arguing with domestic cooks.</li>
+        <li><strong>Vote on Friday Specials:</strong> As an active subscriber, you can vote on our <a href="/vote" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Menu Voting Portal</a> to decide Friday's chef special dish.</li>
+      </ul>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Areas Served in North Delhi</h2>
+      <p>We deliver hot lunches and dinners across Kamla Nagar, Vijay Nagar, Hudson Lane, Roop Nagar, Mukherjee Nagar, GTB Nagar, Model Town, and Civil Lines. Test our quality today with our ₹100 trial box.</p>
+    `,
+  },
+  {
+    slug: "corporate-tiffin-service-golf-course-road-dlf-gurugram",
+    title: "Corporate Tiffin Service on Golf Course Road & DLF Gurugram: Clean Homestyle Lunches",
+    excerpt: "Beat the 3 PM afternoon slump with light, low-oil homestyle lunches delivered hot to offices across Golf Course Road and DLF Cyber City.",
+    date: "May 20, 2026",
+    readTime: "5 min read",
+    category: "Gurugram Food Guide",
+    author: {
+      name: "Pooja Sharma",
+      role: "Lead Nutritionist & Menu Planner",
+    },
+    content: `
+      <p>Working in corporate hubs like One Horizon Center, DLF Cyber City, or Golf Course Extension demands intense focus and sustained stamina. However, the standard corporate lunch routine—pricey cafeteria food or heavy restaurant takeout—inevitably leads to digestive discomfort and the dreaded 3 PM brain fog.</p>
+
+      <div class="my-8 p-6 bg-[#FFF2EA] border-l-4 border-[#E85A34]">
+        <p class="font-bold text-[#E85A34] mb-1">Corporate Delivery Window:</p>
+        <p class="text-sm">Hot, spill-proof thalis delivered directly between 12:00 PM and 1:30 PM across Golf Course Road, Cyber City, and DLF Phases 1 to 5. Lightly spiced with cold-pressed mustard oil and pure cow ghee.</p>
+      </div>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Why Office Professionals Need Clean Homestyle Meals</h2>
+      <p>Commercial restaurant curries are loaded with heavy cashew pastes, excessive butter, and reused oils designed to extend shelf life. Eating that five days a week spikes cholesterol and induces insulin spikes. Mom's Kitchen prepares food the way your mother would: light yellow dals, freshly tossed seasonal vegetables like bhindi, tori, or gobhi, and hot phulkas without heavy greasing.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Engineered for Busy Executives</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Frictionless WhatsApp Ordering:</strong> No app downloads, corporate logins, or cluttered notifications. Setup your subscription in under 60 seconds on WhatsApp.</li>
+        <li><strong>Meeting Schedule Flexibility:</strong> Heading out for an offsite client lunch? Text "PAUSE" before 9:00 AM, and you won't lose a rupee.</li>
+        <li><strong>Thermal Insulated Delivery:</strong> Your meal arrives piping hot and stays fresh for up to 90 minutes in food-grade, eco-friendly thermal boxes.</li>
+      </ul>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Compare Our Plans</h2>
+      <p>Explore our <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Regular Pack (12 Meals for ₹900)</a> or team up with colleagues for our <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Family Pack (24 Meals for ₹1,680)</a> to bring daily lunch costs down to ₹70 per head.</p>
+    `,
+  },
+  {
+    slug: "healthy-tiffin-service-noida-sector-62-sector-18",
+    title: "Homestyle Tiffin Service in Noida Sector 62 & Sector 18: Hot Daily Office Lunches",
+    excerpt: "Looking for fresh, hygienic ghar ka khana in Noida? We deliver piping hot thalis with butter rotis, seasonal sabzi, and tadka dal directly to IT parks and offices.",
+    date: "May 22, 2026",
+    readTime: "5 min read",
+    category: "Noida Food Guide",
+    author: {
+      name: "Sunita Verma",
+      role: "Co-Founder & Head of Kitchen",
+    },
+    content: `
+      <p>Noida's bustling commercial sectors—especially Sector 62 (Logix Cyber Park, Stellar IT Park) and Sector 18—house tens of thousands of IT professionals, business consultants, and support staff. Yet, finding reliable, hygienic, and affordable homestyle food at lunchtime remains an everyday challenge.</p>
+
+      <div class="my-8 p-6 bg-[#EBF7F5] border-l-4 border-[#0C4A48]">
+        <p class="font-bold text-[#0C4A48] mb-1">Freshness Guarantee:</p>
+        <p class="text-sm">Prepared fresh every morning in our FSSAI-compliant cloud kitchen with zero artificial additives, minimal oil, and daily vegetable procurement from local mandis.</p>
+      </div>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">The Trouble with Noida Office Canteens</h2>
+      <p>Canteens in IT parks frequently rotate through the same dull menu items, while commercial food apps add surge pricing, delivery fees, and platform surcharges that push a simple thali past ₹250. Mom's Kitchen eliminates both issues by delivering genuine "ghar ka khana" directly to office receptions or desk drop points on schedule.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">What Comes Inside Your Daily Noida Lunch Box?</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>4 Fresh Butter Rotis:</strong> Made from 100% whole wheat flour, rolled fresh just before dispatch.</li>
+        <li><strong>Homestyle Dal Tadka:</strong> High-protein lentils (arhar, moong, or chana) simmered with cumin, garlic, and hing.</li>
+        <li><strong>Seasonal Vegetable:</strong> Fresh market vegetables prepared with authentic spices and zero industrial gravies.</li>
+        <li><strong>Aromatic Steamed Basmati Rice:</strong> Light, fluffy, and portion-controlled.</li>
+        <li><strong>Fresh Salad & Homemade Pickle:</strong> Crisp cucumbers, carrots, and traditional accompaniments.</li>
+      </ul>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Ready to Upgrade Your Workday Lunch?</h2>
+      <p>Check out our <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Meal Subscription Plans</a> or test our taste today with a single ₹100 trial box on WhatsApp.</p>
+    `,
+  },
+  {
+    slug: "swiggy-zomato-daily-vs-monthly-tiffin-subscription-delhi",
+    title: "Food Delivery Apps vs. Monthly Tiffin Subscription in Delhi: The Honest Math",
+    excerpt: "Ordering from Zomato or Swiggy every workday costs over ₹8,000/month with hidden surge fees. See how Mom's Kitchen delivers better health and saves ₹5,000+.",
+    date: "May 24, 2026",
+    readTime: "6 min read",
+    category: "Savings & Budget",
+    author: {
+      name: "Sunita Verma",
+      role: "Co-Founder & Head of Kitchen",
+    },
+    content: `
+      <p>When you're working long hours in Delhi NCR, ordering lunch from food delivery apps like Zomato or Swiggy feels like the easiest choice. But when you check your credit card statement at the end of the month, the accumulated cost of "convenience" is often shocking.</p>
+
+      <div class="my-8 p-6 bg-[#FFF2EA] border-l-4 border-[#E85A34]">
+        <p class="font-bold text-[#E85A34] mb-1">The Monthly Difference:</p>
+        <p class="text-sm">Daily app orders cost ₹7,500 – ₹9,600 monthly for one person. A Mom's Kitchen Family Pack (24 Meals) costs just ₹1,680. That is an instant saving of over ₹5,800 every month!</p>
+      </div>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">The Invisible Taxes of Daily Food Apps</h2>
+      <p>When you order a seemingly cheap ₹180 thali on a delivery app, look at the final checkout bill:</p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li>Base Meal Price: ₹180</li>
+        <li>Packaging Charge: ₹25</li>
+        <li>Delivery Fee / Surge: ₹45</li>
+        <li>Platform Fee: ₹6</li>
+        <li>GST & Taxes: ₹14</li>
+        <li><strong>Total Checkout Cost: ₹270 per meal</strong></li>
+      </ul>
+      <p>Over 24 working days, <strong>24 × ₹270 = ₹6,480</strong>. If you order dinner as well, your monthly food expense quickly surpasses ₹12,000.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">The Mom's Kitchen Equation</h2>
+      <p>With Mom's Kitchen, there are <strong>zero delivery fees, zero platform fees, and zero hidden charges</strong>:</p>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Starter Pack (6 Meals):</strong> ₹480 (₹80/meal)</li>
+        <li><strong>Regular Pack (12 Meals):</strong> ₹900 (₹75/meal)</li>
+        <li><strong>Family Pack (24 Meals):</strong> ₹1,680 (₹70/meal)</li>
+      </ul>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Health: The Biggest Long-Term Saving</h2>
+      <p>Commercial restaurants rely on rich sauces, saturated cooking oils, and high sodium to make dishes taste appealing across long delivery times. Over months, this causes acidity, weight gain, and sluggishness. With Mom's Kitchen, you get authentic homemade food made with cold-pressed mustard oil, high-fiber rotis, and pure lentils—the nourishment your body actually needs.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Switch Today</h2>
+      <p>Experience the savings and comfort for yourself. View our <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Subscription Plans</a> or order a ₹100 trial box via WhatsApp.</p>
+    `,
+  },
+  {
+    slug: "pg-food-alternatives-delhi-ncr-student-guide",
+    title: "Tired of Bad PG Food in Delhi NCR? The Ultimate Survival Guide for Students & Bachelors",
+    excerpt: "Watery dal, rock-hard rotis, and weekly stomach upsets? Here is how students and young professionals across Delhi NCR upgrade to fresh homestyle meals on a budget.",
+    date: "May 26, 2026",
+    readTime: "6 min read",
+    category: "Student Life",
+    author: {
+      name: "Pooja Sharma",
+      role: "Lead Nutritionist & Menu Planner",
+    },
+    content: `
+      <p>Ask anyone who has moved to Delhi NCR for studies or their first job, and they will tell you the exact same story: within three weeks of moving into a Paying Guest (PG) accommodation, the excitement fades and the battle with PG food begins.</p>
+
+      <div class="my-8 p-6 bg-[#EBF7F5] border-l-4 border-[#0C4A48]">
+        <p class="font-bold text-[#0C4A48] mb-1">PG Reality Check:</p>
+        <p class="text-sm">You don't have to suffer through stale food or blow your entire budget on restaurant delivery. A flexible WhatsApp meal subscription gives you home-quality nutrition at under ₹75 per meal.</p>
+      </div>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Why Is PG Mess Food So Consistently Poor?</h2>
+      <p>Most commercial PG owners outsource catering to third-party contractors on razor-thin margins. To maximize profit, contractors cut corners on essential ingredients: low-grade rice, watered-down dals, vegetables swimming in cheap palm oil, and rotis pre-made hours in advance that turn rubbery by dinnertime. Frequent acidity, digestive distress, and unintentional weight loss or gain are common side effects.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Your 3 Real Options as a Tenant</h2>
+      <ul class="list-disc pl-6 space-y-2">
+        <li><strong>Option A: Cook Yourself:</strong> Requires purchasing induction cooktops, utensils, daily groceries, and spending 2 hours a day cooking and washing up. Impractical during exam periods or 10-hour workdays.</li>
+        <li><strong>Option B: Hire a Local Cook:</strong> A domestic cook charges ₹3,000–₹4,000 plus groceries (₹4,000+), gas, and maid fees—running ₹8,000+ per month. Worse, domestic cooks frequently take leaves without notice. Read our detailed <a href="/blog/hiring-cook-vs-tiffin-subscription-delhi-ncr" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">Cook vs. Tiffin breakdown</a>.</li>
+        <li><strong>Option C: Mom's Kitchen Subscription:</strong> Hot, freshly cooked meals delivered directly to your doorstep on schedule 6 days a week, with zero cleanup, zero grocery shopping, and complete control via WhatsApp.</li>
+      </ul>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Flexibility Tailored for Student & PG Life</h2>
+      <p>Unlike rigid PG mess fees where you pay whether you eat or not, Mom's Kitchen lets you text "PAUSE" on WhatsApp if you're staying late at college, studying with friends, or going out for dinner. Your meal credit never gets wasted.</p>
+
+      <h2 class="text-3xl font-black uppercase mt-8 mb-4">Try It Before You Commit</h2>
+      <p>Order a single <a href="/#plans" class="font-bold text-[#0C4A48] underline hover:text-[#E85A34]">One-Time Trial Pack</a> for just ₹100 today on WhatsApp, and taste the difference of authentic ghar ka khana.</p>
+    `,
+  },
 ];
+

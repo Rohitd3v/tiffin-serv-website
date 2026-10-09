@@ -39,6 +39,11 @@ ${plansMarkdown}
 - [Home & Live Plans](https://momskitchen.co.in/): Instant WhatsApp subscription and live menu.
 - [Weekly Menu Voting](https://momskitchen.co.in/vote): Subscriber portal to curate Friday chef specials.
 - [Delhi Food Blog](https://momskitchen.co.in/blog): Delhi tiffin guides, nutrition tips, and cost breakdowns.
+- [DU North Campus Student Guide](https://momskitchen.co.in/blog/best-tiffin-service-north-campus-delhi-university-students): Student meal subscriptions for Kamla Nagar, Hudson Lane & Mukherjee Nagar.
+- [Golf Course Road Corporate Guide](https://momskitchen.co.in/blog/corporate-tiffin-service-golf-course-road-dlf-gurugram): Clean executive lunch delivery in DLF Cyber City & Golf Course Road.
+- [Noida Sector 62 & 18 Hub](https://momskitchen.co.in/blog/healthy-tiffin-service-noida-sector-62-sector-18): Hot daily thali delivery to Noida IT parks.
+- [Food Apps vs Tiffin Math](https://momskitchen.co.in/blog/swiggy-zomato-daily-vs-monthly-tiffin-subscription-delhi): Cost breakdown of daily Swiggy/Zomato vs ₹70/meal subscription.
+- [Cook vs Tiffin Comparison](https://momskitchen.co.in/blog/hiring-cook-vs-tiffin-subscription-delhi-ncr): Financial and reliability comparison of domestic cooks vs automated tiffin.
 - [Terms & Conditions](https://momskitchen.co.in/terms): Delivery and subscription policies.
 - [Privacy Policy](https://momskitchen.co.in/privacy): WhatsApp data and location handling.
 `;
