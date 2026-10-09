@@ -96,7 +96,7 @@ export async function getPublicPlans(): Promise<PublicPlan[]> {
     }
 
     if (!data || data.length === 0) {
-      return [];
+      return DEFAULT_PLANS;
     }
 
     return data.map((item, idx) => {
