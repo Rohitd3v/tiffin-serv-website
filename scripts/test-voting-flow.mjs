@@ -16,18 +16,44 @@ const admin = createClient(supabaseUrl, serviceRoleKey);
 async function runTest() {
   console.log("=== Testing Menu Voting Full Lifecycle ===\n");
 
-  // 1. Get active poll
-  const { data: poll } = await admin
+  // 1. Get active poll (or provision temporary test poll if none active)
+  let { data: poll } = await admin
     .from("polls")
     .select("*")
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
+
+  let createdTestPoll = false;
+  if (!poll) {
+    console.log("   (No active poll found; provisioning temporary test poll for verification...)");
+    const { data: newPoll, error: pErr } = await admin
+      .from("polls")
+      .insert({
+        title: "Test Active Poll (Verification Suite)",
+        description: "Temporary poll created for testing voting flow",
+        options: [
+          { id: "opt_1", label: "Shahi Paneer with Butter Naan" },
+          { id: "opt_2", label: "Dal Makhani with Laccha Paratha" },
+        ],
+        status: "active",
+        closes_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      })
+      .select()
+      .single();
+
+    if (pErr || !newPoll) {
+      console.error("Failed to provision test poll:", pErr);
+      process.exit(1);
+    }
+    poll = newPoll;
+    createdTestPoll = true;
+  }
 
   console.log("1. Active Poll ID:", poll.id);
   console.log("   Title:", poll.title);
-  console.log("   Options:", poll.options.map(o => o.label));
+  console.log("   Options:", poll.options.map((o) => o.label));
 
   // 2. Test Non-Subscriber (should reject)
   const fakePhone = "9999999999";
@@ -104,7 +130,10 @@ async function runTest() {
   // Clean up test data
   await admin.from("poll_votes").delete().eq("id", voteInsert.id);
   await admin.from("poll_otps").delete().eq("phone", subPhone);
-  console.log("\n7. Test vote and OTP cleaned up. Database is pristine.");
+  if (createdTestPoll) {
+    await admin.from("polls").delete().eq("id", poll.id);
+  }
+  console.log("\n7. Test vote, OTP, and fixtures cleaned up. Database is pristine.");
 
   console.log("\n✅ ALL VOTING VERIFICATION CHECKS PASSED PERFECTLY!");
 }
