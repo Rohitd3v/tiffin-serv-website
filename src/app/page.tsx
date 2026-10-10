@@ -420,15 +420,14 @@ export default function Home() {
         className="p-8 md:p-24 border-b-[3px] border-brutal-border bg-brutal-bg overflow-hidden"
       >
         <div className="max-w-5xl mx-auto">
-          <div className="mb-12 border-l-[10px] border-brutal-pop pl-6">
-            <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-3">
-              Vote On <br className="hidden md:block" />
-              <span className="text-brutal-pop">Next Week&apos;s Menu</span>
-            </h3>
-            <p className="text-lg md:text-xl font-bold font-mono text-brutal-muted uppercase">
-              Exclusive to active subscribers. Decide Friday&apos;s chef special.
-            </p>
-          </div>
+        <div className="mb-12 border-l-[10px] border-brutal-pop pl-6">
+          <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-3">
+            {content.voteBanner.title || "Vote On Next Week's Menu"}
+          </h3>
+          <p className="text-lg md:text-xl font-bold font-mono text-brutal-muted uppercase">
+            {content.voteBanner.subtitle || "Exclusive to active subscribers. Decide Friday's chef special."}
+          </p>
+        </div>
 
           <MenuVotingWidget plansHref="#plans" />
         </div>

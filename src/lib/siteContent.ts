@@ -37,9 +37,16 @@ export interface TestimonialsContent {
   items: Array<{ name: string; role: string; quote: string; color: string }>;
 }
 
+export interface VoteBannerDishOption {
+  /** Display name of the dish (e.g. "Shahi Paneer"). */
+  label: string;
+}
+
 export interface VoteBannerContent {
   title: string;
   subtitle: string;
+  /** Weekly dish choices configured in the admin dashboard (min 2 when published). */
+  dishOptions: VoteBannerDishOption[];
 }
 
 export interface SiteContent {
@@ -88,6 +95,11 @@ export const LOCAL_DEFAULTS: SiteContent = {
   voteBanner: {
     title: "Vote On Next Week's Menu",
     subtitle: "Exclusive to active subscribers. Decide Friday's chef special.",
+    dishOptions: [
+      { label: "Shahi Paneer" },
+      { label: "Dal Makhani" },
+      { label: "Chole Bhature" },
+    ],
   },
 };
 
@@ -101,6 +113,9 @@ function isValidArrayItem(item: unknown, arrayKey: string): boolean {
       typeof obj.title === "string" &&
       typeof obj.desc === "string"
     );
+  }
+  if (arrayKey === "dish_options") {
+    return typeof obj.label === "string" && obj.label.trim().length > 0;
   }
   if (arrayKey === "items") {
     return (
@@ -125,21 +140,25 @@ function mergeSection<T extends object>(
   if (!db) return fallback;
 
   const merged = { ...fallback } as Record<string, unknown>;
-  const arrayKey = "steps" in fallback ? "steps" : "items";
+  // Local key uses camelCase; the database row uses snake_case.
+  const localArrayKey =
+    "steps" in fallback ? "steps" : "items" in fallback ? "items" : "dishOptions";
+  const dbArrayKey =
+    "steps" in fallback ? "steps" : "items" in fallback ? "items" : "dish_options";
 
   for (const key of Object.keys(fallback)) {
-    if (key === arrayKey) continue; // arrays handled below
+    if (key === localArrayKey) continue; // arrays handled below
     const value = db[key];
     if (typeof value === "string" && value.trim()) merged[key] = value;
   }
 
-  const dbArray = db[arrayKey];
+  const dbArray = db[dbArrayKey];
   if (
     Array.isArray(dbArray) &&
     dbArray.length > 0 &&
-    dbArray.every((item) => isValidArrayItem(item, arrayKey))
+    dbArray.every((item) => isValidArrayItem(item, dbArrayKey))
   ) {
-    merged[arrayKey] = dbArray;
+    merged[localArrayKey] = dbArray;
   }
 
   return merged as T;
