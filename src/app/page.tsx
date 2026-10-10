@@ -18,6 +18,7 @@ import {
 import { getPublicPlans, PublicPlan, DEFAULT_PLANS } from "@/lib/plans";
 import { getSiteContent, LOCAL_DEFAULTS, SiteContent } from "@/lib/siteContent";
 import { MenuVotingWidget } from "@/components/MenuVotingWidget";
+import { OrderBotPopup } from "@/components/OrderBotPopup";
 
 // Icon lookup for dashboard-editable process steps
 const PROCESS_ICONS: Record<string, typeof MapPin> = {
@@ -754,7 +755,8 @@ export default function Home() {
         }}
       />
 
-
+      {/* 5-second delayed first-time visitor WhatsApp order popup */}
+      <OrderBotPopup whatsappUrl={whatsappUrl} />
     </main>
   );
 }
