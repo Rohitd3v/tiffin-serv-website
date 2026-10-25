@@ -19,10 +19,10 @@ describe("OrderBotPopup Component & Logic", () => {
     // Must use 5000ms delay by default
     assert.ok(content.includes("5000"), "Must default to 5000ms delay");
 
-    // Must use neo-brutalist theme classes
-    assert.ok(content.includes("border-brutal-border"), "Must use border-brutal-border");
-    assert.ok(content.includes("shadow-brutal"), "Must use shadow-brutal");
-    assert.ok(content.includes("bg-brutal-whatsapp"), "Must use bg-brutal-whatsapp for CTA");
+    // Must use the Apple-grade frosted bottom-sheet design (Vaul + materials)
+    assert.ok(content.includes("Drawer.Root"), "Must render a Vaul drawer sheet");
+    assert.ok(content.includes("frost-strong"), "Must use the frosted material design token");
+    assert.ok(content.includes("bg-whatsapp"), "Must use bg-whatsapp for CTA");
   });
 
   it("safely handles localStorage when available and when throwing exceptions", () => {

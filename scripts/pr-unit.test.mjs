@@ -127,6 +127,7 @@ function route(name, db, options = {}) {
   const api = loadSource(`app/api/poll/${name}/route.ts`, {
     dependencies: {
       "next/server": require("next/server"),
+      "node:crypto": require("node:crypto"),
       "@/lib/supabase": { supabase: db?.client ?? null },
       "@/lib/server-recaptcha": { verifyRecaptcha: captcha },
       "@/lib/whatsapp": { sendWhatsAppOtp: send },
@@ -781,16 +782,33 @@ describe("page rendering", () => {
       "lucide-react": require("lucide-react"),
       "next/link": require("next/link"),
     };
+    const lexicon = {
+      ...shared,
+      "@/lib/motionTokens": loadSource("lib/motionTokens.ts", { dependencies: {} }),
+    };
     const plans = loadSource("lib/plans.ts", { dependencies: { "./supabase": { supabase: null } } });
     const content = loadSource("lib/siteContent.ts", { dependencies: { "./supabase": { supabase: null } } });
-    const recaptcha = loadSource("lib/recaptcha.ts", { dependencies: shared });
-    const widget = loadSource("components/MenuVotingWidget.tsx", { dependencies: { ...shared, "@/lib/recaptcha": recaptcha } });
-    const branch = loadSource("components/AnimatedBranch.tsx", { dependencies: shared });
-    const home = loadSource("app/page.tsx", { dependencies: {
-      ...shared, "@/lib/plans": plans, "@/lib/siteContent": content,
-      "@/components/MenuVotingWidget": widget, "@/components/AnimatedBranch": branch,
+    const recaptcha = loadSource("lib/recaptcha.ts", { dependencies: lexicon });
+    const widget = loadSource("components/MenuVotingWidget.tsx", { dependencies: { ...lexicon, "@/lib/recaptcha": recaptcha } });
+    const branch = loadSource("components/AnimatedBranch.tsx", { dependencies: lexicon });
+    const themeToggle = loadSource("components/ThemeToggle.tsx", { dependencies: lexicon });
+    const siteNav = loadSource("components/SiteNav.tsx", { dependencies: { ...lexicon, "@/components/ThemeToggle": themeToggle } });
+    const processScroll = loadSource("components/ProcessScroll.tsx", { dependencies: {
+      ...lexicon, gsap: require("gsap"), "gsap/ScrollTrigger": require("gsap/ScrollTrigger"),
     } });
-    const vote = loadSource("app/vote/page.tsx", { dependencies: { ...shared, "@/components/MenuVotingWidget": widget } });
+    const faq = loadSource("components/FaqSection.tsx", { dependencies: {
+      ...lexicon, "@radix-ui/react-accordion": require("@radix-ui/react-accordion"),
+    } });
+    const orderPopup = loadSource("components/OrderBotPopup.tsx", { dependencies: {
+      ...lexicon, vaul: require("vaul"),
+    } });
+    const home = loadSource("app/page.tsx", { dependencies: {
+      ...lexicon, "@/lib/plans": plans, "@/lib/siteContent": content,
+      "@/components/MenuVotingWidget": widget, "@/components/AnimatedBranch": branch,
+      "@/components/SiteNav": siteNav, "@/components/ProcessScroll": processScroll,
+      "@/components/FaqSection": faq, "@/components/OrderBotPopup": orderPopup,
+    } });
+    const vote = loadSource("app/vote/page.tsx", { dependencies: { ...lexicon, "@/components/MenuVotingWidget": widget, "@/components/SiteNav": siteNav } });
     return { home, vote, widget, content, render: (Component) => renderToStaticMarkup(React.createElement(Component)) };
   }
   it("renders fallback plan names, prices and features before data is fetched", () => {
@@ -827,7 +845,7 @@ describe("page rendering", () => {
     assert.match(html, /href="\/"/);
     assert.match(html, /Back to Home/);
     assert.match(html, /Loading Community Poll/);
-    assert.match(html, /How Menu Voting Works/);
+    assert.match(html, /How Menu Voting Works/i);
     const helpLink = html.match(/<a\b[^>]*href="https:\/\/wa\.me\/[^>]*>/)?.[0];
     assert.ok(helpLink);
     assert.match(helpLink, /target="_blank"/);

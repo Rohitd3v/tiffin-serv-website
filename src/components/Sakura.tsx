@@ -74,7 +74,7 @@ export function Sakura() {
             rotateX: [0, petal.rotateX + 360],
             rotateY: [0, petal.rotateY + 360],
             rotateZ: [0, petal.rotateZ + 360],
-            opacity: [0, 0.85, 0.85, 0]
+            opacity: [0, 0.55, 0.55, 0]
           }}
           transition={{
             y: {
@@ -129,17 +129,16 @@ export function Sakura() {
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                filter: 'drop-shadow(2px 2px 0px rgba(12, 74, 72, 0.15))' 
+                filter: 'drop-shadow(0 2px 4px rgba(12, 74, 72, 0.12))' 
               }}
             >
               <path 
                 d="M 8,18 C 2,10 0,3 8,0 C 16,3 14,10 8,18 Z" 
-                fill="#2F7D4E" 
-                stroke="#0C4A48" 
-                strokeWidth="1.2" 
+                fill="rgba(47, 125, 78, 0.6)" 
+                stroke="none"
                 strokeLinejoin="round"
               />
-              <path d="M 8,3 L 8,14" stroke="#0C4A48" strokeWidth="0.8" strokeLinecap="round" />
+              <path d="M 8,3 L 8,14" stroke="rgba(12, 74, 72, 0.25)" strokeWidth="0.8" strokeLinecap="round" />
             </svg>
           ) : (
             <svg 
@@ -147,10 +146,10 @@ export function Sakura() {
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                filter: 'drop-shadow(2px 2px 0px rgba(12, 74, 72, 0.15))' 
+                filter: 'drop-shadow(0 2px 4px rgba(12, 74, 72, 0.12))' 
               }}
             >
-              <circle cx="8" cy="9" r="4.5" fill="#F5A623" stroke="#0C4A48" strokeWidth="1" />
+              <circle cx="8" cy="9" r="4.5" fill="rgba(245, 166, 35, 0.6)" stroke="none" />
             </svg>
           )}
         </motion.div>

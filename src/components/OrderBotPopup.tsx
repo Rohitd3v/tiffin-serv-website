@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, ArrowRight, X } from "lucide-react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { motion } from "framer-motion";
+import { Drawer } from "vaul";
+import { MessageCircle, ArrowUpRight, Lock, Plus } from "lucide-react";
+import { appleSpring } from "@/lib/motionTokens";
 
 export interface OrderBotPopupProps {
   /** Target link to the ordering WhatsApp chat */
   whatsappUrl?: string;
-  /** Delay before banner appears (defaults to 5000ms) */
+  /** Delay before sheet auto-opens (defaults to 5000ms) */
   delayMs?: number;
   /** Storage key to track seen status (defaults to "mk_order_popup_seen") */
   storageKey?: string;
@@ -18,102 +20,138 @@ const DEFAULT_WHATSAPP_URL =
 const DEFAULT_STORAGE_KEY = "mk_order_popup_seen";
 const DEFAULT_DELAY_MS = 5000;
 
+/** localStorage is an external store: read it through useSyncExternalStore so
+ * the client snapshot lands after hydration (no server/client mismatch) and
+ * cross-tab "storage" events hide the pill everywhere at once. */
+function useSeenOnce(storageKey: string): boolean {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener("storage", onStoreChange);
+      return () => window.removeEventListener("storage", onStoreChange);
+    },
+    () => {
+      try {
+        return window.localStorage.getItem(storageKey) === "true";
+      } catch {
+        return false; // Private browsing etc. — still eligible to show
+      }
+    },
+    () => false,
+  );
+}
+
+function markSeen(storageKey: string): void {
+  try {
+    localStorage.setItem(storageKey, "true");
+  } catch {
+    // Storage write failure is handled gracefully
+  }
+}
+
+/**
+ * iOS-style bottom sheet for first-time visitors. 1:1 swipe tracking,
+ * rubber-banding and drag-to-dismiss come from Vaul; auto-opens once after
+ * `delayMs`, and stays reachable via the floating pill afterwards.
+ */
 export function OrderBotPopup({
   whatsappUrl = DEFAULT_WHATSAPP_URL,
   delayMs = DEFAULT_DELAY_MS,
   storageKey = DEFAULT_STORAGE_KEY,
 }: OrderBotPopupProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [open, setOpen] = useState(false);
+  const seen = useSeenOnce(storageKey);
+  const allowAutoOpen = !seen;
 
   useEffect(() => {
-    // Guard against SSR and restricted storage in private browsing
-    try {
-      const alreadySeen = localStorage.getItem(storageKey);
-      if (alreadySeen === "true") {
-        return;
-      }
-    } catch {
-      // If localStorage is inaccessible, do not block display
-    }
-
+    if (seen) return;
     const timer = setTimeout(() => {
-      setIsVisible(true);
-      try {
-        localStorage.setItem(storageKey, "true");
-      } catch {
-        // Storage write failure is handled gracefully
-      }
+      setOpen(true);
+      markSeen(storageKey);
     }, delayMs);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [delayMs, storageKey]);
-
-  const handleDismiss = () => {
-    setIsVisible(false);
-  };
+    return () => clearTimeout(timer);
+  }, [delayMs, storageKey, seen]);
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          role="dialog"
-          aria-label="Order Tiffin Pop-Up"
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 30, scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 350, damping: 25 }}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-full max-w-[calc(100vw-2rem)] sm:max-w-sm"
-        >
-          <div className="bg-brutal-bg border-[3px] border-brutal-border p-4 sm:p-5 shadow-brutal-lg relative flex flex-col gap-3">
-            {/* Top header row: Badge + Dismiss Button */}
-            <div className="flex items-center justify-between gap-2">
-              <span className="inline-flex items-center gap-1.5 bg-brutal-pop text-white font-mono font-bold text-[11px] uppercase px-2.5 py-0.5 border-2 border-brutal-border shadow-brutal-sm">
-                <span>🔥</span>
-                <span>Order In 60s</span>
-              </span>
+    <>
+      {/* Floating order pill — always reachable, frosted material */}
+      <motion.button
+        type="button"
+        onClick={() => {
+          markSeen(storageKey);
+          setOpen(true);
+        }}
+        initial={{ y: 80, opacity: 0 }}
+        animate={open ? { y: 90, opacity: 0 } : undefined}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.95 }}
+        transition={allowAutoOpen ? appleSpring : { duration: 0 }}
+        style={allowAutoOpen ? undefined : { y: 90, opacity: 0, pointerEvents: "none" }}
+        aria-label="Open ordering sheet"
+        className="frost-strong press fixed bottom-5 right-4 sm:right-6 z-40 flex items-center gap-2 rounded-full py-3 pr-4 pl-3 text-[13px] font-semibold text-ink"
+      >
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-whatsapp text-white">
+          <MessageCircle className="h-3.5 w-3.5 fill-white stroke-none" strokeWidth={1.75} />
+        </span>
+        Order now
+        <ArrowUpRight className="h-4 w-4 text-muted" strokeWidth={1.75} />
+      </motion.button>
 
-              <button
-                type="button"
-                onClick={handleDismiss}
-                aria-label="Close pop-up banner"
-                className="p-1 border-2 border-brutal-border bg-white hover:bg-brutal-card-pink text-brutal-border transition-colors shadow-brutal-sm active:translate-x-0.5 active:translate-y-0.5 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+      <Drawer.Root open={open} onOpenChange={setOpen} repositionInputs={false}>
+        <Drawer.Portal>
+          <Drawer.Overlay className="fixed inset-0 z-[70] bg-black/50" />
+          <Drawer.Content
+            className="fixed inset-x-0 bottom-0 z-[71] flex justify-center px-4 pb-5 outline-none"
+            style={{ touchAction: "none" }}
+          >
+            <div className="frost-strong w-full max-w-md overflow-hidden rounded-t-[1.75rem] sm:rounded-[1.75rem] shadow-sheet">
+              {/* Grabber */}
+              <div className="mx-auto mt-3 mb-1 h-1.5 w-9 rounded-full bg-ink/25" />
+              <Drawer.Title className="sr-only">Order a tiffin</Drawer.Title>
+              <Drawer.Description className="sr-only">
+                Open the WhatsApp chat to order your tiffin
+              </Drawer.Description>
+
+              <div className="flex flex-col items-center gap-4 px-6 pb-8 pt-2 text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-whatsapp to-whatsapp-deep text-white shadow-lift">
+                  <MessageCircle className="h-7 w-7 fill-white stroke-none" strokeWidth={1.75} />
+                </span>
+
+                <div>
+                  <h3 className="text-xl font-semibold -tracking-[0.02em] text-ink">
+                    Craving ghar ka khana?
+                  </h3>
+                  <p className="mt-1 text-[14px] leading-relaxed text-muted">
+                    Hot homestyle meals, delivered daily across Delhi NCR &amp; Gurugram —
+                    ordered in one WhatsApp message.
+                  </p>
+                </div>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="press w-full rounded-2xl bg-whatsapp py-4 text-center text-[15px] font-semibold text-white shadow-lift transition-colors duration-150 hover:bg-whatsapp-deep"
+                >
+                  <span className="inline-flex items-center justify-center gap-2">
+                    Chat to order on WhatsApp
+                    <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} />
+                  </span>
+                </a>
+
+                <div className="flex w-full items-center justify-center gap-5 border-t border-hairline-soft pt-4">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-faint">
+                    <Lock className="h-3 w-3" strokeWidth={1.5} /> Secure &amp; instant
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-faint">
+                    <Plus className="h-3 w-3" strokeWidth={1.5} /> No app download
+                  </span>
+                </div>
+              </div>
             </div>
-
-            {/* Headline and Description */}
-            <div>
-              <h3 className="text-base sm:text-lg font-black uppercase text-brutal-text leading-tight tracking-tight">
-                Craving Ghar Ka Khana?
-              </h3>
-              <p className="text-xs font-medium text-brutal-muted mt-1 leading-relaxed">
-                Skip the cooking hassle. Tap below to chat with our WhatsApp bot and get fresh homestyle meals delivered hot!
-              </p>
-            </div>
-
-            {/* Call To Action button */}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={handleDismiss}
-              className="mt-1 w-full bg-brutal-whatsapp hover:bg-brutal-whatsapp-hover text-white font-black uppercase text-xs sm:text-sm py-3 px-4 border-[2px] border-brutal-border shadow-brutal flex items-center justify-center gap-2 brutalist-button-hover transition-transform duration-150"
-            >
-              <MessageCircle className="w-4 h-4 fill-white stroke-none" />
-              <span>Order Now On WhatsApp</span>
-              <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-            </a>
-
-            {/* Monospace reassurance footer */}
-            <p className="text-[10px] font-mono text-center text-brutal-muted uppercase tracking-wider">
-              ⚡ Instant response • No app download needed
-            </p>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </Drawer.Content>
+        </Drawer.Portal>
+      </Drawer.Root>
+    </>
   );
 }

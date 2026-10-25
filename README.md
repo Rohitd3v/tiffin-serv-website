@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mom's Kitchen — Homestyle Tiffin Subscription
+
+A Next.js website for a Delhi NCR & Gurugram homestyle tiffin subscription
+service: plan browsing, WhatsApp-first ordering, and a subscriber-exclusive
+weekly menu vote (WhatsApp OTP verified, reCAPTCHA protected).
+
+> **Design**: Apple-grade interfaces — frosted materials, SF typography,
+> spring physics, and momentum scrolling. See
+> [`docs/design-system.md`](docs/design-system.md) for the full design
+> system documentation (materials, type, color, motion, accessibility).
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npx tsc --noEmit` | TypeScript check |
+| `node --test scripts/*.test.mjs` | Unit tests (routes, components, content) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+- **Next.js (App Router) 16** + React 19 + TypeScript
+- **Tailwind CSS v4** — design tokens in `src/app/globals.css` (`@theme`)
+- **Supabase** — `plans`, `site_content`, `polls`, `poll_otps`, `poll_votes`,
+  `customers`, `subscriptions` (RLS-protected; see `supabase/migrations/`)
+- **framer-motion** — spring micro-interactions (`src/lib/motionTokens.ts`)
+- **Lenis** — Apple-style inertia scrolling; **GSAP ScrollTrigger** — pinned
+  "How it works" story
+- **Vaul** — iOS-style bottom sheets (order popup)
+- **Radix UI Accordion** — accessible FAQ disclosures
+- **lucide-react** — icons at a consistent optical weight (`strokeWidth 1.75`)
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Content & pricing never blank the site**: `getPublicPlans()` and
+  `getSiteContent()` merge Supabase rows over commented `LOCAL_DEFAULTS`,
+  falling back wholesale on any error or empty result.
+- **Voting pipeline** (`src/app/api/poll/*`): eligibility and OTP issuance on
+  `send-otp` (subscriber-active check, 3-per-10-minute phone rate limit,
+  4-digit code with exact-boundary seeding), OTP-bound ballot casting on
+  `vote` (attempts counting, unique-constraint dedupe, code consumption only
+  after a successful insert). `active` auto-closes expired polls and persists
+  the winner.
+- **reCAPTCHA v3 degrades gracefully**: with no keys configured both client
+  and server pass through, so the site keeps working until `.env.local` gets
+  `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` + `RECAPTCHA_SECRET_KEY`.
+- **Voting UI flow**: `SELECT → OTP → VOTED / NOT_SUBSCRIBER` state machine in
+  `MenuVotingWidget`, with home, vote-page and WhatsApp fallback paths.
+- **Ordering** is WhatsApp-first and uses one encoded `wa.me` destination
+  across all CTAs for bot keyword matching.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Verification Checklist
+
+Before shipping UI changes, run the checks and confirm the documented
+behaviors against `docs/design-system.md` §8 (reduced motion / transparency /
+contrast):
+
+```bash
+npx tsc --noEmit && npm run lint && npm run build
+node --test scripts/pr-unit.test.mjs scripts/menu-vote-banner.test.mjs scripts/order-bot-popup.test.mjs
+```
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Push to a Vercel-linked branch, or run `npm run build` and deploy with
+`vercel --prod`. Set the Supabase and reCAPTCHA environment variables in the
+hosting dashboard (see `.env.example`).
