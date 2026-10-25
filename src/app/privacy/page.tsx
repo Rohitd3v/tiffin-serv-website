@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import { SiteNav } from "@/components/SiteNav";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -64,62 +64,85 @@ const privacySchema = {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(privacySchema) }}
       />
-      <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
-        <Link href="/" className="flex items-center gap-2 font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back Home
-        </Link>
-        <span className="text-xl font-black uppercase text-brutal-text">Privacy Policy</span>
-      </nav>
+      {/* Adaptive frosted navigation */}
+      <SiteNav
+        whatsappUrl="/"
+        links={null}
+        subtitle={null}
+        backLink={{ href: "/", label: "Back Home" }}
+        showOrderCta={false}
+      />
 
-      <article className="max-w-4xl mx-auto p-6 md:p-20">
-        <header className="mb-12 border-b-4 border-brutal-border pb-8">
-          <div className="bg-brutal-pop p-4 border-2 border-brutal-border w-fit mb-6">
-            <Lock className="w-12 h-12 text-white" />
-          </div>
-          <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">Privacy <br /> Policy</h1>
-          <p className="font-mono font-bold text-brutal-muted uppercase">Last Updated: April 2026</p>
+      <article className="mx-auto max-w-3xl px-5 pb-24 pt-32 md:pt-40">
+        <header className="mb-12 border-b border-hairline-soft pb-10">
+          <span className="mb-6 flex h-12 w-12 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-ink-solid to-[#0d5651] text-white shadow-lift">
+            <Lock className="h-6 w-6" strokeWidth={1.5} />
+          </span>
+          <h1 className="display-hero mb-3 text-4xl text-ink md:text-6xl">Privacy Policy</h1>
+          <p className="tabular text-[13px] text-faint">Last updated: April 2026</p>
         </header>
 
-        <div className="space-y-12 font-medium leading-relaxed text-brutal-text">
+        <div className="space-y-12">
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">1. Information We Collect</h3>
-            <p>To provide automated meal delivery via WhatsApp, we collect:</p>
-            <ul className="list-disc pl-6 mt-4 space-y-2">
-              <li><strong>Phone Number:</strong> Used as your unique account identifier.</li>
-              <li><strong>Geolocation:</strong> Captured once via WhatsApp to verify if your address falls within our Delhi NCR delivery zones.</li>
-              <li><strong>Delivery Address:</strong> Text-based address for our delivery partners.</li>
-              <li><strong>Transaction Data:</strong> Payment confirmation via Razorpay.</li>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              1. Information We Collect
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted mb-3">
+              To provide automated meal delivery via WhatsApp, we collect:
+            </p>
+            <ul className="list-disc space-y-2 pl-6 text-[15px] leading-relaxed text-muted">
+              <li><strong className="font-semibold text-ink">Phone Number:</strong> Used as your unique account identifier.</li>
+              <li><strong className="font-semibold text-ink">Geolocation:</strong> Captured once via WhatsApp to verify if your address falls within our Delhi NCR delivery zones.</li>
+              <li><strong className="font-semibold text-ink">Delivery Address:</strong> Text-based address for our delivery partners.</li>
+              <li><strong className="font-semibold text-ink">Transaction Data:</strong> Payment confirmation via Razorpay.</li>
             </ul>
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">2. How We Use Data</h3>
-            <p>Your data is exclusively used for order fulfillment and customer support. We do not sell or trade your personal information to third parties.</p>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              2. How We Use Data
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted">
+              Your data is exclusively used for order fulfillment and customer support. We do
+              not sell or trade your personal information to third parties.
+            </p>
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">3. Third-Party Services</h3>
-            <p>We utilize industry-standard partners to power our ecosystem:</p>
-            <ul className="list-disc pl-6 mt-4 space-y-2">
-              <li><strong>Meta (WhatsApp Cloud API):</strong> For processing your messages and menu selections.</li>
-              <li><strong>Razorpay:</strong> For secure, PCI-compliant payment processing.</li>
-              <li><strong>Supabase:</strong> For encrypted database storage of your subscription status.</li>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              3. Third-Party Services
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted mb-3">
+              We utilize industry-standard partners to power our ecosystem:
+            </p>
+            <ul className="list-disc space-y-2 pl-6 text-[15px] leading-relaxed text-muted">
+              <li><strong className="font-semibold text-ink">Meta (WhatsApp Cloud API):</strong> For processing your messages and menu selections.</li>
+              <li><strong className="font-semibold text-ink">Razorpay:</strong> For secure, PCI-compliant payment processing.</li>
+              <li><strong className="font-semibold text-ink">Supabase:</strong> For encrypted database storage of your subscription status.</li>
             </ul>
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">4. Retention</h3>
-            <p>We retain your delivery history for 12 months to provide subscription insights. You may request account deletion at any time by texting &quot;DELETE&quot; to our WhatsApp bot.</p>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              4. Retention
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted">
+              We retain your delivery history for 12 months to provide subscription insights.
+              You may request account deletion at any time by texting &quot;DELETE&quot; to our
+              WhatsApp bot.
+            </p>
           </section>
 
-          <section className="bg-brutal-card-mint p-8 border-[3px] border-brutal-border">
-            <h3 className="text-2xl font-black uppercase mb-2">Contact DPO</h3>
-            <p className="text-sm font-mono font-bold">privacy@momskitchen.ops — Udyog Vihar, Sector 18, Gurugram, India, 122022.</p>
+          <section className="calm-card bg-tealwash p-7 rounded-[1.75rem]">
+            <h3 className="text-xl font-semibold -tracking-[0.02em] text-ink mb-2">Contact DPO</h3>
+            <p className="text-[13px] leading-relaxed text-muted">
+              privacy@momskitchen.ops — Udyog Vihar, Sector 18, Gurugram, India, 122022.
+            </p>
           </section>
         </div>
       </article>

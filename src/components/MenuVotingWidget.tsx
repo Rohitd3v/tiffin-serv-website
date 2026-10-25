@@ -15,6 +15,7 @@ import {
   Phone,
 } from "lucide-react";
 import { getRecaptchaToken, useRecaptchaInit } from "@/lib/recaptcha";
+import { appleSpring, appleFlickSpring } from "@/lib/motionTokens";
 
 export interface PollOption {
   id: string;
@@ -201,13 +202,9 @@ export function MenuVotingWidget({
   // Initial loading state
   if (initialLoading) {
     return (
-      <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-8 md:p-12 text-center">
-        <div className="inline-flex items-center justify-center p-3 bg-brutal-accent border-2 border-brutal-border mb-4 animate-spin">
-          <RefreshCw className="w-6 h-6 text-brutal-text" />
-        </div>
-        <p className="font-mono font-bold text-brutal-text uppercase tracking-wider">
-          Loading Community Poll...
-        </p>
+      <div className="frost flex justify-center gap-3 rounded-[1.75rem] p-8 text-center md:p-10">
+        <RefreshCw className="h-5 w-5 animate-spin text-coral" strokeWidth={1.5} />
+        <p className="text-[14px] font-medium text-muted">Loading Community Poll...</p>
       </div>
     );
   }
@@ -215,24 +212,22 @@ export function MenuVotingWidget({
   // Empty state if no active poll exists
   if (!poll) {
     return (
-      <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-8 md:p-12 text-center space-y-4">
-        <div className="inline-flex items-center justify-center p-4 bg-brutal-card-lemon border-2 border-brutal-border shadow-brutal-sm">
-          <Utensils className="w-8 h-8 text-brutal-text" />
-        </div>
-        <h3 className="text-2xl md:text-3xl font-black uppercase text-brutal-text tracking-tight">
-          No Active Poll Right Now
+      <div className="frost flex flex-col items-center gap-4 rounded-[1.75rem] p-8 text-center md:p-10">
+        <span className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-amber to-coral text-white shadow-soft">
+          <Utensils className="h-7 w-7" strokeWidth={1.5} />
+        </span>
+        <h3 className="text-xl font-semibold -tracking-[0.02em] text-ink">
+          No active poll right now
         </h3>
-        <p className="font-mono text-sm text-brutal-muted max-w-md mx-auto">
+        <p className="max-w-md text-[14px] leading-relaxed text-muted">
           Our chef is currently preparing the next weekly menu vote. Check back soon or explore our meal plans!
         </p>
-        <div className="pt-2">
-          <a
-            href={plansHref}
-            className="inline-flex items-center gap-2 bg-brutal-pop text-white font-black px-6 py-3 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-pop-hover transition-colors uppercase text-sm"
-          >
-            Explore Meal Plans <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
+        <a
+          href={plansHref}
+          className="press mt-1 inline-flex items-center gap-2 rounded-full bg-ink-solid px-6 py-3 text-[14px] font-semibold text-white shadow-lift transition-colors duration-150 hover:bg-[#0d5651]"
+        >
+          Explore meal plans <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+        </a>
       </div>
     );
   }
@@ -240,31 +235,33 @@ export function MenuVotingWidget({
   const whatsappOrderNumber = whatsappNumber;
 
   return (
-    <div className="bg-brutal-bg border-[3px] border-brutal-border shadow-brutal-lg p-6 md:p-10 relative overflow-hidden">
-      {/* Decorative Badge */}
-      <div className="absolute -top-3 -right-3 rotate-6 bg-brutal-card-lemon border-2 border-brutal-border shadow-brutal-sm px-3 py-1 text-[11px] font-mono font-black uppercase text-brutal-text hidden sm:block">
-        Subscriber Choice 🗳️
-      </div>
+    <div className="frost-strong relative overflow-hidden rounded-[1.75rem] p-6 md:p-10">
+      {/* Subtle corner aura */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-gradient-to-br from-amber/25 to-coral/15 blur-3xl"
+      />
 
       {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div className="inline-flex items-center gap-2 bg-brutal-accent text-brutal-text text-xs font-mono font-bold uppercase px-3 py-1.5 border-2 border-brutal-border shadow-brutal-sm">
-          <Vote className="w-4 h-4" /> Subscriber Weekly Poll
-        </div>
+      <div className="relative flex flex-wrap items-center justify-between gap-3 mb-6">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-tealwash px-3.5 py-1.5 text-[12px] font-medium text-ink">
+          <Vote className="h-3.5 w-3.5" strokeWidth={1.5} /> Subscriber weekly poll
+        </span>
 
         {formattedClosing && (
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono font-bold text-brutal-muted bg-white px-3 py-1.5 border-2 border-brutal-border shadow-brutal-sm">
-            <Clock className="w-3.5 h-3.5 text-brutal-pop" /> Closes: {formattedClosing}
-          </div>
+          <span className="tabular inline-flex items-center gap-1.5 rounded-full bg-surface/90 px-3.5 py-1.5 text-[12px] font-medium text-muted">
+            <Clock className="h-3.5 w-3.5 text-coral" strokeWidth={1.5} />
+            Closes {formattedClosing}
+          </span>
         )}
       </div>
 
-      <h3 className="text-2xl md:text-4xl font-black uppercase text-brutal-text tracking-tight leading-tight mb-2">
+      <h3 className="display-locked relative text-2xl text-ink md:text-3xl mb-2">
         {poll.title}
       </h3>
 
       {poll.description && (
-        <p className="text-sm md:text-base font-medium text-brutal-muted mb-8 leading-relaxed">
+        <p className="relative mb-8 text-[14px] leading-relaxed text-muted">
           {poll.description}
         </p>
       )}
@@ -273,33 +270,35 @@ export function MenuVotingWidget({
       <AnimatePresence>
         {errorMsg && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mb-6 p-4 bg-brutal-card-pink border-2 border-brutal-border shadow-brutal-sm flex items-start gap-3 text-brutal-text"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="relative mb-6 flex items-start gap-3 rounded-2xl bg-coral-soft px-4 py-3 text-ink"
           >
-            <AlertCircle className="w-5 h-5 text-brutal-pop shrink-0 mt-0.5" />
-            <div className="text-sm font-bold font-mono leading-tight">{errorMsg}</div>
+            <AlertCircle className="h-5 w-5 shrink-0 text-coral" strokeWidth={1.5} />
+            <p className="text-[13px] font-medium leading-snug">{errorMsg}</p>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* STEP: SELECT (Dish Selection & Direct Subscriber Verification) */}
       {step === "SELECT" && (
-        <form onSubmit={handleVote} className="space-y-6">
+        <form onSubmit={handleVote} className="relative space-y-6">
           <div className="space-y-3">
-            <span className="block text-xs font-mono font-bold uppercase text-brutal-muted tracking-wider">
-              Step 1: Choose This Week&apos;s Special Dish
+            <span className="eyebrow block text-faint">
+              Step 1 · Choose this week&apos;s special
             </span>
 
-            <div className="grid grid-cols-1 gap-3" role="radiogroup" aria-label="Dish options">
+            <div className="grid grid-cols-1 gap-2.5" role="radiogroup" aria-label="Dish options">
               {poll.options.map((option) => {
                 const isSelected = selectedOption === option.id;
                 return (
                   <motion.div
                     key={option.id}
-                    whileHover={{ scale: 1.01, x: 2 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.985 }}
+                    transition={appleSpring}
                     onClick={() => {
                       setSelectedOption(option.id);
                       setErrorMsg(null);
@@ -314,32 +313,34 @@ export function MenuVotingWidget({
                         setErrorMsg(null);
                       }
                     }}
-                    className={`border-[3px] border-brutal-border p-4 transition-all text-left flex items-center justify-between gap-4 select-none ${
+                    className={`press flex cursor-pointer select-none items-center justify-between rounded-2xl border p-4 text-left ${
                       isSelected
-                        ? "bg-brutal-accent text-brutal-text shadow-brutal translate-x-1 -translate-y-0.5"
-                        : "bg-white hover:bg-brutal-card-mint shadow-brutal-sm text-brutal-text cursor-pointer"
+                        ? "border-amber/60 bg-gradient-to-r from-amber-soft to-coral-soft shadow-soft"
+                        : "border-hairline-soft bg-surface/90 hover:bg-surface hover:border-hairline"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className={`w-9 h-9 border-2 border-brutal-border flex items-center justify-center shrink-0 ${
-                          isSelected ? "bg-white text-brutal-text" : "bg-brutal-bg text-brutal-muted"
+                      <span
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                          isSelected ? "bg-white text-amber-deep" : "bg-tealwash text-ink"
                         }`}
                       >
-                        <Utensils className="w-4 h-4" />
-                      </div>
-                      <span className="font-black text-base md:text-lg uppercase leading-snug">
+                        <Utensils className="h-4 w-4" strokeWidth={1.5} />
+                      </span>
+                      <span className="text-[15px] font-semibold -tracking-[0.01em] text-ink">
                         {option.label}
                       </span>
                     </div>
 
-                    <div
-                      className={`w-6 h-6 rounded-full border-2 border-brutal-border flex items-center justify-center shrink-0 ${
-                        isSelected ? "bg-brutal-pop text-white" : "bg-white"
+                    <span
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors duration-150 ${
+                        isSelected ? "border-amber-deep bg-amber-deep text-white" : "border-hairline bg-surface"
                       }`}
                     >
-                      {isSelected && <CheckCircle2 className="w-4 h-4 fill-white text-brutal-border" />}
-                    </div>
+                      {isSelected && (
+                        <CheckCircle2 className="h-3 w-3 fill-white" strokeWidth={2} />
+                      )}
+                    </span>
                   </motion.div>
                 );
               })}
@@ -347,17 +348,17 @@ export function MenuVotingWidget({
           </div>
 
           {/* Mobile Phone Input */}
-          <div className="space-y-2 pt-2">
+          <div className="space-y-2 pt-1">
             <label
               htmlFor={phoneInputId}
-              className="text-xs font-mono font-bold uppercase text-brutal-text flex items-center gap-1.5"
+              className="eyebrow flex items-center gap-1.5 text-faint"
             >
-              <Phone className="w-4 h-4 text-brutal-pop" />
-              Step 2: Enter Subscriber Mobile Number
+              <Phone className="h-3.5 w-3.5 text-coral" strokeWidth={1.5} />
+              Step 2 · Subscriber mobile number
             </label>
 
-            <div className="flex items-stretch border-[3px] border-brutal-border bg-white shadow-brutal">
-              <span className="bg-brutal-bg px-4 py-3 font-mono font-black border-r-[3px] border-brutal-border text-brutal-text flex items-center text-sm">
+            <div className="flex items-stretch overflow-hidden rounded-2xl border border-hairline bg-surface shadow-soft focus-within:border-[rgba(21,133,127,0.6)] focus-within:shadow-[0_0_0_4px_rgba(21,133,127,0.12)]">
+              <span className="tabular border-r border-hairline-soft bg-paper px-4 py-3 text-[14px] font-medium text-ink">
                 +91
               </span>
               <input
@@ -370,35 +371,39 @@ export function MenuVotingWidget({
                 }}
                 placeholder="98765 43210"
                 maxLength={14}
-                className="flex-1 px-4 py-3 font-mono font-bold text-brutal-text text-base md:text-lg focus:outline-none bg-transparent placeholder:text-gray-400"
+                className="tabular flex-1 bg-transparent px-4 py-3 text-[15px] text-ink focus:outline-none placeholder:text-faint/60"
               />
             </div>
-            <p className="text-[11px] font-mono text-brutal-muted">
-              🔒 Instant verification for active subscribers. Protected by bot &amp; spam shield.
+            <p className="flex items-center gap-1.5 text-[11px] text-faint">
+              <Lock className="h-3 w-3" strokeWidth={1.5} />
+              Instant verification for active subscribers. Protected by bot &amp; spam shield.
             </p>
           </div>
 
           {/* Action Button */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={loading || !selectedOption ? undefined : { scale: 1.01 }}
+            whileTap={loading || !selectedOption ? undefined : { scale: 0.98 }}
+            transition={appleSpring}
             type="submit"
             disabled={loading || !selectedOption}
-            className={`w-full py-4 px-6 border-[3px] border-brutal-border shadow-brutal font-black uppercase text-base flex items-center justify-center gap-3 transition-colors ${
+            className={`press w-full rounded-2xl py-4 text-[15px] font-semibold text-white transition-all duration-150 ${
               loading || !selectedOption
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-brutal-pop text-white hover:bg-brutal-pop-hover cursor-pointer"
+                ? "cursor-not-allowed bg-ink-solid/30"
+                : "cursor-pointer bg-ink-solid shadow-lift hover:bg-[#0d5651]"
             }`}
           >
             {loading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" /> Verifying Subscriber...
-              </>
+              <span className="inline-flex items-center gap-2">
+                <RefreshCw className="h-4 w-4 animate-spin" strokeWidth={1.75} />
+                Verifying subscriber…
+              </span>
             ) : (
-              <>
-                <Vote className="w-5 h-5" /> Cast Your Vote
-                <ArrowRight className="w-5 h-5" />
-              </>
+              <span className="inline-flex items-center justify-center gap-2">
+                <Vote className="h-4 w-4" strokeWidth={1.75} />
+                Cast your vote
+                <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+              </span>
             )}
           </motion.button>
         </form>
@@ -406,37 +411,38 @@ export function MenuVotingWidget({
 
       {/* STEP: VOTED (Live Progress Bars) */}
       {step === "VOTED" && (
-        <div className="space-y-6">
-          <div className="p-4 bg-brutal-card-mint border-[3px] border-brutal-border shadow-brutal flex items-center justify-between gap-4">
+        <div className="relative space-y-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={appleFlickSpring}
+            className="flex items-center justify-between gap-4 rounded-2xl border border-hairline-soft bg-tealwash px-4 py-4"
+          >
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#25D366] text-white border-2 border-brutal-border">
-                <CheckCircle2 className="w-6 h-6 fill-white text-brutal-border" />
-              </div>
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-whatsapp text-white shadow-soft">
+                <CheckCircle2 className="h-5 w-5 fill-white" strokeWidth={1.75} />
+              </span>
               <div>
-                <h4 className="text-lg md:text-xl font-black uppercase text-brutal-text leading-tight">
-                  Vote Cast Successfully!
+                <h4 className="text-[15px] font-semibold -tracking-[0.01em] text-ink">
+                  Vote cast successfully!
                 </h4>
-                <p className="font-mono text-xs font-bold text-brutal-muted uppercase">
+                <p className="text-[12px] text-muted">
                   Thank you for helping curate this week&apos;s special.
                 </p>
               </div>
             </div>
 
-            <div className="text-right shrink-0">
-              <span className="font-mono text-xs font-bold text-brutal-muted block uppercase">
-                Total Cast
-              </span>
-              <span className="text-2xl font-black text-brutal-text font-mono">
-                {poll.totalVotes}
-              </span>
+            <div className="shrink-0 text-right">
+              <span className="eyebrow block text-faint">Total cast</span>
+              <span className="tabular text-xl font-semibold text-ink">{poll.totalVotes}</span>
             </div>
-          </div>
+          </motion.div>
 
           {/* Results progress bars */}
           <div className="space-y-4">
-            <div className="flex justify-between items-center text-xs font-mono font-bold uppercase text-brutal-muted">
-              <span>Live Community Results</span>
-              <span>{poll.totalVotes} Total Votes</span>
+            <div className="eyebrow flex justify-between text-faint">
+              <span>Live community results</span>
+              <span className="tabular">{poll.totalVotes} total</span>
             </div>
 
             {poll.options.map((option, idx) => {
@@ -446,53 +452,54 @@ export function MenuVotingWidget({
               return (
                 <div
                   key={option.id}
-                  className={`p-4 border-[3px] border-brutal-border bg-white shadow-brutal-sm relative transition-all ${
-                    isSelected ? "ring-2 ring-brutal-pop bg-brutal-card-peach" : ""
+                  className={`rounded-2xl border p-4 transition-colors duration-200 ${
+                    isSelected ? "border-amber/60 bg-amber-soft/50" : "border-hairline-soft bg-surface/90"
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="mb-2.5 flex items-start justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-black text-sm md:text-base uppercase text-brutal-text">
+                      <span className="text-[14px] font-semibold -tracking-[0.01em] text-ink">
                         {option.label}
                       </span>
                       {isSelected && (
-                        <span className="inline-flex items-center gap-1 bg-brutal-pop text-white text-[10px] font-mono font-bold px-2 py-0.5 border border-brutal-border shadow-brutal-sm uppercase">
-                          <CheckCircle2 className="w-3 h-3" /> Your Choice
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-deep px-2 py-0.5 text-[10px] font-medium text-white">
+                          <CheckCircle2 className="h-2.5 w-2.5" strokeWidth={2} /> Your choice
                         </span>
                       )}
                       {isLeading && (
-                        <span className="inline-flex items-center gap-1 bg-brutal-accent text-brutal-text text-[10px] font-mono font-bold px-2 py-0.5 border border-brutal-border shadow-brutal-sm uppercase">
-                          <Sparkles className="w-3 h-3" /> Leading
+                        <span className="inline-flex items-center gap-1 rounded-full bg-tealwash px-2 py-0.5 text-[10px] font-medium text-ink">
+                          <Sparkles className="h-2.5 w-2.5" strokeWidth={1.5} /> Leading
                         </span>
                       )}
                     </div>
 
-                    <div className="text-right shrink-0 font-mono">
-                      <span className="text-base md:text-lg font-black text-brutal-text">
+                    <div className="shrink-0 text-right">
+                      <span className="tabular text-[15px] font-semibold text-ink">
                         {option.percent}%
                       </span>
-                      <span className="text-xs text-brutal-muted block font-bold">
-                        ({option.votes} {option.votes === 1 ? "vote" : "votes"})
+                      <span className="tabular block text-[11px] text-faint">
+                        {option.votes} {option.votes === 1 ? "vote" : "votes"}
                       </span>
                     </div>
                   </div>
 
                   {/* Animated Progress Bar */}
-                  <div className="w-full h-4 bg-gray-100 border-2 border-brutal-border overflow-hidden">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-hairline-soft">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${option.percent}%` }}
                       transition={{
-                        duration: 0.8,
-                        ease: "easeOut",
-                        delay: idx * 0.1,
+                        type: "spring",
+                        damping: 30,
+                        stiffness: 120,
+                        delay: idx * 0.08,
                       }}
-                      className={`h-full border-r-2 border-brutal-border ${
+                      className={`h-full rounded-full ${
                         isSelected
-                          ? "bg-brutal-pop"
+                          ? "bg-amber-deep"
                           : isLeading
-                          ? "bg-brutal-accent"
-                          : "bg-[#25D366]"
+                          ? "bg-gradient-to-r from-amber to-coral"
+                          : "bg-whatsapp"
                       }`}
                     />
                   </div>
@@ -504,9 +511,9 @@ export function MenuVotingWidget({
           <div className="pt-2 text-center">
             <button
               onClick={() => refreshPoll()}
-              className="text-xs font-mono font-bold text-brutal-muted hover:text-brutal-text uppercase inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="press inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] font-medium text-muted transition-colors duration-150 hover:bg-tealwash hover:text-ink"
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Refresh Live Standings
+              <RefreshCw className="h-3.5 w-3.5" strokeWidth={1.5} /> Refresh live standings
             </button>
           </div>
         </div>
@@ -517,31 +524,32 @@ export function MenuVotingWidget({
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-6 md:p-8 bg-white border-[3px] border-brutal-border shadow-brutal text-center space-y-5"
+          transition={appleSpring}
+          className="frost relative flex flex-col items-center gap-5 rounded-2xl p-6 text-center md:p-8"
         >
-          <div className="inline-flex items-center justify-center p-4 bg-brutal-pop text-white border-2 border-brutal-border shadow-brutal-sm">
-            <Lock className="w-8 h-8" />
-          </div>
+          <span className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-coral to-coral-deep text-white shadow-lift">
+            <Lock className="h-7 w-7" strokeWidth={1.5} />
+          </span>
 
           <div>
-            <span className="inline-flex items-center gap-1.5 bg-brutal-card-lemon text-brutal-text font-mono font-bold text-xs px-3 py-1 border-2 border-brutal-border mb-3 uppercase">
-              <Sparkles className="w-3.5 h-3.5 text-brutal-pop" /> Exclusive Subscriber Privilege
+            <span className="eyebrow inline-flex items-center gap-1.5 rounded-full bg-amber-soft px-3 py-1 text-amber-deep">
+              <Sparkles className="h-3 w-3" strokeWidth={1.5} /> Subscriber privilege
             </span>
-            <h4 className="text-2xl md:text-3xl font-black uppercase text-brutal-text tracking-tight mb-2">
-              Active Meal Pack Required
+            <h4 className="mt-3 text-xl font-semibold -tracking-[0.02em] text-ink mb-2">
+              Active meal pack required
             </h4>
-            <p className="font-mono text-sm text-brutal-muted max-w-md mx-auto leading-relaxed">
+            <p className="mx-auto max-w-md text-[13px] leading-relaxed text-muted">
               Voting is an exclusive perk reserved for active Mom&apos;s Kitchen meal subscribers.
               Subscribe to any weekly or monthly meal pack today to decide our Friday specials!
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+          <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
             <a
               href={plansHref}
-              className="bg-brutal-pop text-white font-black px-6 py-3.5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-pop-hover transition-colors uppercase text-sm flex items-center justify-center gap-2"
+              className="press inline-flex items-center justify-center gap-2 rounded-full bg-ink-solid px-6 py-3 text-[14px] font-semibold text-white shadow-lift transition-colors duration-150 hover:bg-[#0d5651]"
             >
-              Explore Meal Packs <ArrowRight className="w-4 h-4" />
+              Explore meal packs <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
             </a>
 
             <button
@@ -549,20 +557,20 @@ export function MenuVotingWidget({
                 setStep("SELECT");
                 setErrorMsg(null);
               }}
-              className="bg-white text-brutal-text font-bold px-6 py-3.5 border-[3px] border-brutal-border shadow-brutal hover:bg-brutal-accent transition-colors uppercase text-sm cursor-pointer"
+              className="press rounded-full border border-hairline bg-surface px-6 py-3 text-[14px] font-medium text-ink transition-colors duration-150 hover:bg-tealwash"
             >
-              Try Another Number
+              Try another number
             </button>
           </div>
 
-          <div className="pt-2 border-t-2 border-brutal-border">
+          <div className="w-full border-t border-hairline-soft pt-4">
             <a
               href={`https://wa.me/${whatsappOrderNumber}?text=Hello!%20I%20want%20to%20subscribe%20to%20a%20meal%20pack%20and%20vote%20on%20weekly%20menus.`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-mono font-bold uppercase text-brutal-muted hover:text-[#25D366] inline-flex items-center gap-1.5 transition-colors"
+              className="text-[12px] font-medium text-muted transition-colors duration-150 hover:text-ink"
             >
-              Order or Subscribe via WhatsApp
+              Order or subscribe via WhatsApp
             </a>
           </div>
         </motion.div>

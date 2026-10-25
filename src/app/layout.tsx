@@ -1,25 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, DM_Mono } from "next/font/google";
 import { Sakura } from "@/components/Sakura";
 import { Footer } from "@/components/Footer";
+import { LenisProvider } from "@/components/LenisProvider";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-});
-
-const dmMono = DM_Mono({
-  variable: "--font-dm-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
-
 export const viewport: Viewport = {
-  themeColor: "#0C4A48",
+  themeColor: [{ media: "(prefers-color-scheme: light)", color: "#faf6ef" }, { media: "(prefers-color-scheme: dark)", color: "#0a2321" }],
   width: "device-width",
   initialScale: 1,
 };
+
+/** Pre-paint theme boot: storage value wins, else system preference.
+ * Runs inline before first paint so there is no dark-mode flash.
+ * Keep in sync with the key and class used by ThemeToggle. */
+const themeBootScript =
+  "(function(){try{var p=localStorage.getItem('mk-theme');var d=p==='dark'||(p!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var c=document.documentElement.classList;d?c.add('dark'):c.remove('dark');}catch(e){}})()";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://momskitchen.co.in"),
@@ -152,21 +147,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{ __html: themeBootScript }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body
-        className={`${spaceGrotesk.variable} ${dmMono.variable} antialiased font-display flex flex-col min-h-screen`}
-      >
+      <body className="antialiased font-sans flex flex-col min-h-screen bg-paper text-ink">
         <Sakura />
-        <div className="relative z-10 flex-1 flex flex-col">
-          {children}
-        </div>
+        <LenisProvider>
+          <div className="relative z-10 flex-1 flex flex-col">
+            {children}
+          </div>
         <Footer />
+        </LenisProvider>
       </body>
     </html>
   );

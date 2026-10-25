@@ -2,51 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
-// In-memory sliding-window IP rate limiting with TTL pruning
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
+/** A code is toast once it has absorbed five wrong entries. */
+const MAX_OTP_ATTEMPTS = 5;
 
-const ipLimiter = new Map<string, RateLimitEntry>();
-
-function checkIpRateLimit(ip: string, maxRequests = 10, windowMs = 10 * 60 * 1000): boolean {
-  const now = Date.now();
-  // Prevent unbounded memory growth by pruning expired entries
-  if (ipLimiter.size > 500) {
-    for (const [key, val] of ipLimiter.entries()) {
-      if (now > val.resetAt) ipLimiter.delete(key);
-    }
-  }
-  const entry = ipLimiter.get(ip);
-  if (!entry || now > entry.resetAt) {
-    ipLimiter.set(ip, { count: 1, resetAt: now + windowMs });
-    return true;
-  }
-  if (entry.count >= maxRequests) {
-    return false;
-  }
-  entry.count += 1;
-  return true;
-}
-
-function normalizePhone(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
-  if (digits.length === 10) return "91" + digits;
-  if (digits.startsWith("91") && digits.length === 12) return digits;
-  return digits.length > 10 ? "91" + digits.slice(-10) : digits;
-}
+const MISSING_FIELDS_ERROR = "Missing required fields: phone, pollId, optionId, otp";
 
 /**
- * Direct phone verification & ballot casting for active subscribers.
- * 
- * Protections:
- * 1. IP sliding-window limit (in-memory, immediate exit before network calls)
- * 2. Invisible reCAPTCHA v3 (bot protection)
- * 3. Active poll deadline & status guard
- * 4. Active subscriber validation (customers + subscriptions.status = 'active')
- * 5. Phone-level rate limit (spam protection)
- * 6. Duplicate vote protection (PostgreSQL UNIQUE constraint unique_customer_poll_vote)
+ * Vote casting bounded by the WhatsApp OTP issued by POST /api/poll/send-otp.
+ *
+ * Flow:
+ * 1. phone/pollId/optionId/otp must all be present before any verification.
+ * 2. reCAPTCHA v3 runs before any database touch (bot protection; skipped
+ *    gracefully when keys are not configured).
+ * 3. The poll must be active and its deadline not passed.
+ * 4. The freshest poll_otps row for the WhatsApp phone is pulled, checked for
+ *    expiry, and compared against the submitted code. Wrong entries bump the
+ *    attempts counter, five burn the code.
+ * 5. The verified customer record is required and the option must belong to
+ *    the active poll. The ballot is inserted and the code consumed; the
+ *    unique constraint on poll_votes is the race-safe agent against
+ *    double-voting, and the OTP is retained whenever a write fails so the
+ *    subscriber can retry without a fresh code.
+ *
+ * Returns 400 for missing fields, unavailable/expired/incorrect codes; 403 for
+ * captcha failures or unrecognized subscribers; 409 for duplicate insert 23505
+ * or unique-constraint text; 410 for closed or expired polls; 500 for missed
+ * configuration, insert exceptions, and transport errors.
  */
 export async function POST(req: NextRequest) {
   if (!supabase) {
@@ -54,34 +35,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { phone, pollId, optionId, recaptchaToken } = await req.json();
+    const { phone, pollId, optionId, otp, recaptchaToken } = await req.json();
 
     if (!phone || typeof phone !== "string") {
-      return NextResponse.json({ error: "Valid 10-digit phone number is required" }, { status: 400 });
+      return NextResponse.json({ error: MISSING_FIELDS_ERROR }, { status: 400 });
     }
     if (!pollId || typeof pollId !== "string") {
-      return NextResponse.json({ error: "Poll ID is required" }, { status: 400 });
+      return NextResponse.json({ error: MISSING_FIELDS_ERROR }, { status: 400 });
     }
     if (!optionId || typeof optionId !== "string") {
-      return NextResponse.json({ error: "Dish option is required" }, { status: 400 });
+      return NextResponse.json({ error: MISSING_FIELDS_ERROR }, { status: 400 });
+    }
+    if (!otp && otp !== 0) {
+      return NextResponse.json({ error: MISSING_FIELDS_ERROR }, { status: 400 });
     }
 
-    const cleanPhone = normalizePhone(phone);
-    if (cleanPhone.length < 10) {
-      return NextResponse.json({ error: "Please enter a valid 10-digit phone number" }, { status: 400 });
-    }
-
-    // 1. IP Rate Limiting (checked first to reject network floods without outbound API latency)
-    const forwarded = req.headers.get("x-forwarded-for");
-    const clientIp = (forwarded ? forwarded.split(",")[0].trim() : null) || req.headers.get("x-real-ip") || "unknown";
-    if (clientIp !== "unknown" && !checkIpRateLimit(clientIp)) {
-      return NextResponse.json(
-        { error: "Too many requests from your network. Please wait a few minutes and try again." },
-        { status: 429 }
-      );
-    }
-
-    // 2. Bot Protection: reCAPTCHA v3 (graceful skip when keys are not configured)
+    // reCAPTCHA v3 (graceful skip when keys are not configured).
     const captcha = await verifyRecaptcha(recaptchaToken, "poll_vote");
     if (!captcha.ok) {
       return NextResponse.json(
@@ -90,7 +59,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Guard: Poll must still be active and its deadline not passed
+    // Guard: the poll must still be active and its deadline not passed.
     const { data: activePoll } = await supabase
       .from("polls")
       .select("id, status, closes_at, options")
@@ -108,7 +77,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate that optionId exists in this poll
+    // Validate that optionId exists in this poll.
     const pollOptions = Array.isArray(activePoll.options)
       ? (activePoll.options as Array<{ id?: string }>)
       : [];
@@ -120,78 +89,73 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Phone-level Rate Limiting: max 5 attempts per phone per 10 mins
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    const { data: recentAttempts } = await supabase
-      .from("poll_otps")
-      .select("id")
-      .eq("phone", cleanPhone)
-      .gte("created_at", tenMinutesAgo)
-      .limit(5);
+    // The freshest code issued to this WhatsApp phone.
+    let cleanPhone = phone.replace(/[^0-9]/g, "");
+    if (cleanPhone.length === 10) cleanPhone = "91" + cleanPhone;
 
-    if (recentAttempts && recentAttempts.length >= 5) {
+    const { data: codeRow } = await supabase
+      .from("poll_otps")
+      .select("id, otp_code, attempts, expires_at")
+      .eq("phone", cleanPhone)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!codeRow) {
       return NextResponse.json(
-        { error: "Too many voting attempts for this phone number. Please wait 10 minutes." },
-        { status: 429 }
+        {
+          code: "OTP_REQUIRED",
+          error: "No active verification code. Open the voting flow again to request a fresh WhatsApp code.",
+        },
+        { status: 400 }
       );
     }
 
-    // 5. Verify Customer exists
-    const { data: customer, error: custErr } = await supabase
+    // Codes die exactly at their timestamp, mirroring send-otp.
+    if (new Date(codeRow.expires_at).getTime() < Date.now()) {
+      await supabase.from("poll_otps").delete().eq("id", codeRow.id);
+      return NextResponse.json(
+        {
+          code: "OTP_EXPIRED",
+          error: "This verification code has expired. Please request a fresh code on WhatsApp.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (String(otp).trim() !== String(codeRow.otp_code).trim()) {
+      const nextAttempts = (codeRow.attempts ?? 0) + 1;
+      if (nextAttempts >= MAX_OTP_ATTEMPTS) {
+        await supabase.from("poll_otps").delete().eq("id", codeRow.id);
+        return NextResponse.json(
+          {
+            code: "OTP_EXHAUSTED",
+            error: "Too many incorrect attempts. Please request a fresh code on WhatsApp.",
+          },
+          { status: 400 }
+        );
+      }
+      await supabase.from("poll_otps").update({ attempts: nextAttempts }).eq("id", codeRow.id);
+      return NextResponse.json(
+        { error: "Incorrect verification code. Please try again." },
+        { status: 400 }
+      );
+    }
+
+    // Resolve the vetted subscriber so the ballot attaches to their record.
+    const { data: customer } = await supabase
       .from("customers")
       .select("id")
       .or(`phone.eq.${cleanPhone},phone.eq.${cleanPhone.slice(-10)}`)
       .limit(1)
       .maybeSingle();
 
-    if (custErr || !customer) {
-      return NextResponse.json({
-        code: "NO_ACTIVE_PLAN",
-        message: "Voting is an exclusive perk for active subscribers. Subscribe to any meal plan today to vote on upcoming menus!",
-      }, { status: 403 });
+    if (!customer) {
+      return NextResponse.json({ error: "Customer not recognized" }, { status: 403 });
     }
 
-    // 6. Verify Customer has an active meal plan subscription
-    const { data: activeSub, error: subErr } = await supabase
-      .from("subscriptions")
-      .select("id, status")
-      .eq("customer_id", customer.id)
-      .eq("status", "active")
-      .limit(1)
-      .maybeSingle();
-
-    if (subErr || !activeSub) {
-      return NextResponse.json({
-        code: "NO_ACTIVE_PLAN",
-        message: "Voting is an exclusive perk for active subscribers. Subscribe to any meal plan today to vote on upcoming menus!",
-      }, { status: 403 });
-    }
-
-    // 7. Duplicate Vote Guard: Check if customer already voted
-    const { data: existingVote } = await supabase
-      .from("poll_votes")
-      .select("id, option_id")
-      .eq("poll_id", pollId)
-      .eq("customer_id", customer.id)
-      .maybeSingle();
-
-    if (existingVote) {
-      return NextResponse.json({
-        code: "ALREADY_VOTED",
-        message: "You have already voted on this poll! Here are the community results so far.",
-        votedOptionId: existingVote.option_id,
-      }, { status: 409 });
-    }
-
-    // Record verified attempt in poll_otps for multi-worker distributed rate limiting
-    await supabase.from("poll_otps").insert({
-      phone: cleanPhone,
-      otp_code: "DIRECT_VOTE",
-      expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
-      attempts: 1,
-    });
-
-    // 8. Insert Vote (Protected by PostgreSQL UNIQUE constraint unique_customer_poll_vote)
+    // Record the ballot. The poll_votes unique constraint on
+    // (customer_id, poll_id) is the race-safe agent against double-voting.
     const { error: voteErr } = await supabase.from("poll_votes").insert({
       poll_id: pollId,
       customer_id: customer.id,
@@ -205,8 +169,12 @@ export async function POST(req: NextRequest) {
           message: "You have already voted on this poll!",
         }, { status: 409 });
       }
+      // Keep the OTP so the subscriber can retry without a fresh code.
       return NextResponse.json({ error: voteErr.message }, { status: 500 });
     }
+
+    // Consume the code only after a successful write.
+    await supabase.from("poll_otps").delete().eq("id", codeRow.id);
 
     return NextResponse.json({
       ok: true,
