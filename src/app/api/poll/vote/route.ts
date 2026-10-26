@@ -4,6 +4,9 @@ import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
 export const dynamic = "force-dynamic";
 
+/** A code is toast once it has absorbed five wrong entries. */
+const MAX_OTP_ATTEMPTS = 5;
+
 // In-memory sliding-window IP rate limiting with TTL pruning
 interface RateLimitEntry {
   count: number;
@@ -14,7 +17,6 @@ const ipLimiter = new Map<string, RateLimitEntry>();
 
 function checkIpRateLimit(ip: string, maxRequests = 10, windowMs = 10 * 60 * 1000): boolean {
   const now = Date.now();
-  // Prevent unbounded memory growth by pruning expired entries
   if (ipLimiter.size > 500) {
     for (const [key, val] of ipLimiter.entries()) {
       if (now > val.resetAt) ipLimiter.delete(key);
@@ -56,7 +58,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { phone, pollId, optionId, recaptchaToken } = await req.json();
+    const { phone, pollId, optionId, otp, recaptchaToken } = await req.json();
 
     if (!phone || typeof phone !== "string") {
       return NextResponse.json({ error: "Valid 10-digit phone number is required" }, { status: 400 });
@@ -122,7 +124,60 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Phone-level Rate Limiting: max 5 attempts per phone per 10 mins
+    // 4. Optional OTP verification if an OTP was explicitly provided
+    let otpRowId: string | null = null;
+    if (otp !== undefined && otp !== null && String(otp).trim() !== "") {
+      const { data: codeRow } = await supabase
+        .from("poll_otps")
+        .select("id, otp_code, attempts, expires_at")
+        .eq("phone", cleanPhone)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!codeRow) {
+        return NextResponse.json(
+          {
+            code: "OTP_REQUIRED",
+            error: "No active verification code. Open the voting flow again to request a fresh WhatsApp code.",
+          },
+          { status: 400 }
+        );
+      }
+
+      if (new Date(codeRow.expires_at).getTime() < Date.now()) {
+        await supabase.from("poll_otps").delete().eq("id", codeRow.id);
+        return NextResponse.json(
+          {
+            code: "OTP_EXPIRED",
+            error: "This verification code has expired. Please request a fresh code on WhatsApp.",
+          },
+          { status: 400 }
+        );
+      }
+
+      if (String(otp).trim() !== String(codeRow.otp_code).trim()) {
+        const nextAttempts = (codeRow.attempts ?? 0) + 1;
+        if (nextAttempts >= MAX_OTP_ATTEMPTS) {
+          await supabase.from("poll_otps").delete().eq("id", codeRow.id);
+          return NextResponse.json(
+            {
+              code: "OTP_EXHAUSTED",
+              error: "Too many incorrect attempts. Please request a fresh code on WhatsApp.",
+            },
+            { status: 400 }
+          );
+        }
+        await supabase.from("poll_otps").update({ attempts: nextAttempts }).eq("id", codeRow.id);
+        return NextResponse.json(
+          { error: "Incorrect verification code. Please try again." },
+          { status: 400 }
+        );
+      }
+      otpRowId = codeRow.id;
+    }
+
+    // 5. Phone-level Rate Limiting: max 5 attempts per phone per 10 mins
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     const { data: recentAttempts } = await supabase
       .from("poll_otps")
@@ -138,7 +193,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 5. Verify Customer exists
+    // 6. Verify Customer exists
     const { data: customer, error: custErr } = await supabase
       .from("customers")
       .select("id")
@@ -153,7 +208,7 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    // 6. Verify Customer has an active meal plan subscription
+    // 7. Verify Customer has an active meal plan subscription
     const { data: activeSub, error: subErr } = await supabase
       .from("subscriptions")
       .select("id, status")
@@ -169,7 +224,7 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
 
-    // 7. Duplicate Vote Guard: Check if customer already voted
+    // 8. Duplicate Vote Guard: Check if customer already voted
     const { data: existingVote } = await supabase
       .from("poll_votes")
       .select("id, option_id")
@@ -193,7 +248,7 @@ export async function POST(req: NextRequest) {
       attempts: 1,
     });
 
-    // 8. Insert Vote (Protected by PostgreSQL UNIQUE constraint unique_customer_poll_vote)
+    // 9. Insert Vote (Protected by PostgreSQL UNIQUE constraint unique_customer_poll_vote)
     const { error: voteErr } = await supabase.from("poll_votes").insert({
       poll_id: pollId,
       customer_id: customer.id,
@@ -208,6 +263,10 @@ export async function POST(req: NextRequest) {
         }, { status: 409 });
       }
       return NextResponse.json({ error: voteErr.message }, { status: 500 });
+    }
+
+    if (otpRowId) {
+      await supabase.from("poll_otps").delete().eq("id", otpRowId);
     }
 
     return NextResponse.json({

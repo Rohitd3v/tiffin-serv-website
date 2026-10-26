@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { SiteNav } from "@/components/SiteNav";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -64,36 +64,48 @@ const termsSchema = {
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(termsSchema) }}
       />
-      <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
-        <Link href="/" className="flex items-center gap-2 font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back Home
-        </Link>
-        <span className="text-xl font-black uppercase text-brutal-text">Terms &amp; Conditions</span>
-      </nav>
+      {/* Adaptive frosted navigation */}
+      <SiteNav
+        whatsappUrl="/"
+        links={null}
+        subtitle={null}
+        backLink={{ href: "/", label: "Back Home" }}
+        showOrderCta={false}
+      />
 
-      <article className="max-w-4xl mx-auto p-6 md:p-20">
-        <header className="mb-12 border-b-4 border-brutal-border pb-8">
-          <div className="bg-brutal-accent p-4 border-2 border-brutal-border w-fit mb-6">
-            <ShieldCheck className="w-12 h-12" />
-          </div>
-          <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">Terms &amp; <br /> Conditions</h1>
-          <p className="font-mono font-bold text-brutal-muted uppercase">Last Updated: April 2026</p>
+      <article className="mx-auto max-w-3xl px-5 pb-24 pt-32 md:pt-40">
+        <header className="mb-12 border-b border-hairline-soft pb-10">
+          <span className="mb-6 flex h-12 w-12 items-center justify-center rounded-[1.25rem] bg-gradient-to-br from-amber to-coral text-white shadow-lift">
+            <ShieldCheck className="h-6 w-6" strokeWidth={1.5} />
+          </span>
+          <h1 className="display-hero mb-3 text-4xl text-ink md:text-6xl">
+            Terms &amp; Conditions
+          </h1>
+          <p className="tabular text-[13px] text-faint">Last updated: April 2026</p>
         </header>
 
-        <div className="space-y-12 font-medium leading-relaxed text-brutal-text">
+        <div className="space-y-12">
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">1. Service Description</h3>
-            <p>Mom&apos;s Kitchen provides subscription-based meal preparation and delivery services within designated zones in Delhi NCR. All orders are initiated through our WhatsApp-based automated system.</p>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              1. Service Description
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted">
+              Mom&apos;s Kitchen provides subscription-based meal preparation and delivery
+              services within designated zones in Delhi NCR. All orders are initiated
+              through our WhatsApp-based automated system.
+            </p>
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">2. Subscription & Payments</h3>
-            <ul className="list-disc pl-6 space-y-4">
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              2. Subscription & Payments
+            </h3>
+            <ul className="list-disc space-y-3 pl-6 text-[15px] leading-relaxed text-muted">
               <li>Payments are processed securely via Razorpay.</li>
               <li>Subscriptions (Starter, Regular, Family) are pre-paid.</li>
               <li>&quot;Meals Remaining&quot; are tracked within our database and updated upon each delivery.</li>
@@ -102,23 +114,41 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">3. Delivery Windows</h3>
-            <p>We strictly adhere to the following slots:</p>
-            <ul className="font-mono font-bold mt-4 space-y-2">
-              <li>Lunch: 12:00 PM - 2:00 PM</li>
-              <li>Dinner: 7:00 PM - 9:00 PM</li>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              3. Delivery Windows
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted mb-3">
+              We strictly adhere to the following slots:
+            </p>
+            <ul className="tabular space-y-1.5 pl-6 list-disc text-[15px] text-ink">
+              <li>Lunch: 12:00 PM – 2:00 PM</li>
+              <li>Dinner: 7:00 PM – 9:00 PM</li>
             </ul>
-            <p className="mt-4">Delays caused by extreme weather or traffic in Delhi NCR will be communicated via WhatsApp.</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-muted">
+              Delays caused by extreme weather or traffic in Delhi NCR will be communicated
+              via WhatsApp.
+            </p>
           </section>
 
           <section>
-            <h3 className="text-3xl font-black uppercase mb-4">4. Pause & Cancellation</h3>
-            <p>Users can pause their meals by texting &quot;PAUSE&quot; to our WhatsApp bot. Pause requests for Lunch must be received before 9:00 AM, and for Dinner before 4:00 PM on the same day.</p>
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-4">
+              4. Pause & Cancellation
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted">
+              Users can pause their meals by texting &quot;PAUSE&quot; to our WhatsApp bot.
+              Pause requests for Lunch must be received before 9:00 AM, and for Dinner
+              before 4:00 PM on the same day.
+            </p>
           </section>
 
-          <section className="bg-brutal-bg p-8 border-[3px] border-brutal-border">
-            <h3 className="text-2xl font-black uppercase mb-2">Governing Law</h3>
-            <p className="text-sm">These terms are governed by the laws of the Republic of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Gurugram.</p>
+          <section className="calm-card bg-tealwash p-7 rounded-[1.75rem]">
+            <h3 className="text-xl font-semibold -tracking-[0.02em] text-ink mb-2">
+              Governing Law
+            </h3>
+            <p className="text-[13px] leading-relaxed text-muted">
+              These terms are governed by the laws of the Republic of India. Any disputes
+              shall be subject to the exclusive jurisdiction of the courts in Gurugram.
+            </p>
           </section>
         </div>
       </article>

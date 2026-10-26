@@ -1,112 +1,480 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-brutal-bg: rgb(255 248 237);
-  --color-brutal-card: rgb(255 255 255);
-  --color-brutal-card-mint: rgb(235 247 245);
-  --color-brutal-card-peach: rgb(255 242 234);
-  --color-brutal-card-lilac: rgb(240 248 247);
-  --color-brutal-card-lemon: rgb(255 248 225);
-  --color-brutal-card-pink: rgb(255 237 232);
-  --color-brutal-border: rgb(12 74 72);
-  --color-brutal-ink: rgb(12 74 72);
-  --color-brutal-accent: rgb(245 166 35);
-  --color-brutal-accent-hover: rgb(224 150 24);
-  --color-brutal-pop: rgb(232 90 52);
-  --color-brutal-pop-hover: rgb(210 74 38);
-  --color-brutal-sea: rgb(37 211 102);
-  --color-brutal-sky: rgb(20 123 120);
-  --color-brutal-whatsapp: rgb(37 211 102);
-  --color-brutal-whatsapp-hover: rgb(32 186 90);
-  --color-brutal-text: rgb(12 74 72);
-  --color-brutal-muted: rgb(46 101 99);
-  
-  --shadow-brutal-sm: 2px 2px 0px var(--color-brutal-border);
-  --shadow-brutal: 4px 4px 0px var(--color-brutal-border);
-  --shadow-brutal-lg: 8px 8px 0px var(--color-brutal-border);
+/* ─────────────────────────────────────────────────────────────
+   Mom's Kitchen — Design System
+   Apple-grade: frosted materials, specular depth, SF typography.
 
-  --font-display: var(--font-space-grotesk);
-  --font-mono: var(--font-dm-mono);
+   Dark mode: every semantic token resolves from a `--sys-*` runtime
+   variable declared on `:root` and overridden on `.dark` (booted
+   pre-paint by the inline script in layout.tsx), so components stay
+   token-driven and never use hardcoded whites/darks.
+   ───────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* Typography — SF Pro system stack (optically sized on Apple platforms) */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Helvetvetica Neue", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-sans);
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Paper & ink */
+  --color-paper: var(--sys-paper);
+  --color-surface: var(--sys-surface);
+  --color-ink: var(--sys-ink);
+  /* Constant-teal fill for chips/CTAs that carry white text — does not flip:
+     in dark it lifts slightly so white icons/labels stay legible. */
+  --color-ink-solid: var(--sys-ink-solid);
+  --color-muted: var(--sys-muted);
+  --color-faint: var(--sys-faint);
+  --color-hairline: var(--sys-hairline);
+  --color-hairline-soft: var(--sys-hairline-soft);
+
+  /* Accents — accent solids (amber, whatsapp, amber-deep) are theme-proof
+     (they always carry white text); washes and gradients adapt per theme. */
+  --color-amber: var(--sys-amber);
+  --color-amber-deep: var(--sys-amber-deep);
+  --color-amber-soft: var(--sys-amber-soft);
+  --color-coral: var(--sys-coral);
+  --color-coral-deep: var(--sys-coral-deep);
+  --color-coral-soft: var(--sys-coral-soft);
+  --color-tealwash: var(--sys-tealwash);
+  --color-whatsapp: var(--sys-whatsapp);
+  --color-whatsapp-deep: var(--sys-whatsapp-deep);
+
+  /* Legacy palette names (referenced by editable plan/testimonial payloads)
+     — values retuned for the new material system. */
+  --color-brutal-bg: var(--sys-paper);
+  --color-brutal-card: var(--sys-surface);
+  --color-brutal-card-mint: var(--sys-tealwash);
+  --color-brutal-card-peach: var(--sys-coral-soft);
+  --color-brutal-card-lilac: var(--sys-tealwash);
+  --color-brutal-card-lemon: var(--sys-amber-soft);
+  --color-brutal-card-pink: var(--sys-coral-soft);
+  --color-brutal-border: var(--sys-ink-solid);
+  --color-brutal-ink: var(--sys-ink);
+  --color-brutal-accent: var(--sys-amber);
+  --color-brutal-accent-hover: #d98b0d;
+  --color-brutal-pop: var(--sys-coral);
+  --color-brutal-pop-hover: var(--sys-coral-deep);
+  --color-brutal-sea: var(--sys-whatsapp);
+  --color-brutal-sky: #15857f;
+  --color-brutal-whatsapp: var(--sys-whatsapp);
+  --color-brutal-whatsapp-hover: var(--sys-whatsapp-deep);
+  --color-brutal-text: var(--sys-ink);
+  --color-brutal-muted: var(--sys-muted);
+
+  /* Soft ambient shadows — layered diffusion, never hard offsets.
+     Var-based so dark mode can deepen to neutral black diffusion. */
+  --shadow-soft: var(--sys-shadow-soft);
+  --shadow-lift: var(--sys-shadow-lift);
+  --shadow-sheet: var(--sys-shadow-sheet);
+
+  /* Radii — Apple's continuous-corner language */
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
 }
 
 :root {
-  --background: #fff8ed;
-  --foreground: #0c4a48;
+  color-scheme: light;
+
+  --sys-paper: #faf6ef;
+  --sys-surface: #ffffff;
+  --sys-ink: #0c4a48;
+  --sys-ink-solid: #0c4a48;
+  --sys-muted: #567673;
+  --sys-faint: #7d918f;
+  --sys-hairline: rgba(12, 74, 72, 0.12);
+  --sys-hairline-soft: rgba(12, 74, 72, 0.07);
+
+  --sys-amber: #f5a623;
+  --sys-amber-deep: #c77f0a;
+  --sys-amber-soft: #fdf0d7;
+  --sys-coral: #e85a34;
+  --sys-coral-deep: #cf4726;
+  --sys-coral-soft: #fceae4;
+  --sys-tealwash: #eaf3f2;
+  --sys-whatsapp: #25d366;
+  --sys-whatsapp-deep: #1eb257;
+
+  --sys-shadow-soft: 0 1px 2px rgba(12, 74, 72, 0.04), 0 6px 18px rgba(12, 74, 72, 0.06);
+  --sys-shadow-lift: 0 2px 6px rgba(12, 74, 72, 0.06), 0 14px 32px rgba(12, 74, 72, 0.1);
+  --sys-shadow-sheet: 0 6px 16px rgba(12, 74, 72, 0.08), 0 28px 64px rgba(12, 74, 72, 0.16);
+
+  --background: var(--sys-paper);
+  --foreground: var(--sys-ink);
+}
+
+/* Dark — deep teal kitchen at night: warm-dark surfaces (never pure black),
+   light ink, and accent washes at low alpha. Accent solids stay theme-proof. */
+.dark {
+  color-scheme: dark;
+
+  --sys-paper: #0a2321;
+  --sys-surface: #0e2b29;
+  --sys-ink: #e9f4f2;
+  --sys-ink-solid: #12635f;
+  --sys-muted: #a3bfbb;
+  --sys-faint: #72908d;
+  --sys-hairline: rgba(233, 244, 242, 0.14);
+  --sys-hairline-soft: rgba(233, 244, 242, 0.07);
+
+  --sys-amber: #f5a623;
+  --sys-amber-deep: #c77f0a;
+  --sys-amber-soft: rgba(245, 166, 35, 0.16);
+  --sys-coral: #ef6a43;
+  --sys-coral-deep: #d95536;
+  --sys-coral-soft: rgba(232, 90, 52, 0.16);
+  --sys-tealwash: rgba(151, 226, 218, 0.1);
+  --sys-whatsapp: #25d366;
+  --sys-whatsapp-deep: #1eb257;
+
+  --sys-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.25), 0 6px 18px rgba(0, 0, 0, 0.3);
+  --sys-shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.28), 0 14px 32px rgba(0, 0, 0, 0.4);
+  --sys-shadow-sheet: 0 6px 16px rgba(0, 0, 0, 0.3), 0 28px 64px rgba(0, 0, 0, 0.5);
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+/* Lenis momentum scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-space-grotesk), sans-serif;
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
   overflow-x: hidden;
-  cursor: url('/petal-cursor.svg') 12 1, auto;
+  -webkit-font-smoothing: antialiased;
+  /* Theme switches ease instead of strobing (no abrupt brightness jumps) */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a, button, input[type="submit"], input[type="button"], [role="button"] {
-  cursor: url('/petal-cursor.svg') 12 1, pointer;
-}
-
-/* Brutalist selection */
 ::selection {
-  background: var(--color-brutal-accent);
-  color: var(--color-brutal-border);
+  background: rgba(245, 166, 35, 0.35);
+  color: var(--foreground);
 }
 
-/* Custom Scrollbar */
+/* Thin, quiet scrollbar like macOS overlay indicators */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
+  height: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--color-brutal-bg);
-  border-left: 3px solid var(--color-brutal-border);
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: var(--color-brutal-border);
-  border: 2px solid var(--color-brutal-bg);
+  background: rgba(12, 74, 72, 0.22);
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(12, 74, 72, 0.35);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(233, 244, 242, 0.2);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(233, 244, 242, 0.32);
 }
 
-/* Helper classes for brutalist elements */
-.brutalist-border {
-  border: 3px solid var(--color-brutal-border);
+/* Apple focus ring — teal halo, keyboard-visible only */
+:focus-visible {
+  outline: 2px solid rgba(21, 133, 127, 0.8);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-.brutalist-shadow {
-  box-shadow: 4px 4px 0px var(--color-brutal-border);
+/* ── Materials ──────────────────────────────────────────────
+   Frosted surfaces: 1px specular top edge, ambient diffusion,
+   hairline separation. Bigger surface = deeper diffusion. */
+
+.frost {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    var(--shadow-soft);
 }
 
-.brutalist-shadow-lg {
-  box-shadow: 8px 8px 0px var(--color-brutal-border);
+.frost-strong {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    var(--shadow-lift);
 }
 
-.brutalist-button-hover:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--color-brutal-border);
+.glass {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 24px 64px rgba(0, 0, 0, 0.28);
 }
 
+/* Soft-edged card for tinted pastel surfaces over paper */
+.calm-card {
+  background: var(--sys-surface);
+  border: 1px solid rgba(12, 74, 72, 0.09);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Dark materials — same recipes on deep-teal dark surfaces. The specular
+   edge stays so the material still reads as "light catching layers". */
+.dark .frost {
+  background: rgba(11, 42, 40, 0.66);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    var(--shadow-soft);
+}
+
+.dark .frost-strong {
+  background: rgba(13, 46, 44, 0.74);
+  backdrop-filter: blur(28px) saturate(150%);
+  -webkit-backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    var(--shadow-lift);
+}
+
+.dark .glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 24px 64px rgba(0, 0, 0, 0.35);
+}
+
+.dark .calm-card {
+  background: var(--sys-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Legacy helper — retired hard card, aliased to the calm material
+   while dashboard-managed references age out. */
 .brutalist-card {
-  border: 3px solid var(--color-brutal-border);
-  background: var(--color-brutal-card);
+  background: var(--sys-surface);
+  border: 1px solid rgba(12, 74, 72, 0.09);
   padding: 1.5rem;
-  box-shadow: 4px 4px 0px var(--color-brutal-border);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft);
   transition: all 0.2s ease;
 }
-
-.brutalist-input {
-  border: 3px solid var(--color-brutal-border);
+.dark .brutalist-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.brutalist-border {
+  border: 1px solid var(--sys-hairline);
+}
+.brutalist-shadow {
+  box-shadow: var(--shadow-soft);
+}
+.brutalist-shadow-lg {
+  box-shadow: var(--shadow-lift);
+}
+.brutalist-button-hover:hover {
+  transform: none;
+  box-shadow: var(--shadow-lift);
+}
+.brutalist-input,
+.field-input {
+  border: 1px solid var(--sys-hairline);
+  background: var(--sys-surface);
   padding: 0.75rem 1rem;
-  font-family: var(--font-dm-mono);
+  border-radius: 0.9rem;
+  font-family: var(--font-mono);
   outline: none;
-  transition: all 0.2s ease;
-  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.brutalist-input:focus,
+.field-input:focus {
+  border-color: rgba(21, 133, 127, 0.6);
+  box-shadow: 0 0 0 4px rgba(21, 133, 127, 0.12);
 }
 
-.brutalist-input:focus {
-  background: var(--color-brutal-accent);
-  box-shadow: 4px 4px 0px var(--color-brutal-border);
+/* Instant press feedback on every tappable surface (acts on pointer-down) */
+.press {
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+}
+.press:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Micro-label — quiet uppercase eyebrow, Apple sidebar-style */
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Display type — SF-style tight tracking & leading that tracks size */
+.display-hero {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  font-optical-sizing: auto;
+}
+.display-locked {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Ambient gradient washes — kitchen-warm atmosphere under contents */
+.wash-bokeh {
+  background:
+    radial-gradient(560px 420px at 12% -4%, rgba(245, 166, 35, 0.16), transparent 70%),
+    radial-gradient(640px 500px at 92% 12%, rgba(21, 133, 127, 0.14), transparent 70%),
+    radial-gradient(500px 420px at 55% 105%, rgba(232, 90, 52, 0.1), transparent 70%),
+    linear-gradient(180deg, #faf6ef 0%, #fdfbf7 100%);
+}
+
+/* Dark night-wash: the same three radials dimmed + a warm-dark base */
+.dark .wash-bokeh {
+  background:
+    radial-gradient(560px 420px at 12% -4%, rgba(245, 166, 35, 0.1), transparent 70%),
+    radial-gradient(640px 500px at 92% 12%, rgba(158, 231, 224, 0.08), transparent 70%),
+    radial-gradient(500px 420px at 55% 105%, rgba(240, 106, 67, 0.07), transparent 70%),
+    linear-gradient(180deg, #0a2321 0%, #071918 100%);
+}
+
+.wash-deep {
+  background:
+    radial-gradient(720px 480px at 15% 0%, rgba(45, 212, 191, 0.14), transparent 72%),
+    radial-gradient(640px 420px at 88% 100%, rgba(232, 90, 52, 0.18), transparent 70%),
+    linear-gradient(165deg, #0b4a48 0%, #0d5651 55%, #0a3f3e 100%);
+}
+
+/* Fine grain overlay for hero warmth (no full-viewport loops).
+   In dark, multiply would vanish — soften to overlay-style blend instead. */
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.05'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.dark .grain::before {
+  mix-blend-mode: soft-light;
+  opacity: 0.25;
+}
+
+/* Marquee seam — soft scroll-edge fade, no hard divider */
+.edge-fade-y {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Vaul iOS bottom-sheet chrome */
+[data-vaul-drawer] {
+  will-change: transform;
+}
+.vaul-snap {
+  background: var(--sys-surface);
+}
+
+/* Radix accordion — SwiftUI-like disclosure easing */
+@keyframes expand {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+@keyframes collapse {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+[data-state="open"][data-accordion-content] {
+  animation: expand 240ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+[data-state="closed"][data-accordion-content] {
+  animation: collapse 200ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* ── Theme switching ────────────────────────────────────────
+   Class-driven: the boot script in layout.tsx adds `.dark` before first
+   paint (storage value, else system preference), and ThemeToggle writes
+   the same pair. Keep the class name and storage key in sync. */
+
+/* ── Accessibility: independent prefers-* responses ───────── */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Replace slides/springs with short cross-fades; drop overshoot */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.2s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+    scroll-behavior: auto !important;
+  }
+  .grain::before {
+    opacity: 0.2;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .frost,
+  .frost-strong {
+    background: var(--sys-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .glass {
+    background: rgba(10, 63, 62, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .frost,
+  .frost-strong,
+  .calm-card {
+    background: var(--sys-surface);
+    border-color: var(--sys-ink-solid);
+  }
 }

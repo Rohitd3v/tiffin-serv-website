@@ -1,7 +1,8 @@
 import { BLOG_POSTS } from "@/lib/blog";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, MessageCircle, Share2 } from "lucide-react";
+import { ArrowUpRight, Calendar, Clock, MessageCircle } from "lucide-react";
+import { SiteNav } from "@/components/SiteNav";
 import type { Metadata } from "next";
 
 type Props = {
@@ -53,6 +54,9 @@ export default async function BlogPostPage({ params }: Props) {
   const post = BLOG_POSTS.find((p) => p.slug === slug);
 
   if (!post) notFound();
+
+  const ORDER_URL =
+    "https://wa.me/917033558836?text=Hello!%20I%27d%20like%20to%20order%20a%20tiffin%20subscription.";
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -121,77 +125,87 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-paper">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
-      <nav className="border-b-[3px] border-brutal-border p-6 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
-        <Link href="/blog" className="flex items-center gap-2 font-bold uppercase text-sm hover:bg-brutal-accent px-2 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Blog
-        </Link>
-        <Link href="/" className="text-2xl font-bold tracking-tight uppercase text-brutal-text hidden md:block">
-          Mom&apos;s Kitchen
-        </Link>
-        <div className="flex gap-4">
-          <button className="p-2 border-2 border-brutal-border hover:bg-brutal-sea transition-colors">
-            <Share2 className="w-4 h-4" />
-          </button>
-        </div>
-      </nav>
+      {/* Adaptive frosted navigation */}
+      <SiteNav
+        whatsappUrl={ORDER_URL}
+        links={null}
+        subtitle={null}
+        backLink={{ href: "/blog", label: "Back to Blog" }}
+      />
 
-      <article className="max-w-4xl mx-auto p-6 md:p-20">
+      <article className="mx-auto max-w-3xl px-5 pb-24 pt-32 md:pt-40">
         <header className="mb-12">
-          <div className="bg-brutal-pop text-white text-xs font-black uppercase px-3 py-1 border-2 border-brutal-border w-fit mb-6 shadow-brutal-sm">
+          <span className="eyebrow mb-5 w-fit rounded-full bg-tealwash px-3 py-1 text-muted">
             {post.category}
-          </div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-brutal-text leading-none mb-8">
+          </span>
+          <h1 className="display-hero mb-8 text-4xl text-ink md:text-6xl">
             {post.title}
           </h1>
-          <div className="flex flex-wrap gap-6 text-sm font-bold uppercase text-brutal-muted font-mono border-y-2 border-brutal-border py-4">
-            <span className="flex items-center gap-2 text-brutal-text">
-              <Calendar className="w-4 h-4" /> {post.date}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-hairline-soft py-4 text-[12px] font-medium text-faint">
+            <span className="tabular flex items-center gap-1.5 text-muted">
+              <Calendar className="h-3.5 w-3.5" strokeWidth={1.5} /> {post.date}
             </span>
-            <span className="flex items-center gap-2">
-              <Clock className="w-4 h-4" /> {post.readTime}
+            <span className="flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" strokeWidth={1.5} /> {post.readTime}
             </span>
             <span className="md:ml-auto">
-              By {post.author.name} • <span className="text-brutal-pop">{post.author.role}</span>
+              By {post.author.name} · <span className="text-coral">{post.author.role}</span>
             </span>
           </div>
         </header>
 
-        <div 
-          className="prose prose-xl max-w-none font-medium leading-relaxed text-brutal-text 
-          [&>p]:mb-8 [&>h2]:text-brutal-text [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:mb-8 [&>ul>li]:mb-2
-          [&>strong]:font-black"
+        <div
+          className="text-[16px] leading-[1.75] text-ink/90
+          [&>p]:mb-7 [&>p]:text-muted [&>h2]:mt-12 [&>h2]:mb-4 [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:-tracking-[0.02em] [&>h2]:text-ink
+          [&>ul]:mb-7 [&>ul]:mt-0 [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:text-muted [&>ul>li]:mb-2 [&>ul>li]:leading-relaxed
+          [&>strong]:font-semibold [&>strong]:text-ink [&>a]:text-coral [&>a]:underline [&>a]:decoration-hairline [&>a]:underline-offset-2"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
-        <footer className="mt-20 pt-10 border-t-4 border-brutal-border">
-          <div className="brutalist-card bg-brutal-accent">
-            <h3 className="text-3xl font-black uppercase mb-4">Want more content like this?</h3>
-            <p className="font-bold font-mono mb-8">Join our Delhi community on WhatsApp for daily menus, nutrition tips, and exclusive subscription offers.</p>
-            <a 
+        <footer className="mt-16">
+          <div className="calm-card bg-gradient-to-b from-amber-soft to-surface p-8 md:p-10 rounded-[1.75rem]">
+            <h3 className="text-2xl font-semibold -tracking-[0.02em] text-ink mb-3">
+              Want more content like this?
+            </h3>
+            <p className="mb-7 text-[14px] leading-relaxed text-muted">
+              Join our Delhi community on WhatsApp for daily menus, nutrition tips, and
+              exclusive subscription offers.
+            </p>
+            <a
               href="https://wa.me/917033558836?text=I read your blog and want to subscribe"
-              className="bg-brutal-border text-white text-xl font-bold px-8 py-4 shadow-brutal uppercase flex items-center gap-3 w-fit hover:bg-brutal-pop transition-colors border-[3px] border-brutal-border"
+              className="press inline-flex items-center gap-2.5 rounded-full bg-ink-solid px-7 py-3.5 text-[14px] font-semibold text-white shadow-lift transition-colors duration-150 hover:bg-[#0d5651]"
             >
-              <MessageCircle className="w-6 h-6" /> Chat with Us
+              <MessageCircle className="h-4 w-4" strokeWidth={1.75} /> Chat with Us
             </a>
           </div>
         </footer>
       </article>
 
       {/* Recommended Section */}
-      <section className="bg-brutal-bg p-6 md:p-20 border-t-[3px] border-brutal-border">
-        <div className="max-w-7xl mx-auto">
-          <h3 className="text-4xl font-black uppercase tracking-tighter mb-12">More to Read</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {BLOG_POSTS.filter(p => p.slug !== slug).slice(0, 2).map((p) => (
-              <Link key={p.slug} href={`/blog/${p.slug}`} className="brutalist-card bg-white hover:translate-x-1 hover:-translate-y-1 transition-transform shadow-brutal">
-                <h4 className="text-2xl font-black uppercase mb-4">{p.title}</h4>
-                <p className="font-mono text-sm opacity-70 mb-4">{p.excerpt}</p>
-                <span className="text-xs font-black uppercase underline">Read Now</span>
+      <section className="border-t border-hairline-soft bg-paper/60">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <p className="eyebrow mb-3 text-coral">Keep reading</p>
+          <h3 className="display-locked mb-10 text-3xl text-ink">More to read</h3>
+          <div className="grid gap-5 md:grid-cols-2">
+            {BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 2).map((p) => (
+              <Link
+                key={p.slug}
+                href={`/blog/${p.slug}`}
+                className="calm-card press group flex flex-col rounded-[1.75rem] p-7 transition-all duration-200 hover:shadow-lift"
+              >
+                <h4 className="mb-3 text-xl font-semibold -tracking-[0.02em] leading-snug text-ink transition-colors duration-150 group-hover:text-coral">
+                  {p.title}
+                </h4>
+                <p className="mb-5 flex-1 text-[14px] leading-relaxed text-muted">{p.excerpt}</p>
+                <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-ink">
+                  Read now
+                  <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" strokeWidth={1.75} />
+                </span>
               </Link>
             ))}
           </div>
@@ -199,10 +213,4 @@ export default async function BlogPostPage({ params }: Props) {
       </section>
     </main>
   );
-}
-
-export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({
-    slug: post.slug,
-  }));
 }

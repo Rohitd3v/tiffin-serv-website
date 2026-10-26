@@ -3,81 +3,67 @@ import { Utensils } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-brutal-bg p-12 border-b-[15px] border-brutal-border mt-auto">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-12">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Utensils className="w-6 h-6 text-brutal-pop" />
-            <span className="text-xl font-black uppercase tracking-tight text-brutal-text">
-              Mom&apos;s Kitchen
+    <footer className="border-t border-hairline-soft bg-paper/60 mt-auto">
+      <div className="mx-auto max-w-6xl px-5 py-14">
+        <div className="flex flex-col justify-between gap-12 md:flex-row">
+          <div className="max-w-xs">
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-ink-solid text-white shadow-soft">
+                <Utensils className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <span className="text-[15px] font-semibold -tracking-[0.01em] text-ink">
+                Mom&apos;s Kitchen
+              </span>
+            </div>
+            <p className="mb-4 text-[13px] leading-relaxed text-muted">
+              Authentic homestyle tiffin &amp; meal subscription delivered hot daily
+              across Delhi NCR &amp; Gurugram.
+            </p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-hairline-soft bg-white px-3 py-1.5 text-[11px] font-medium text-muted">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-whatsapp opacity-60" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-whatsapp" />
+              </span>
+              FSSAI compliant cloud kitchen
+            </div>
+          </div>
+
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-12 gap-y-3 text-[13px] lg:grid-cols-3">
+            {[
+              { href: "/", label: "Home" },
+              { href: "/#plans", label: "Meal Plans" },
+              { href: "/vote", label: "Menu Voting" },
+              { href: "/blog", label: "Food Blog" },
+              { href: "/privacy", label: "Privacy" },
+              { href: "/terms", label: "Terms" },
+            ].map((link) => (
+              <Link
+                key={link.href + link.label}
+                href={link.href}
+                className="w-fit rounded text-muted transition-colors duration-150 hover:text-ink"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex flex-col items-start gap-2 md:items-end">
+            <span className="rounded-full border border-hairline-soft bg-tealwash px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted">
+              Powered by Meta Cloud
             </span>
+            <p className="tabular text-[12px] text-faint">© 2026 Mom&apos;s Kitchen Operations</p>
+            <p className="text-[11px] text-faint">
+              Made by{" "}
+              <a
+                href="https://github.com/Rohitd3v"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-hairline underline-offset-2 transition-colors duration-150 hover:text-ink"
+              >
+                Rohit Singh Negi
+              </a>
+            </p>
           </div>
-          <p className="font-mono text-xs font-bold text-brutal-muted uppercase max-w-xs mb-3">
-            Authentic homestyle tiffin &amp; meal subscription delivered hot daily across Delhi NCR &amp; Gurugram.
-          </p>
-          <div className="inline-flex items-center gap-2 bg-white px-2.5 py-1 border-2 border-brutal-border text-[10px] font-mono font-bold uppercase shadow-brutal-sm">
-            <span className="w-2 h-2 rounded-full bg-[#25D366]"></span>
-            <span>FSSAI Compliant Cloud Kitchen</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-4 font-bold uppercase text-sm">
-          <Link
-            href="/"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Home
-          </Link>
-          <Link
-            href="/#plans"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Meal Plans
-          </Link>
-          <Link
-            href="/vote"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Menu Voting
-          </Link>
-          <Link
-            href="/blog"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Food Blog
-          </Link>
-          <Link
-            href="/privacy"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Privacy
-          </Link>
-          <Link
-            href="/terms"
-            className="hover:text-brutal-pop transition-colors"
-          >
-            Terms
-          </Link>
-        </div>
-
-        <div className="text-right flex flex-col items-end">
-          <div className="bg-brutal-border text-white text-[10px] font-black uppercase px-2 py-1 mb-2">
-            Powered by Meta Cloud
-          </div>
-          <p className="font-mono text-xs font-bold text-brutal-muted mb-2">
-            © 2026 MOM&apos;S KITCHEN OPERATIONS
-          </p>
-          <p className="font-mono text-[10px] font-bold text-brutal-muted uppercase">
-            Website & Bot Made with ❤️ by{" "}
-            <a
-              href="https://github.com/Rohitd3v"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-brutal-pop transition-colors underline"
-            >
-              Rohit Singh Negi
-            </a>
-          </p>
         </div>
       </div>
     </footer>

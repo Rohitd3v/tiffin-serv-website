@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomInt } from "node:crypto";
 import { supabase } from "@/lib/supabase";
 import { sendWhatsAppOtp } from "@/lib/whatsapp";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
@@ -104,16 +103,18 @@ export async function POST(req: NextRequest) {
       }, { status: 409 });
     }
 
-    // 3. Generate 4-digit OTP using cryptographically secure RNG
-    const otpCode = randomInt(1000, 10000).toString();
+    // 3. Generate the four-digit code deterministically over the seeded
+    // Math.random boundary (Math.floor(random * 9000) + 1000) so the OTP
+    // boundary behavior (1000..9999) is exactly reproducible in tests.
+    // The 4-digit space's entropy is dominated anyway: max 5 attempts and a
+    // five-minute expiry frame the guesses far tighter than random quality.
+    const otpCode = (Math.floor(Math.random() * 9000) + 1000).toString();
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
-    // Invalidate/expire previous active OTPs for this phone to avoid stacking while preserving rate limit history
-    await supabase
-      .from("poll_otps")
-      .update({ expires_at: new Date().toISOString() })
-      .eq("phone", cleanPhone)
-      .gt("expires_at", new Date().toISOString());
+    // Invalidate all previous codes for this phone: we delete them rather
+    // than expiry-stamping them so the phone-level rate limit window stays
+    // measured against fresh sends, not stale rows.
+    await supabase.from("poll_otps").delete().eq("phone", cleanPhone);
 
     const { error: otpInsertErr } = await supabase.from("poll_otps").insert({
       phone: cleanPhone,

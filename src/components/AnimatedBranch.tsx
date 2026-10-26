@@ -15,25 +15,25 @@ const leaves = [
   { cx: 65, cy: 155, delay: 2.7, size: 1.05, rotate: -20 },
 ];
 
-/** Renders a decorative animated herb vine and cooking pot on md+ screens. */
+/** Renders a soft decorative herb vine and steam wisps on md+ screens. */
 export function AnimatedBranch() {
   return (
-    <div className="hidden md:block absolute top-0 right-0 md:-right-20 w-[420px] h-[320px] md:w-[580px] md:h-[380px] pointer-events-none opacity-90 z-0">
+    <div className="hidden md:block absolute top-0 right-0 md:-right-16 w-[420px] h-[320px] md:w-[560px] md:h-[360px] pointer-events-none opacity-80 z-0">
       <svg
         viewBox="0 0 400 300"
-        className="w-full h-full overflow-visible drop-shadow-[2px_2px_0px_rgba(12,74,72,0.25)]"
+        className="w-full h-full overflow-visible blur-[0.3px]"
       >
         <motion.g
-          animate={{ rotate: [0, 1.2, -1.2, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ rotate: [0, 0.8, -0.8, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
           style={{ transformOrigin: "400px 0px" }}
         >
           {/* Main Herb Vine */}
           <motion.path
             d="M 400 0 Q 300 50 200 100 T 50 150"
             fill="transparent"
-            stroke="#0C4A48"
-            strokeWidth="5"
+            stroke="#9DB8B4"
+            strokeWidth="4"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -43,8 +43,8 @@ export function AnimatedBranch() {
           <motion.path
             d="M 280 65 Q 250 30 200 20"
             fill="transparent"
-            stroke="#0C4A48"
-            strokeWidth="3.5"
+            stroke="#B6CCC8"
+            strokeWidth="2.5"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -54,8 +54,8 @@ export function AnimatedBranch() {
           <motion.path
             d="M 180 110 Q 150 140 100 130"
             fill="transparent"
-            stroke="#0C4A48"
-            strokeWidth="2.5"
+            stroke="#C4D6D3"
+            strokeWidth="2"
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -76,70 +76,43 @@ export function AnimatedBranch() {
               }}
             >
               <g transform={`rotate(${leaf.rotate})`}>
-                {/* Coriander leaf shape */}
                 <path
                   d="M 0,0 C -8,-6 -10,-16 0,-20 C 10,-16 8,-6 0,0 Z"
-                  fill={i % 3 === 0 ? "#25D366" : "#2F7D4E"}
-                  stroke="#0C4A48"
-                  strokeWidth="1.5"
+                  fill={i % 3 === 0 ? "rgba(37, 211, 102, 0.55)" : "rgba(47, 125, 78, 0.5)"}
+                  stroke="none"
                 />
                 <path
                   d="M 0,-2 L 0,-16"
-                  stroke="#0C4A48"
+                  stroke="rgba(12, 74, 72, 0.25)"
                   strokeWidth="1"
                   strokeLinecap="round"
                 />
-                {/* Turmeric spice dot accent */}
-                <circle cx="5" cy="-8" r="2" fill="#F5A623" stroke="#0C4A48" strokeWidth="0.8" />
+                <circle cx="5" cy="-8" r="2" fill="rgba(245, 166, 35, 0.6)" stroke="none" />
               </g>
             </motion.g>
           ))}
 
-          {/* Illustrated Terracotta Handi / Cooking Pot (from card logo) */}
-          <motion.g
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.6, type: "spring" }}
-            transform="translate(45, 140)"
-          >
-            {/* Steam wisps */}
+          {/* Steam wisps from the Imagined Pot */}
+          <g transform="translate(45, 140)">
             <motion.path
               d="M 12,-6 C 14,-14 10,-20 13,-26"
               fill="none"
-              stroke="#E85A34"
-              strokeWidth="1.8"
+              stroke="rgba(232, 90, 52, 0.4)"
+              strokeWidth="2"
               strokeLinecap="round"
-              animate={{ y: [-2, -8, -2], opacity: [0.4, 0.9, 0.4] }}
+              animate={{ y: [-2, -8, -2], opacity: [0.2, 0.55, 0.2] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.path
               d="M 22,-6 C 25,-16 20,-22 24,-28"
               fill="none"
-              stroke="#F5A623"
-              strokeWidth="1.8"
+              stroke="rgba(245, 166, 35, 0.45)"
+              strokeWidth="2"
               strokeLinecap="round"
-              animate={{ y: [-3, -9, -3], opacity: [0.5, 1, 0.5] }}
+              animate={{ y: [-3, -9, -3], opacity: [0.25, 0.6, 0.25] }}
               transition={{ duration: 3, delay: 0.3, repeat: Infinity, ease: "easeInOut" }}
             />
-            {/* Pot Lid Handle */}
-            <ellipse cx="18" cy="2" rx="4" ry="2" fill="#0C4A48" />
-            {/* Pot Lid */}
-            <path
-              d="M 6,5 Q 18,0 30,5 Z"
-              fill="#E85A34"
-              stroke="#0C4A48"
-              strokeWidth="2"
-            />
-            {/* Pot Body */}
-            <path
-              d="M 6,6 Q 2,18 9,24 Q 18,27 27,24 Q 34,18 30,6 Z"
-              fill="#E85A34"
-              stroke="#0C4A48"
-              strokeWidth="2"
-            />
-            {/* Pot Rim Highlight */}
-            <line x1="6" y1="6" x2="30" y2="6" stroke="#0C4A48" strokeWidth="2" />
-          </motion.g>
+          </g>
         </motion.g>
       </svg>
     </div>
