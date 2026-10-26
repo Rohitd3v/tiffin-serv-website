@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * Returns the newest active poll with vote counts and rounded percentages,
  * or { poll: null } when none exists. At or after its deadline, attempts to

@@ -3,6 +3,8 @@ import { supabase } from "@/lib/supabase";
 import { sendWhatsAppOtp } from "@/lib/whatsapp";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Accepts JSON phone, pollId, and optional recaptchaToken to create a four-digit
  * OTP for an active subscriber. Strips phone punctuation and prefixes 10-digit

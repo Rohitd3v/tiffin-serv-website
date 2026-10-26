@@ -80,8 +80,8 @@ export default function Home() {
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{ y: 12 }}
+            animate={{ y: 0 }}
             transition={appleFlickSpring}
             className="display-hero mt-7 text-5xl text-ink sm:text-6xl md:text-7xl lg:text-[5.5rem]"
           >
