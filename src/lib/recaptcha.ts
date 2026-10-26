@@ -56,9 +56,40 @@ export function getRecaptchaToken(action: string): Promise<string | null> {
   });
 }
 
-/** Convenience hook so page components can call this once on mount. */
+/**
+ * Loads reCAPTCHA lazily on user interaction (scroll, touch, click) or
+ * after an idle delay, ensuring third-party scripts never block initial
+ * page render, LCP, or main-thread performance.
+ */
 export function useRecaptchaInit(): void {
   useEffect(() => {
-    initializeRecaptcha();
+    if (typeof window === "undefined" || !SITE_KEY) return;
+
+    let executed = false;
+    const trigger = () => {
+      if (executed) return;
+      executed = true;
+      cleanup();
+      initializeRecaptcha();
+    };
+
+    const cleanup = () => {
+      window.removeEventListener("scroll", trigger);
+      window.removeEventListener("click", trigger);
+      window.removeEventListener("touchstart", trigger);
+      window.removeEventListener("keydown", trigger);
+    };
+
+    window.addEventListener("scroll", trigger, { passive: true, once: true });
+    window.addEventListener("click", trigger, { passive: true, once: true });
+    window.addEventListener("touchstart", trigger, { passive: true, once: true });
+    window.addEventListener("keydown", trigger, { passive: true, once: true });
+
+    const timer = setTimeout(trigger, 4000);
+
+    return () => {
+      cleanup();
+      clearTimeout(timer);
+    };
   }, []);
 }

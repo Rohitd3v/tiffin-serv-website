@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { verifyRecaptcha } from "@/lib/server-recaptcha";
 
+export const dynamic = "force-dynamic";
+
 // In-memory sliding-window IP rate limiting with TTL pruning
 interface RateLimitEntry {
   count: number;

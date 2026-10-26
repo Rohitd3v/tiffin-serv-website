@@ -117,9 +117,9 @@ export default function VotePage() {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden sm:flex items-center gap-2 bg-[#25D366] text-white font-black text-xs uppercase px-3 py-1.5 border-2 border-brutal-border shadow-brutal-sm hover:bg-[#20BA5A] transition-colors"
+          className="hidden sm:flex items-center gap-2 bg-[#25D366] text-brutal-border font-black text-xs uppercase px-3 py-1.5 border-2 border-brutal-border shadow-brutal-sm hover:bg-[#20BA5A] transition-colors"
         >
-          <MessageCircle className="w-3.5 h-3.5 fill-white" /> Help
+          <MessageCircle className="w-3.5 h-3.5 fill-brutal-border text-brutal-border" /> Help
         </a>
       </nav>
 

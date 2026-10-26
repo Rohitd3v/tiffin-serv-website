@@ -114,9 +114,9 @@ export default function Home() {
             whileHover={{ scale: 1.05, x: 2, y: -2 }}
             whileTap={{ scale: 0.95 }}
             href={whatsappUrl}
-            className="bg-[#25D366] text-white font-black border-2 border-brutal-border px-4 py-2 shadow-brutal-sm hover:shadow-brutal hover:bg-[#20BA5A] transition-all flex items-center gap-2"
+            className="bg-[#25D366] text-brutal-border font-black border-2 border-brutal-border px-4 py-2 shadow-brutal-sm hover:shadow-brutal hover:bg-[#20BA5A] transition-all flex items-center gap-2"
           >
-            <MessageCircle className="w-4 h-4 fill-white" /> Order on WhatsApp
+            <MessageCircle className="w-4 h-4 fill-brutal-border text-brutal-border" /> Order on WhatsApp
           </motion.a>
         </div>
       </nav>
@@ -140,26 +140,24 @@ export default function Home() {
           </motion.div>
 
           <motion.h1
-            initial={{ scale: 0.85, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0.98 }}
+            animate={{ scale: 1 }}
             transition={{
               type: "spring",
               stiffness: 200,
               damping: 15,
-              delay: 0.1,
             }}
             className="text-6xl md:text-8xl lg:text-[8.5rem] font-black leading-[0.9] uppercase tracking-tighter mb-8 text-brutal-text"
           >
             {content.hero.titleLine1} <br />
             <span className="text-brutal-pop">{content.hero.titleAccent}</span> <br />
             <motion.span
-              initial={{ rotate: -4, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
+              initial={{ rotate: -2 }}
+              animate={{ rotate: 0 }}
               transition={{
                 type: "spring",
                 stiffness: 200,
                 damping: 12,
-                delay: 0.4,
               }}
               className="bg-brutal-accent text-brutal-text px-6 border-[3px] border-brutal-border inline-block mt-4 shadow-brutal"
             >
@@ -186,8 +184,8 @@ export default function Home() {
             transition={{ delay: 0.4 }}
             className="bg-white border-[3px] border-brutal-border p-4 md:px-6 md:py-3 mb-8 shadow-brutal flex flex-col sm:flex-row items-center gap-4 max-w-lg"
           >
-            <div className="bg-[#25D366] text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
-              <MessageCircle className="w-3.5 h-3.5 fill-white" />
+            <div className="bg-[#25D366] text-brutal-border text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm">
+              <MessageCircle className="w-3.5 h-3.5 fill-brutal-border text-brutal-border" />
               <span>Hi Mom&apos;s Kitchen, Order 1 Tiffin!</span>
             </div>
             <div className="text-xs font-mono font-bold text-brutal-muted uppercase">
@@ -205,9 +203,9 @@ export default function Home() {
               href={whatsappUrl}
               whileHover={{ scale: 1.05, x: 4, y: -4 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-[#25D366] text-white text-xl font-black px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-[#20BA5A] transition-colors border-[3px] border-brutal-border"
+              className="bg-[#25D366] text-brutal-border text-xl font-black px-8 py-5 shadow-brutal uppercase flex items-center gap-3 group hover:bg-[#20BA5A] transition-colors border-[3px] border-brutal-border"
             >
-              <MessageCircle className="w-6 h-6 fill-white" /> Order on WhatsApp
+              <MessageCircle className="w-6 h-6 fill-brutal-border text-brutal-border" /> Order on WhatsApp
             </motion.a>
 
             <motion.a
@@ -584,9 +582,9 @@ export default function Home() {
               href={whatsappUrl}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full bg-[#25D366] text-white text-xl font-black py-4 px-6 border-[3px] border-brutal-border shadow-brutal uppercase flex items-center justify-center gap-3 hover:bg-[#20BA5A] transition-colors"
+              className="w-full bg-[#25D366] text-brutal-border text-xl font-black py-4 px-6 border-[3px] border-brutal-border shadow-brutal uppercase flex items-center justify-center gap-3 hover:bg-[#20BA5A] transition-colors"
             >
-              <MessageCircle className="w-6 h-6 fill-white" /> Chat to Order Now
+              <MessageCircle className="w-6 h-6 fill-brutal-border text-brutal-border" /> Chat to Order Now
             </motion.a>
 
             <div className="mt-6 pt-4 border-t-2 border-brutal-border w-full flex flex-col gap-1 text-xs font-mono font-bold text-brutal-muted text-center">
